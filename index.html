@@ -1,0 +1,2673 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes">
+    <title>StudyPad</title>
+    <meta name="monetag" content="49a20c71efc2a18364fb0420ce4296b8">
+
+    <script>
+        if (typeof window.storage === 'undefined') {
+            window.storage = {
+                async set(key, value) { try { localStorage.setItem(key, value); return true; } catch(e) { return false; } },
+                async get(key) { const v = localStorage.getItem(key); return v !== null ? { value: v } : null; },
+                async list(prefix) { const keys = []; for (let i = 0; i < localStorage.length; i++) { const k = localStorage.key(i); if (k.startsWith(prefix)) keys.push(k); } return { keys }; },
+                async delete(key) { localStorage.removeItem(key); return true; }
+            };
+        }
+    </script>
+
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#0a1e3c">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="StudyPad">
+    <link rel="icon" type="image/png" sizes="192x192" href="icons/icon-192.png">
+    <link rel="icon" type="image/png" sizes="512x512" href="icons/icon-512.png">
+    <link rel="apple-touch-icon" href="icons/apple-icon-180.png">
+
+    <style>
+        :root {
+            --bg: #f7f8fb;
+            --surface: #ffffff;
+            --surface-2: #fafbfd;
+            --border: #e8ecf1;
+            --border-strong: #d6dce4;
+            --text: #0f172a;
+            --text-muted: #64748b;
+            --text-faint: #94a3b8;
+            --primary: #0f172a;
+            --accent: #6366f1;
+            --accent-2: #8b5cf6;
+            --success: #059669;
+            --danger: #dc2626;
+            --radius-sm: 8px;
+            --radius-md: 12px;
+            --radius-lg: 16px;
+            --radius-pill: 999px;
+            --shadow-xs: 0 1px 2px rgba(15,23,42,0.04);
+            --shadow-sm: 0 1px 3px rgba(15,23,42,0.06), 0 1px 2px rgba(15,23,42,0.04);
+            --shadow-md: 0 4px 16px rgba(15,23,42,0.06), 0 2px 6px rgba(15,23,42,0.04);
+            --shadow-lg: 0 12px 32px rgba(15,23,42,0.10), 0 4px 12px rgba(15,23,42,0.06);
+            --shadow-glow: 0 0 0 4px rgba(99,102,241,0.12);
+            --transition: 0.2s cubic-bezier(0.4,0,0.2,1);
+
+            /* Galaxy vars */
+            --galaxy-bg: linear-gradient(180deg, #eef2ff 0%, #f7f8fb 60%, #f7f8fb 100%);
+            --galaxy-star: rgba(99,102,241,0.55);
+            --galaxy-star-bright: #6366f1;
+            --galaxy-nebula-1: rgba(139,92,246,0.18);
+            --galaxy-nebula-2: rgba(99,102,241,0.14);
+            --galaxy-nebula-3: rgba(236,72,153,0.10);
+            --galaxy-shooting: #6366f1;
+            --galaxy-glow: rgba(99,102,241,0.35);
+        }
+
+        [data-theme="dark"] {
+            --bg: #060913;
+            --surface: #111a2e;
+            --surface-2: #0f1729;
+            --border: #1e2a44;
+            --border-strong: #2a3a5c;
+            --text: #e6ecf7;
+            --text-muted: #94a3b8;
+            --text-faint: #64748b;
+            --primary: #e6ecf7;
+            --accent: #818cf8;
+            --accent-2: #a78bfa;
+            --success: #34d399;
+            --danger: #f87171;
+            --shadow-xs: 0 1px 2px rgba(0,0,0,0.4);
+            --shadow-sm: 0 1px 3px rgba(0,0,0,0.5);
+            --shadow-md: 0 4px 16px rgba(0,0,0,0.5);
+            --shadow-lg: 0 12px 32px rgba(0,0,0,0.6);
+            --shadow-glow: 0 0 0 4px rgba(129,140,248,0.18);
+
+            /* Galaxy dark vars */
+            --galaxy-bg: radial-gradient(ellipse at 20% 0%, #1a1040 0%, #0a0e1f 45%, #060913 100%);
+            --galaxy-star: rgba(255,255,255,0.85);
+            --galaxy-star-bright: #ffffff;
+            --galaxy-nebula-1: rgba(139,92,246,0.30);
+            --galaxy-nebula-2: rgba(99,102,241,0.22);
+            --galaxy-nebula-3: rgba(236,72,153,0.15);
+            --galaxy-shooting: #a5b4fc;
+            --galaxy-glow: rgba(129,140,248,0.45);
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+
+        html, body {
+            width: 100%; height: 100%;
+            font-family: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            overflow-x: hidden;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+            transition: background 0.4s ease, color 0.3s ease;
+        }
+
+        ::-webkit-scrollbar { width: 10px; height: 10px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: var(--border-strong); border-radius: 10px; border: 2px solid var(--bg); }
+        ::-webkit-scrollbar-thumb:hover { background: var(--text-faint); }
+
+        /* HEADER */
+        .header {
+            position: fixed; top: 0; left: 0; width: 100%; height: 64px;
+            background: color-mix(in srgb, var(--surface) 80%, transparent);
+            backdrop-filter: saturate(180%) blur(20px);
+            -webkit-backdrop-filter: saturate(180%) blur(20px);
+            border-bottom: 1px solid var(--border);
+            display: flex; align-items: center; justify-content: space-between;
+            padding: 0 20px; z-index: 1000;
+            box-shadow: var(--shadow-xs);
+        }
+
+        .logo { display: flex; flex-direction: column; align-items: flex-start; gap: 0; font-weight: 700; color: var(--text); white-space: nowrap; line-height: 1.2; }
+        .logo-main { display: flex; align-items: center; gap: 12px; font-size: 20px; letter-spacing: -0.02em; }
+        .logo-icon {
+            width: 38px; height: 38px; border-radius: 11px;
+            display: flex; align-items: center; justify-content: center;
+            background: linear-gradient(135deg, #0f172a 0%, #4338ca 100%);
+            color: white; font-size: 18px;
+            box-shadow: 0 4px 12px rgba(67,56,202,0.28);
+        }
+        .logo-sub { font-size: 10.5px; font-weight: 500; color: var(--text-faint); opacity: 0.7; margin-left: 50px; letter-spacing: 0.5px; text-transform: uppercase; }
+
+        .header-actions { display: flex; align-items: center; gap: 10px; }
+
+        .search {
+            width: 200px; height: 38px;
+            border: 1px solid var(--border); border-radius: var(--radius-md);
+            padding: 0 14px; outline: none; font-size: 13.5px;
+            background: var(--surface-2); color: var(--text);
+            transition: var(--transition);
+        }
+        .search::placeholder { color: var(--text-faint); }
+        .search:focus { border-color: var(--accent); background: var(--surface); box-shadow: var(--shadow-glow); }
+
+        .notification {
+            width: 38px; height: 38px;
+            border: 1px solid var(--border); border-radius: var(--radius-md);
+            background: var(--surface); cursor: pointer; font-size: 15px;
+            display: flex; align-items: center; justify-content: center;
+            transition: var(--transition); color: var(--text);
+        }
+        .notification:hover { background: var(--surface-2); border-color: var(--border-strong); transform: translateY(-1px); box-shadow: var(--shadow-sm); }
+
+        .profile {
+            width: 38px; height: 38px; border-radius: 50%;
+            background: linear-gradient(135deg, #0f172a 0%, #4338ca 100%);
+            color: white; display: flex; align-items: center; justify-content: center;
+            font-weight: 700; font-size: 14px;
+            box-shadow: 0 4px 10px rgba(67,56,202,0.28);
+            cursor: pointer; transition: var(--transition);
+        }
+        .profile:hover { transform: scale(1.05); }
+
+        .menu-toggle {
+            display: none; width: 38px; height: 38px;
+            border: 1px solid var(--border); border-radius: var(--radius-md);
+            background: var(--surface); cursor: pointer; font-size: 18px;
+            align-items: center; justify-content: center;
+            transition: var(--transition); color: var(--text);
+        }
+
+        /* SIDEBAR */
+        .sidebar {
+            position: fixed; top: 64px; left: 0; width: 248px;
+            height: calc(100vh - 64px);
+            background: var(--surface); border-right: 1px solid var(--border);
+            padding: 18px 12px; overflow-y: auto; z-index: 900;
+            transition: transform 0.3s cubic-bezier(0.4,0,0.2,1);
+        }
+        .sidebar.closed { transform: translateX(-100%); }
+
+        .sidebar-overlay {
+            display: none; position: fixed; top: 64px; left: 0;
+            width: 100%; height: calc(100vh - 64px);
+            background: rgba(15,23,42,0.4); backdrop-filter: blur(2px); z-index: 850;
+        }
+        .sidebar-overlay.active { display: block; }
+
+        .menu-title {
+            font-size: 10.5px; font-weight: 700; color: var(--text-faint);
+            text-transform: uppercase; letter-spacing: 0.08em;
+            margin: 14px 12px 8px;
+        }
+
+        .menu-item {
+            display: flex; align-items: center; gap: 12px;
+            padding: 10px 14px; margin-bottom: 2px;
+            border-radius: var(--radius-md); color: var(--text-muted);
+            text-decoration: none; font-size: 14px; font-weight: 500;
+            transition: var(--transition); cursor: pointer;
+            width: 100%; border: none; background: transparent;
+            text-align: left; position: relative;
+        }
+        .menu-item:hover { background: var(--surface-2); color: var(--text); }
+        .menu-item.active {
+            background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+            color: white; box-shadow: 0 4px 12px rgba(15,23,42,0.18);
+        }
+        [data-theme="dark"] .menu-item.active {
+            background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
+            box-shadow: 0 4px 12px rgba(99,102,241,0.35);
+        }
+        .menu-item.active::before {
+            content: ''; position: absolute; left: -12px; top: 50%;
+            transform: translateY(-50%); width: 3px; height: 20px;
+            background: var(--accent); border-radius: 0 3px 3px 0;
+        }
+        .menu-item span:first-child { font-size: 16px; transition: transform var(--transition); }
+        .menu-item:hover span:first-child { transform: scale(1.15); }
+
+        /* MAIN */
+        .main {
+            position: fixed; top: 64px; left: 248px;
+            width: calc(100% - 248px); height: calc(100vh - 64px);
+            overflow-y: auto; padding: 28px;
+            transition: left 0.3s ease, width 0.3s ease;
+        }
+        .main.expanded { left: 0; width: 100%; }
+
+        .page-title { margin-bottom: 24px; }
+        .page-title h1 { font-size: 26px; color: var(--text); margin-bottom: 6px; letter-spacing: -0.025em; font-weight: 700; }
+        .page-title p { color: var(--text-muted); font-size: 14px; }
+
+        /* ═══════════ GALAXY HOME ═══════════ */
+        .galaxy-home {
+            position: relative;
+            border-radius: var(--radius-lg);
+            padding: 36px 28px 32px;
+            background: var(--galaxy-bg);
+            overflow: hidden;
+            margin-bottom: 24px;
+            border: 1px solid var(--border);
+            transition: background 0.5s ease;
+            min-height: 240px;
+            isolation: isolate;
+        }
+
+        [data-theme="dark"] .galaxy-home {
+            border-color: rgba(129,140,248,0.2);
+            box-shadow:
+                0 0 60px rgba(99,102,241,0.15),
+                0 0 120px rgba(139,92,246,0.08),
+                inset 0 0 80px rgba(99,102,241,0.05);
+        }
+
+        /* Star canvas layers */
+        .galaxy-stars,
+        .galaxy-stars-2,
+        .galaxy-stars-3 {
+            position: absolute;
+            inset: 0;
+            pointer-events: none;
+            z-index: 0;
+            overflow: hidden;
+            border-radius: var(--radius-lg);
+        }
+
+        .galaxy-stars::before,
+        .galaxy-stars::after,
+        .galaxy-stars-2::before,
+        .galaxy-stars-2::after,
+        .galaxy-stars-3::before,
+        .galaxy-stars-3::after {
+            content: '';
+            position: absolute;
+            inset: -50%;
+            background-image:
+                radial-gradient(1.5px 1.5px at 20px 30px, var(--galaxy-star), transparent),
+                radial-gradient(1px 1px at 40px 70px, var(--galaxy-star), transparent),
+                radial-gradient(1.5px 1.5px at 90px 40px, var(--galaxy-star), transparent),
+                radial-gradient(1px 1px at 130px 80px, var(--galaxy-star), transparent),
+                radial-gradient(2px 2px at 160px 120px, var(--galaxy-star-bright), transparent),
+                radial-gradient(1px 1px at 200px 50px, var(--galaxy-star), transparent),
+                radial-gradient(1.5px 1.5px at 240px 180px, var(--galaxy-star), transparent),
+                radial-gradient(1px 1px at 280px 90px, var(--galaxy-star), transparent),
+                radial-gradient(1px 1px at 320px 200px, var(--galaxy-star), transparent),
+                radial-gradient(2px 2px at 360px 140px, var(--galaxy-star-bright), transparent),
+                radial-gradient(1px 1px at 400px 60px, var(--galaxy-star), transparent),
+                radial-gradient(1.5px 1.5px at 440px 220px, var(--galaxy-star), transparent),
+                radial-gradient(1px 1px at 480px 100px, var(--galaxy-star), transparent),
+                radial-gradient(1px 1px at 520px 260px, var(--galaxy-star), transparent),
+                radial-gradient(2px 2px at 560px 160px, var(--galaxy-star-bright), transparent),
+                radial-gradient(1px 1px at 600px 300px, var(--galaxy-star), transparent),
+                radial-gradient(1.5px 1.5px at 640px 80px, var(--galaxy-star), transparent),
+                radial-gradient(1px 1px at 680px 240px, var(--galaxy-star), transparent),
+                radial-gradient(1px 1px at 720px 180px, var(--galaxy-star), transparent),
+                radial-gradient(2px 2px at 760px 320px, var(--galaxy-star-bright), transparent);
+            background-size: 800px 400px;
+            background-repeat: repeat;
+            animation: twinkle 4s ease-in-out infinite;
+        }
+
+        .galaxy-stars-2::before {
+            background-size: 600px 300px;
+            animation: twinkle 6s ease-in-out infinite 1s;
+            opacity: 0.7;
+        }
+        .galaxy-stars-2::after {
+            background-size: 900px 500px;
+            animation: twinkle 8s ease-in-out infinite 2s;
+            opacity: 0.5;
+        }
+
+        .galaxy-stars-3::before {
+            background-size: 400px 200px;
+            animation: twinkle 5s ease-in-out infinite 0.5s;
+            opacity: 0.6;
+        }
+        .galaxy-stars-3::after {
+            background-size: 700px 400px;
+            animation: twinkle 7s ease-in-out infinite 3s;
+            opacity: 0.4;
+        }
+
+        @keyframes twinkle {
+            0%, 100% { opacity: 0.6; transform: scale(1); }
+            50% { opacity: 1; transform: scale(1.02); }
+        }
+
+        /* Nebula glows */
+        .galaxy-nebula {
+            position: absolute;
+            inset: 0;
+            pointer-events: none;
+            z-index: 1;
+            border-radius: var(--radius-lg);
+            overflow: hidden;
+        }
+        .galaxy-nebula::before,
+        .galaxy-nebula::after {
+            content: '';
+            position: absolute;
+            border-radius: 50%;
+            filter: blur(60px);
+            opacity: 0.9;
+            animation: float 12s ease-in-out infinite;
+        }
+        .galaxy-nebula::before {
+            top: -20%; left: -10%;
+            width: 55%; height: 100%;
+            background: radial-gradient(circle, var(--galaxy-nebula-1) 0%, transparent 70%);
+        }
+        .galaxy-nebula::after {
+            bottom: -30%; right: -15%;
+            width: 60%; height: 110%;
+            background: radial-gradient(circle, var(--galaxy-nebula-2) 0%, transparent 70%);
+            animation-delay: 3s;
+        }
+
+        .galaxy-nebula-2 {
+            position: absolute;
+            inset: 0;
+            pointer-events: none;
+            z-index: 1;
+            border-radius: var(--radius-lg);
+            overflow: hidden;
+        }
+        .galaxy-nebula-2::before {
+            content: '';
+            position: absolute;
+            top: 30%; left: 40%;
+            width: 50%; height: 80%;
+            background: radial-gradient(circle, var(--galaxy-nebula-3) 0%, transparent 70%);
+            filter: blur(70px);
+            animation: float 15s ease-in-out infinite 5s;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translate(0, 0) scale(1); }
+            50% { transform: translate(3%, 4%) scale(1.08); }
+        }
+
+        /* Shooting stars */
+        .shooting-star {
+            position: absolute;
+            height: 2px;
+            background: linear-gradient(90deg, var(--galaxy-shooting), transparent);
+            border-radius: 50%;
+            filter: drop-shadow(0 0 6px var(--galaxy-glow));
+            opacity: 0;
+            z-index: 2;
+            pointer-events: none;
+        }
+        .shooting-star::before {
+            content: '';
+            position: absolute;
+            right: 0; top: 50%;
+            transform: translateY(-50%);
+            width: 4px; height: 4px;
+            border-radius: 50%;
+            background: #fff;
+            box-shadow: 0 0 10px var(--galaxy-star-bright), 0 0 20px var(--galaxy-shooting);
+        }
+
+        .shooting-star.s1 {
+            top: 15%; left: 60%; width: 120px;
+            animation: shoot 4s linear infinite;
+            animation-delay: 1s;
+        }
+        .shooting-star.s2 {
+            top: 40%; left: 80%; width: 90px;
+            animation: shoot 5s linear infinite;
+            animation-delay: 3.5s;
+        }
+        .shooting-star.s3 {
+            top: 65%; left: 50%; width: 100px;
+            animation: shoot 6s linear infinite;
+            animation-delay: 6s;
+        }
+        .shooting-star.s4 {
+            top: 25%; left: 30%; width: 80px;
+            animation: shoot 4.5s linear infinite;
+            animation-delay: 8s;
+        }
+
+        @keyframes shoot {
+            0% { opacity: 0; transform: translate(0, 0) rotate(-35deg); }
+            5% { opacity: 1; }
+            60% { opacity: 1; }
+            100% { opacity: 0; transform: translate(-400px, 280px) rotate(-35deg); }
+        }
+
+        /* Galaxy Home Content */
+        .galaxy-content {
+            position: relative;
+            z-index: 10;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .galaxy-header-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            flex-wrap: wrap;
+            gap: 16px;
+        }
+
+        .galaxy-greeting {
+            font-size: 32px;
+            font-weight: 800;
+            letter-spacing: -0.03em;
+            color: var(--text);
+            line-height: 1.15;
+            text-shadow: 0 2px 20px var(--galaxy-glow);
+        }
+        [data-theme="dark"] .galaxy-greeting {
+            background: linear-gradient(135deg, #ffffff 0%, #c7d2fe 60%, #a5b4fc 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            text-shadow: none;
+            filter: drop-shadow(0 2px 20px rgba(165,180,252,0.4));
+        }
+
+        .galaxy-subtitle {
+            font-size: 14.5px;
+            color: var(--text-muted);
+            margin-top: 6px;
+            font-weight: 500;
+        }
+        [data-theme="dark"] .galaxy-subtitle { color: rgba(199,210,254,0.75); }
+
+        .galaxy-date {
+            background: color-mix(in srgb, var(--surface) 70%, transparent);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-md);
+            padding: 10px 16px;
+            text-align: right;
+            box-shadow: var(--shadow-sm);
+        }
+        [data-theme="dark"] .galaxy-date {
+            border-color: rgba(129,140,248,0.25);
+            background: rgba(17,26,46,0.5);
+            box-shadow: 0 4px 20px rgba(99,102,241,0.15);
+        }
+        .galaxy-date .time {
+            font-size: 18px;
+            font-weight: 800;
+            font-variant-numeric: tabular-nums;
+            color: var(--text);
+            letter-spacing: -0.01em;
+        }
+        [data-theme="dark"] .galaxy-date .time { color: #e0e7ff; }
+        .galaxy-date .label {
+            font-size: 10.5px;
+            color: var(--text-faint);
+            text-transform: uppercase;
+            letter-spacing: 0.06em;
+            font-weight: 700;
+            margin-top: 2px;
+        }
+        [data-theme="dark"] .galaxy-date .label { color: rgba(165,180,252,0.6); }
+
+        /* Galaxy stat chips */
+        .galaxy-stats {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 12px;
+            margin-top: 4px;
+        }
+
+        .galaxy-stat {
+            background: color-mix(in srgb, var(--surface) 65%, transparent);
+            backdrop-filter: blur(14px) saturate(180%);
+            -webkit-backdrop-filter: blur(14px) saturate(180%);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-md);
+            padding: 14px 16px;
+            box-shadow: var(--shadow-sm);
+            transition: transform 0.25s ease, box-shadow 0.25s ease, border-color 0.25s ease;
+            position: relative;
+            overflow: hidden;
+        }
+        .galaxy-stat:hover {
+            transform: translateY(-3px);
+            box-shadow: var(--shadow-md);
+            border-color: var(--border-strong);
+        }
+        [data-theme="dark"] .galaxy-stat {
+            background: rgba(17,26,46,0.55);
+            border-color: rgba(129,140,248,0.2);
+            box-shadow: 0 4px 20px rgba(0,0,0,0.3), inset 0 1px 0 rgba(255,255,255,0.04);
+        }
+        [data-theme="dark"] .galaxy-stat:hover {
+            border-color: rgba(129,140,248,0.45);
+            box-shadow: 0 8px 30px rgba(99,102,241,0.25), inset 0 1px 0 rgba(255,255,255,0.06);
+        }
+
+        .galaxy-stat::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; right: 0; height: 2px;
+            border-radius: var(--radius-md) var(--radius-md) 0 0;
+        }
+        .galaxy-stat:nth-child(1)::before { background: linear-gradient(90deg, #6366f1, #8b5cf6); }
+        .galaxy-stat:nth-child(2)::before { background: linear-gradient(90deg, #059669, #34d399); }
+        .galaxy-stat:nth-child(3)::before { background: linear-gradient(90deg, #f59e0b, #f97316); }
+        .galaxy-stat:nth-child(4)::before { background: linear-gradient(90deg, #3b82f6, #06b6d4); }
+
+        .galaxy-stat-label {
+            font-size: 10.5px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.06em;
+            color: var(--text-muted);
+            margin-bottom: 6px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+        [data-theme="dark"] .galaxy-stat-label { color: rgba(165,180,252,0.75); }
+
+        .galaxy-stat-value {
+            font-size: 24px;
+            font-weight: 800;
+            color: var(--text);
+            font-variant-numeric: tabular-nums;
+            letter-spacing: -0.03em;
+            line-height: 1.1;
+        }
+        [data-theme="dark"] .galaxy-stat-value {
+            background: linear-gradient(135deg, #ffffff 0%, #c7d2fe 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            filter: drop-shadow(0 2px 8px rgba(165,180,252,0.3));
+        }
+
+        /* Light mode galaxy — softer, warmer */
+        [data-theme="light"] .galaxy-home {
+            background: linear-gradient(135deg, #eef2ff 0%, #faf5ff 40%, #f7f8fb 100%);
+            box-shadow: 0 4px 24px rgba(99,102,241,0.06);
+        }
+        [data-theme="light"] .galaxy-stars::before,
+        [data-theme="light"] .galaxy-stars::after,
+        [data-theme="light"] .galaxy-stars-2::before,
+        [data-theme="light"] .galaxy-stars-2::after,
+        [data-theme="light"] .galaxy-stars-3::before,
+        [data-theme="light"] .galaxy-stars-3::after {
+            opacity: 0.35;
+        }
+        [data-theme="light"] .shooting-star::before {
+            box-shadow: 0 0 8px var(--accent);
+        }
+
+        /* Mobile adjustments */
+        @media (max-width: 900px) {
+            .galaxy-stats { grid-template-columns: repeat(2, 1fr); }
+        }
+        @media (max-width: 600px) {
+            .galaxy-greeting { font-size: 24px; }
+            .galaxy-stat-value { font-size: 20px; }
+            .galaxy-home { padding: 26px 18px 24px; }
+            .galaxy-header-row { flex-direction: column; align-items: stretch; }
+            .galaxy-date { text-align: left; align-self: flex-start; }
+        }
+        @media (max-width: 380px) {
+            .galaxy-stat-value { font-size: 18px; }
+            .galaxy-stat { padding: 11px 12px; }
+        }
+
+        /* CARDS */
+        .cards { display: grid; grid-template-columns: repeat(4, minmax(0,1fr)); gap: 16px; margin-bottom: 24px; }
+        .card {
+            background: var(--surface); border: 1px solid var(--border);
+            border-radius: var(--radius-lg); padding: 18px;
+            box-shadow: var(--shadow-sm); transition: var(--transition);
+            position: relative; overflow: hidden;
+        }
+        .card::before {
+            content: ''; position: absolute; top: 0; left: 0; right: 0; height: 3px;
+            background: linear-gradient(90deg, #6366f1, #8b5cf6);
+            opacity: 0; transition: opacity var(--transition);
+        }
+        .card:hover { transform: translateY(-2px); box-shadow: var(--shadow-md); border-color: var(--border-strong); }
+        .card:hover::before { opacity: 1; }
+        .card:nth-child(1)::before { background: linear-gradient(90deg, #6366f1, #8b5cf6); }
+        .card:nth-child(2)::before { background: linear-gradient(90deg, #059669, #10b981); }
+        .card:nth-child(3)::before { background: linear-gradient(90deg, #f59e0b, #f97316); }
+        .card:nth-child(4)::before { background: linear-gradient(90deg, #3b82f6, #06b6d4); }
+        .card-label { color: var(--text-muted); font-size: 12px; margin-bottom: 8px; font-weight: 500; text-transform: uppercase; letter-spacing: 0.05em; }
+        .card-value { font-size: 26px; font-weight: 700; color: var(--text); letter-spacing: -0.03em; font-variant-numeric: tabular-nums; }
+
+        .content-grid { display: grid; grid-template-columns: 2fr 1fr; gap: 16px; }
+
+        /* SECTIONS */
+        .section {
+            background: var(--surface); border: 1px solid var(--border);
+            border-radius: var(--radius-lg); padding: 20px;
+            margin-bottom: 16px; box-shadow: var(--shadow-xs);
+        }
+        .section-header {
+            display: flex; align-items: center; justify-content: space-between;
+            margin-bottom: 18px; padding-bottom: 14px;
+            border-bottom: 1px solid var(--border);
+        }
+        .section-header h2 { font-size: 15.5px; color: var(--text); font-weight: 700; letter-spacing: -0.015em; }
+
+        /* DEADLINE */
+        .deadline {
+            border: 1px solid var(--border); border-radius: var(--radius-md);
+            padding: 14px; margin-bottom: 10px;
+            background: var(--surface-2); transition: var(--transition);
+            position: relative; overflow: hidden;
+        }
+        .deadline::before {
+            content: ''; position: absolute; left: 0; top: 0; bottom: 0; width: 3px;
+            background: linear-gradient(180deg, #6366f1, #8b5cf6);
+        }
+        .deadline:last-child { margin-bottom: 0; }
+        .deadline:hover { border-color: var(--border-strong); box-shadow: var(--shadow-sm); }
+        .deadline-title { font-weight: 600; margin-bottom: 8px; font-size: 14px; color: var(--text); letter-spacing: -0.01em; }
+        .countdown {
+            font-size: 19px; font-weight: 700; letter-spacing: 0.02em;
+            font-family: ui-monospace, "SF Mono", Monaco, "Cascadia Code", monospace;
+            color: var(--text); font-variant-numeric: tabular-nums;
+        }
+        .progress { width: 100%; height: 6px; background: var(--border); border-radius: var(--radius-pill); margin-top: 12px; overflow: hidden; }
+        .progress-bar { height: 100%; width: 80%; background: linear-gradient(90deg, #6366f1, #8b5cf6); border-radius: var(--radius-pill); transition: width 0.4s ease; }
+
+        /* STICKY NOTES */
+        .sticky-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 14px; }
+
+        .sticky {
+            min-height: 130px; padding: 16px;
+            border-radius: var(--radius-md);
+            box-shadow: 0 2px 6px rgba(0,0,0,0.06), 0 1px 2px rgba(0,0,0,0.04);
+            cursor: grab;
+            transition: box-shadow 0.2s, transform 0.15s;
+            user-select: none; position: relative;
+            transform: rotate(-0.6deg);
+            border: 1px solid rgba(0,0,0,0.04);
+        }
+        .sticky:nth-child(2n) { transform: rotate(0.8deg); }
+        .sticky:nth-child(3n) { transform: rotate(-0.4deg); }
+
+        .sticky::before {
+            content: ''; position: absolute; top: -6px; left: 50%;
+            transform: translateX(-50%); width: 42px; height: 12px;
+            background: rgba(255,255,255,0.55); border-radius: 2px;
+            box-shadow: 0 1px 2px rgba(0,0,0,0.06); pointer-events: none;
+        }
+        .sticky:active { cursor: grabbing; }
+        .sticky.dragging { opacity: 0.9; transform: scale(1.02) rotate(2deg); box-shadow: var(--shadow-lg); z-index: 9999 !important; }
+        .sticky h3 { font-size: 13.5px; margin-bottom: 8px; cursor: pointer; padding: 3px; border-radius: 4px; transition: background 0.2s; outline: none; color: #422006; font-weight: 700; letter-spacing: -0.01em; }
+        .sticky h3:hover { background: rgba(0,0,0,0.04); }
+        .sticky p { font-size: 13px; line-height: 1.55; cursor: pointer; padding: 3px; border-radius: 4px; transition: background 0.2s; outline: none; color: #57534e; }
+        .sticky p:hover { background: rgba(0,0,0,0.04); }
+        .sticky .delete-sticky {
+            position: absolute; top: 8px; right: 8px;
+            background: rgba(0,0,0,0.06); border: none; border-radius: 50%;
+            width: 22px; height: 22px; cursor: pointer; font-size: 11px;
+            display: flex; align-items: center; justify-content: center;
+            transition: all 0.2s; opacity: 0.5; color: #422006;
+        }
+        .sticky .delete-sticky:hover { background: rgba(220,38,38,0.15); opacity: 1; color: var(--danger); }
+
+        .sticky-color-picker {
+            position: absolute; top: 8px; right: 36px;
+            display: none; flex-wrap: wrap; gap: 4px;
+            background: var(--surface); padding: 6px;
+            border-radius: 8px; box-shadow: var(--shadow-lg);
+            border: 1px solid var(--border); z-index: 100;
+            width: 130px;
+        }
+        .sticky-color-picker.show { display: flex; }
+        .sticky-color-picker button {
+            width: 20px; height: 20px; border-radius: 50%;
+            border: 2px solid transparent; cursor: pointer;
+            transition: transform 0.15s;
+        }
+        .sticky-color-picker button:hover { transform: scale(1.2); border-color: var(--accent); }
+        .sticky-color-toggle {
+            position: absolute; top: 8px; right: 34px;
+            background: rgba(0,0,0,0.06); border: none; border-radius: 50%;
+            width: 22px; height: 22px; cursor: pointer; font-size: 11px;
+            display: flex; align-items: center; justify-content: center;
+            transition: all 0.2s; opacity: 0.5; color: #422006;
+        }
+        .sticky-color-toggle:hover { opacity: 1; background: rgba(0,0,0,0.12); }
+
+        /* BUTTONS */
+        .btn-action {
+            background: var(--surface); border: 1px solid var(--border);
+            border-radius: var(--radius-pill); padding: 7px 16px;
+            font-size: 13px; cursor: pointer; transition: var(--transition);
+            color: var(--text); font-weight: 600; letter-spacing: -0.005em;
+            display: inline-flex; align-items: center; gap: 6px;
+        }
+        .btn-action:hover {
+            background: var(--primary); border-color: var(--primary);
+            color: var(--bg); transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(15,23,42,0.18);
+        }
+        [data-theme="dark"] .btn-action:hover {
+            background: var(--accent); border-color: var(--accent); color: #fff;
+            box-shadow: 0 4px 12px rgba(99,102,241,0.35);
+        }
+        .btn-add-sticky {
+            background: var(--surface); border: 1px solid var(--border);
+            border-radius: var(--radius-pill); padding: 5px 14px;
+            font-size: 16px; line-height: 1.2; cursor: pointer;
+            transition: var(--transition); color: var(--text); font-weight: 600;
+        }
+        .btn-add-sticky:hover { background: var(--primary); border-color: var(--primary); color: var(--bg); transform: translateY(-1px); }
+        [data-theme="dark"] .btn-add-sticky:hover { background: var(--accent); border-color: var(--accent); color: #fff; }
+
+        /* PAGE SECTIONS */
+        .page-section { display: none; }
+        .page-section.active-section { display: block; animation: fadeIn 0.25s ease; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(4px); } to { opacity: 1; transform: translateY(0); } }
+
+        /* NOTES */
+        .notes-list { display: flex; flex-direction: column; gap: 8px; margin-top: 12px; }
+        .note-item {
+            background: var(--surface-2); border: 1px solid var(--border);
+            border-radius: var(--radius-md); padding: 12px 14px;
+            display: flex; justify-content: space-between; align-items: center;
+            transition: var(--transition);
+        }
+        .note-item:hover { border-color: var(--border-strong); background: var(--surface); box-shadow: var(--shadow-sm); }
+        .note-item .note-title { font-weight: 600; color: var(--text); font-size: 14px; }
+        .note-item .note-meta { font-size: 11.5px; color: var(--text-faint); margin-top: 2px; }
+        .note-item .note-actions { display: flex; gap: 4px; }
+        .note-item .note-actions button {
+            background: none; border: none; cursor: pointer;
+            color: var(--text-muted); font-size: 13px;
+            width: 30px; height: 30px; border-radius: 50%;
+            transition: var(--transition); display: inline-flex;
+            align-items: center; justify-content: center;
+        }
+        .note-item .note-actions button:hover { background: var(--surface); color: var(--accent); }
+        .note-item .note-actions button.delete:hover { background: #fee2e2; color: var(--danger); }
+
+        .upload-area {
+            border: 2px dashed var(--border-strong); border-radius: var(--radius-md);
+            padding: 28px 20px; text-align: center; color: var(--text-muted);
+            margin-top: 12px; transition: var(--transition); cursor: pointer;
+            font-size: 14px; background: var(--surface-2);
+        }
+        .upload-area:hover { border-color: var(--accent); background: #eef2ff; color: var(--accent); }
+        [data-theme="dark"] .upload-area:hover { background: rgba(99,102,241,0.1); }
+        .upload-area input[type="file"] { display: none; }
+        .upload-area.dragover { border-color: var(--accent); background: #eef2ff; }
+        [data-theme="dark"] .upload-area.dragover { background: rgba(99,102,241,0.15); }
+
+        /* CALENDAR */
+        .calendar-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 6px; margin-top: 12px; }
+        .calendar-grid .day { padding: 10px; text-align: center; border-radius: var(--radius-sm); background: var(--surface-2); font-size: 13px; transition: var(--transition); cursor: pointer; font-variant-numeric: tabular-nums; }
+        .calendar-grid .day:hover { background: #eef2ff; }
+        [data-theme="dark"] .calendar-grid .day:hover { background: rgba(99,102,241,0.15); }
+        .calendar-grid .day.weekday { font-weight: 700; color: var(--text-faint); background: transparent; font-size: 11px; text-transform: uppercase; letter-spacing: 0.06em; cursor: default; }
+        .calendar-grid .day.weekday:hover { background: transparent; }
+        .calendar-grid .day.today { background: linear-gradient(135deg, #0f172a 0%, #4338ca 100%); color: white; font-weight: 700; box-shadow: 0 4px 12px rgba(67,56,202,0.3); }
+        [data-theme="dark"] .calendar-grid .day.today { background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%); box-shadow: 0 4px 12px rgba(99,102,241,0.4); }
+        .calendar-grid .day.other-month { color: var(--text-faint); opacity: 0.5; }
+        .calendar-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px; }
+        .calendar-header button {
+            background: var(--surface); border: 1px solid var(--border);
+            border-radius: var(--radius-sm); padding: 6px 12px;
+            cursor: pointer; font-size: 14px; transition: var(--transition); color: var(--text);
+        }
+        .calendar-header button:hover { background: var(--primary); border-color: var(--primary); color: var(--bg); transform: translateY(-1px); }
+        [data-theme="dark"] .calendar-header button:hover { background: var(--accent); border-color: var(--accent); color: #fff; }
+        .calendar-header h2 { font-size: 16px; font-weight: 700; letter-spacing: -0.015em; }
+
+        /* TIMER */
+        .timer-display {
+            font-size: 56px; font-weight: 800; text-align: center;
+            padding: 24px 16px;
+            font-family: ui-monospace, "SF Mono", Monaco, "Cascadia Code", monospace;
+            letter-spacing: 0.02em;
+            background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
+            -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+            background-clip: text; font-variant-numeric: tabular-nums;
+        }
+        .timer-controls { display: flex; gap: 10px; justify-content: center; margin-top: 16px; flex-wrap: wrap; }
+        .timer-controls button {
+            padding: 10px 22px; border: none; border-radius: var(--radius-pill);
+            font-weight: 700; cursor: pointer; transition: var(--transition);
+            font-size: 13.5px; letter-spacing: -0.005em;
+        }
+        .timer-controls .start-btn { background: linear-gradient(135deg, #0f172a 0%, #4338ca 100%); color: white; box-shadow: 0 4px 12px rgba(67,56,202,0.3); }
+        .timer-controls .start-btn:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(67,56,202,0.4); }
+        [data-theme="dark"] .timer-controls .start-btn { background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%); }
+        .timer-controls .pause-btn, .timer-controls .reset-btn { background: var(--surface); color: var(--text); border: 1px solid var(--border); }
+        .timer-controls .pause-btn:hover, .timer-controls .reset-btn:hover { background: var(--surface-2); border-color: var(--border-strong); transform: translateY(-1px); }
+        .timer-status { text-align: center; margin-top: 14px; color: var(--text-muted); font-size: 13.5px; font-weight: 500; }
+        .timer-alert {
+            display: none; background: #fef2f2; border: 2px solid var(--danger);
+            border-radius: var(--radius-md); padding: 14px; margin-top: 14px;
+            text-align: center; color: var(--danger); font-weight: 700;
+            animation: pulse 1s ease-in-out infinite; letter-spacing: 0.02em;
+        }
+        [data-theme="dark"] .timer-alert { background: rgba(248,113,113,0.15); }
+        @keyframes pulse { 0%,100% { opacity: 1; transform: scale(1); } 50% { opacity: 0.85; transform: scale(1.01); } }
+
+        /* FORMS */
+        .assessment-form, .assignment-form {
+            background: var(--surface-2); border: 1px solid var(--border);
+            border-radius: var(--radius-md); padding: 18px; margin-bottom: 18px;
+            animation: slideDown 0.25s ease;
+        }
+        @keyframes slideDown { from { opacity: 0; transform: translateY(-6px); } to { opacity: 1; transform: translateY(0); } }
+        .assessment-form input, .assignment-form input, .assignment-form textarea {
+            width: 100%; padding: 10px 14px; border: 1px solid var(--border);
+            border-radius: var(--radius-sm); margin-bottom: 10px;
+            font-size: 13.5px; font-family: inherit; outline: none;
+            transition: var(--transition); background: var(--surface); color: var(--text);
+        }
+        .assessment-form input::placeholder, .assignment-form input::placeholder, .assignment-form textarea::placeholder { color: var(--text-faint); }
+        .assessment-form input:focus, .assignment-form input:focus, .assignment-form textarea:focus { border-color: var(--accent); box-shadow: var(--shadow-glow); }
+        .assessment-form .form-row, .assessment-form .form-actions, .assignment-form .form-actions { display: flex; gap: 10px; }
+        .assessment-form .form-row input { flex: 1; }
+        .assessment-form .form-actions button { flex: 1; }
+
+        /* ASSIGNMENTS */
+        .assignment-card {
+            border: 1px solid var(--border); border-radius: var(--radius-md);
+            padding: 16px; margin-bottom: 10px;
+            background: var(--surface-2); transition: var(--transition);
+            position: relative; overflow: hidden;
+        }
+        .assignment-card::before {
+            content: ''; position: absolute; left: 0; top: 0; bottom: 0; width: 3px;
+            background: linear-gradient(180deg, #6366f1, #8b5cf6);
+        }
+        .assignment-card:hover { border-color: var(--border-strong); box-shadow: var(--shadow-sm); background: var(--surface); }
+        .assignment-card .assignment-title { font-weight: 700; font-size: 15px; color: var(--text); letter-spacing: -0.01em; }
+        .assignment-card .assignment-desc { font-size: 13px; color: var(--text-muted); margin: 8px 0; line-height: 1.5; }
+        .assignment-card .assignment-meta { font-size: 12px; color: var(--text-faint); font-weight: 500; }
+        .assignment-card .assignment-actions { margin-top: 12px; display: flex; gap: 8px; }
+        .assignment-card .assignment-actions button { padding: 5px 14px; font-size: 12px; }
+
+        /* DOC VIEWER */
+        .doc-viewer-overlay {
+            display: none; position: fixed; top: 0; left: 0;
+            width: 100%; height: 100%;
+            background: rgba(15,23,42,0.65); backdrop-filter: blur(4px);
+            z-index: 9999; justify-content: center; align-items: center;
+            padding: 20px; animation: fadeIn 0.2s ease;
+        }
+        .doc-viewer-overlay.active { display: flex; }
+        .doc-viewer {
+            background: var(--surface); border-radius: var(--radius-lg);
+            max-width: 92%; max-height: 92%; width: 100%; height: 100%;
+            display: flex; flex-direction: column; overflow: hidden;
+            position: relative; box-shadow: var(--shadow-lg);
+        }
+        .doc-viewer-header {
+            display: flex; justify-content: space-between; align-items: center;
+            padding: 16px 22px; border-bottom: 1px solid var(--border); flex-shrink: 0;
+        }
+        .doc-viewer-header h3 { font-size: 15px; color: var(--text); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-weight: 700; letter-spacing: -0.01em; }
+        .doc-viewer-header .close-viewer {
+            background: var(--surface-2); border: 1px solid var(--border);
+            font-size: 16px; cursor: pointer; color: var(--text-muted);
+            width: 32px; height: 32px; border-radius: 50%;
+            transition: var(--transition); display: flex; align-items: center; justify-content: center;
+        }
+        .doc-viewer-header .close-viewer:hover { background: #fee2e2; color: var(--danger); border-color: #fecaca; }
+        .doc-viewer-body { flex: 1; overflow: auto; padding: 22px; background: var(--surface-2); }
+        .doc-viewer-body .doc-content {
+            background: var(--surface); padding: 22px;
+            border-radius: var(--radius-md); border: 1px solid var(--border);
+            min-height: 200px; white-space: pre-wrap; word-wrap: break-word;
+            font-family: ui-monospace, "SF Mono", Monaco, monospace;
+            font-size: 13.5px; line-height: 1.6; color: var(--text);
+        }
+        .doc-viewer-body .doc-content img { max-width: 100%; height: auto; display: block; margin: 0 auto; border-radius: var(--radius-sm); }
+        .doc-viewer-body .doc-content .file-type-badge {
+            display: inline-flex; align-items: center; gap: 6px;
+            padding: 5px 12px; background: var(--surface-2);
+            border: 1px solid var(--border); border-radius: var(--radius-pill);
+            font-size: 11.5px; color: var(--text-muted); margin-bottom: 14px; font-weight: 600;
+        }
+        .doc-viewer-body .doc-content .file-type-badge .ext { font-weight: 800; color: var(--accent); text-transform: uppercase; letter-spacing: 0.03em; }
+        .doc-viewer-body .doc-content .preview-unavailable { color: var(--text-muted); text-align: center; padding: 40px 20px; }
+
+        /* TIMETABLE */
+        .timetable-grid { display: grid; grid-template-columns: 90px 1fr; gap: 10px; margin-top: 10px; }
+        .timetable-grid .time-slot { font-weight: 700; font-size: 13px; color: var(--text-muted); padding: 10px 8px; border-bottom: 1px solid var(--border); text-transform: uppercase; letter-spacing: 0.04em; }
+        .timetable-grid .event-slot { padding: 10px 8px; border-bottom: 1px solid var(--border); font-size: 13.5px; }
+        .timetable-grid .event-slot .event-name { font-weight: 600; color: var(--text); }
+        .timetable-grid .event-slot .event-desc { font-size: 11.5px; color: var(--text-faint); margin-top: 3px; }
+        .timetable-grid .event-slot .event-desc button { background: none; border: none; color: var(--danger); cursor: pointer; font-size: 12px; margin-left: 8px; padding: 2px 6px; border-radius: 4px; transition: var(--transition); }
+        .timetable-grid .event-slot .event-desc button:hover { background: #fee2e2; }
+
+        /* GRADES */
+        .grade-subject {
+            border: 1px solid var(--border); border-radius: var(--radius-md);
+            padding: 16px; margin-bottom: 12px;
+            background: var(--surface-2); transition: var(--transition);
+            position: relative; overflow: hidden;
+        }
+        .grade-subject::before {
+            content: ''; position: absolute; left: 0; top: 0; bottom: 0; width: 3px;
+            background: linear-gradient(180deg, #6366f1, #8b5cf6);
+        }
+        .grade-subject:hover { border-color: var(--border-strong); box-shadow: var(--shadow-sm); background: var(--surface); }
+        .grade-subject .subject-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; flex-wrap: wrap; gap: 8px; }
+        .grade-subject .subject-name { font-weight: 700; font-size: 16px; color: var(--text); letter-spacing: -0.015em; }
+        .grade-subject .subject-final {
+            font-weight: 800; font-size: 18px; color: var(--success);
+            font-variant-numeric: tabular-nums; padding: 4px 12px;
+            background: #ecfdf5; border-radius: var(--radius-pill); border: 1px solid #a7f3d0;
+        }
+        [data-theme="dark"] .grade-subject .subject-final { background: rgba(52,211,153,0.15); border-color: rgba(52,211,153,0.3); }
+        .grade-subject .subject-final.fail { color: var(--danger); background: #fef2f2; border-color: #fecaca; }
+        [data-theme="dark"] .grade-subject .subject-final.fail { background: rgba(248,113,113,0.15); border-color: rgba(248,113,113,0.3); }
+        .grade-subject .assessment-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 10px; margin-top: 8px; }
+        .grade-subject .assessment-item { display: flex; flex-direction: column; gap: 5px; }
+        .grade-subject .assessment-item label { font-size: 10.5px; font-weight: 700; color: var(--text-faint); text-transform: uppercase; letter-spacing: 0.06em; }
+        .grade-subject .assessment-item input {
+            width: 100%; padding: 8px 12px;
+            border: 1px solid var(--border); border-radius: var(--radius-sm);
+            font-size: 13.5px; outline: none; transition: var(--transition);
+            background: var(--surface); color: var(--text); font-variant-numeric: tabular-nums;
+        }
+        .grade-subject .assessment-item input:focus { border-color: var(--accent); box-shadow: var(--shadow-glow); }
+        .grade-subject .assessment-item input::placeholder { color: var(--text-faint); font-size: 12px; }
+        .grade-subject .subject-actions { margin-top: 12px; display: flex; gap: 8px; flex-wrap: wrap; }
+        .grade-subject .subject-actions button { padding: 5px 14px; font-size: 12px; }
+
+        /* SETTINGS */
+        .setting-group { margin-bottom: 20px; }
+        .setting-group label { display: block; font-size: 13px; font-weight: 600; color: var(--text); margin-bottom: 6px; letter-spacing: -0.005em; }
+        .setting-group input, .setting-group select {
+            width: 100%; padding: 10px 14px;
+            border: 1px solid var(--border); border-radius: var(--radius-sm);
+            font-size: 13.5px; outline: none; transition: var(--transition);
+            background: var(--surface); color: var(--text); font-family: inherit;
+        }
+        .setting-group input:focus, .setting-group select:focus { border-color: var(--accent); box-shadow: var(--shadow-glow); }
+        .setting-group .checkbox-group { display: flex; align-items: center; gap: 10px; }
+        .setting-group .checkbox-group input { width: auto; accent-color: var(--accent); cursor: pointer; }
+
+        /* STUDY TIPS */
+        .tips-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 16px; }
+        .tip-card {
+            background: var(--surface); border: 1px solid var(--border);
+            border-radius: var(--radius-lg); padding: 20px;
+            box-shadow: var(--shadow-xs); transition: var(--transition);
+            position: relative; overflow: hidden;
+        }
+        .tip-card:hover { transform: translateY(-2px); box-shadow: var(--shadow-md); border-color: var(--border-strong); }
+        .tip-card .tip-icon { font-size: 28px; margin-bottom: 10px; display: block; }
+        .tip-card h3 { font-size: 15px; font-weight: 700; color: var(--text); margin-bottom: 10px; letter-spacing: -0.015em; }
+        .tip-card p, .tip-card ul { font-size: 13.5px; color: var(--text-muted); line-height: 1.65; }
+        .tip-card ul { padding-left: 18px; margin-top: 6px; }
+        .tip-card ul li { margin-bottom: 4px; }
+
+        /* MOBILE */
+        @media (max-width: 1024px) {
+            .cards { grid-template-columns: repeat(2, 1fr); }
+        }
+        @media (max-width: 768px) {
+            .menu-toggle { display: flex; }
+            .search { display: none; }
+            .sidebar { transform: translateX(-100%); width: 280px; }
+            .sidebar.open { transform: translateX(0); }
+            .sidebar-overlay.active { display: block; }
+            .main { left: 0; width: 100%; padding: 18px; height: calc(100vh - 64px); }
+            .content-grid { grid-template-columns: 1fr; gap: 14px; }
+            .cards { grid-template-columns: repeat(2, 1fr); gap: 12px; }
+            .card { padding: 14px; }
+            .card-value { font-size: 22px; }
+            .sticky-grid { grid-template-columns: 1fr 1fr; }
+            .section { padding: 16px; }
+            .page-title h1 { font-size: 22px; }
+            .header { padding: 0 14px; height: 60px; }
+            .logo-main { font-size: 17px; }
+            .logo-icon { width: 34px; height: 34px; font-size: 16px; }
+            .logo-sub { font-size: 10px; margin-left: 46px; }
+            .profile { width: 34px; height: 34px; font-size: 13px; }
+            .notification { width: 34px; height: 34px; font-size: 14px; }
+            .countdown { font-size: 17px; }
+            .deadline-title { font-size: 13px; }
+            .timer-display { font-size: 42px; }
+            .grade-subject .assessment-grid { grid-template-columns: repeat(2, 1fr); }
+            .doc-viewer { max-width: 95%; max-height: 95%; }
+            .tips-grid { grid-template-columns: 1fr; }
+        }
+        @media (max-width: 480px) {
+            .cards { grid-template-columns: 1fr 1fr; gap: 10px; }
+            .card { padding: 12px; }
+            .card-value { font-size: 19px; }
+            .card-label { font-size: 11px; }
+            .sticky-grid { grid-template-columns: 1fr; }
+            .main { padding: 12px; }
+            .section { padding: 14px; }
+            .section-header h2 { font-size: 14.5px; }
+            .page-title h1 { font-size: 20px; }
+            .sidebar { width: 260px; }
+            .menu-item { font-size: 13.5px; padding: 9px 12px; }
+            .timer-display { font-size: 38px; }
+            .timer-controls button { padding: 8px 16px; font-size: 12.5px; }
+            .calendar-grid .day { padding: 7px; font-size: 12px; }
+            .timetable-grid { grid-template-columns: 70px 1fr; }
+            .grade-subject .assessment-grid { grid-template-columns: 1fr 1fr; }
+            .doc-viewer { max-width: 98%; max-height: 98%; }
+            .doc-viewer-header h3 { font-size: 13.5px; }
+        }
+        @media (max-width: 380px) {
+            .cards { gap: 8px; }
+            .card { padding: 10px; }
+            .card-value { font-size: 17px; }
+            .logo-main { font-size: 15px; }
+            .logo-icon { width: 30px; height: 30px; font-size: 15px; }
+            .logo-sub { font-size: 9.5px; margin-left: 42px; }
+            .header { padding: 0 10px; height: 56px; }
+            .main { top: 56px; height: calc(100vh - 56px); padding: 10px; }
+            .sidebar { top: 56px; height: calc(100vh - 56px); }
+            .sidebar-overlay { top: 56px; height: calc(100vh - 56px); }
+            .section { padding: 12px; }
+            .deadline { padding: 10px; }
+            .countdown { font-size: 15px; }
+            .grade-subject .assessment-grid { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- HEADER -->
+    <header class="header">
+        <div class="logo">
+            <div class="logo-main">
+                <div class="logo-icon">📚</div>
+                StudyPad
+            </div>
+            <div class="logo-sub">Joheliv: Jason's Labs</div>
+        </div>
+        <div class="header-actions">
+            <input class="search" type="text" placeholder="Search...">
+            <button class="notification" id="notifBtn">🔔</button>
+            <div class="profile" id="profileAvatar">N</div>
+            <button class="menu-toggle" id="menuToggle">☰</button>
+        </div>
+    </header>
+
+    <div class="sidebar-overlay" id="sidebarOverlay"></div>
+
+    <!-- SIDEBAR -->
+    <aside class="sidebar" id="sidebar">
+        <div class="menu-title">Workspace</div>
+        <button class="menu-item active" data-section="dashboard"><span>🏠</span><span>Dashboard</span></button>
+        <button class="menu-item" data-section="timetable"><span>📅</span><span>Timetable</span></button>
+        <button class="menu-item" data-section="notes"><span>📝</span><span>Notes</span></button>
+        <button class="menu-item" data-section="humanizer"><span>✨</span><span>AI Humanizer</span></button>
+        <button class="menu-item" data-section="assignments"><span>✅</span><span>Assignments</span></button>
+        <button class="menu-item" data-section="calendar"><span>📆</span><span>Calendar</span></button>
+        <button class="menu-item" data-section="stickies"><span>📌</span><span>Sticky Notes</span></button>
+        <button class="menu-item" id="libraryNavBtn"><span>📚</span><span>Library</span></button>
+        <button class="menu-item" data-section="timer"><span>⏱️</span><span>Study Timer</span></button>
+        <button class="menu-item" data-section="grades"><span>📊</span><span>Grades</span></button>
+        <button class="menu-item" data-section="tips"><span>💡</span><span>Study Tips</span></button>
+        <div class="menu-title">Account</div>
+        <button class="menu-item" data-section="settings"><span>⚙️</span><span>Settings</span></button>
+    </aside>
+
+    <!-- MAIN -->
+    <main class="main" id="main">
+
+        <!-- DASHBOARD -->
+        <div id="section-dashboard" class="page-section active-section">
+
+            <!-- ═══════════ GALAXY HOME ═══════════ -->
+            <div class="galaxy-home">
+                <!-- Star layers -->
+                <div class="galaxy-stars"></div>
+                <div class="galaxy-stars-2"></div>
+                <div class="galaxy-stars-3"></div>
+
+                <!-- Nebula glows -->
+                <div class="galaxy-nebula"></div>
+                <div class="galaxy-nebula-2"></div>
+
+                <!-- Shooting stars -->
+                <div class="shooting-star s1"></div>
+                <div class="shooting-star s2"></div>
+                <div class="shooting-star s3"></div>
+                <div class="shooting-star s4"></div>
+
+                <!-- Content -->
+                <div class="galaxy-content">
+                    <div class="galaxy-header-row">
+                        <div>
+                            <div class="galaxy-greeting" id="greeting">Good afternoon 👋</div>
+                            <div class="galaxy-subtitle">Here's what's happening with your studies.</div>
+                        </div>
+                        <div class="galaxy-date">
+                            <div class="time" id="galaxyTime">--:--</div>
+                            <div class="label" id="galaxyDateLabel">Loading...</div>
+                        </div>
+                    </div>
+
+                    <div class="galaxy-stats">
+                        <div class="galaxy-stat">
+                            <div class="galaxy-stat-label">🎯 Total</div>
+                            <div class="galaxy-stat-value" id="totalAssessments">0</div>
+                        </div>
+                        <div class="galaxy-stat">
+                            <div class="galaxy-stat-label">✅ Completed</div>
+                            <div class="galaxy-stat-value" id="completedAssessments">0</div>
+                        </div>
+                        <div class="galaxy-stat">
+                            <div class="galaxy-stat-label">⏳ Pending</div>
+                            <div class="galaxy-stat-value" id="pendingAssessments">0</div>
+                        </div>
+                        <div class="galaxy-stat">
+                            <div class="galaxy-stat-label">📚 Study</div>
+                            <div class="galaxy-stat-value" id="studyHours">0.0h</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- ═══════════ END GALAXY HOME ═══════════ -->
+
+            <div class="content-grid">
+                <div class="section">
+                    <div class="section-header">
+                        <h2>🔥 Upcoming Assessments & Assignments</h2>
+                        <button class="btn-action" id="showAssessmentForm">+ Add</button>
+                    </div>
+
+                    <div class="assessment-form" id="assessmentForm" style="display:none;">
+                        <h3 style="margin-bottom:10px; font-size:15px;">📝 Draft New Assessment</h3>
+                        <input type="text" id="assessmentName" placeholder="Assessment Name (e.g., Test 1)">
+                        <div class="form-row">
+                            <input type="date" id="assessmentDate">
+                        </div>
+                        <div class="form-actions">
+                            <button class="btn-action" id="saveAssessment" style="flex:2;">💾 Save</button>
+                            <button class="btn-action" id="cancelAssessment" style="flex:1;">Cancel</button>
+                        </div>
+                        <div style="margin-top:8px; font-size:11.5px; color:var(--text-faint);">Max 10 assessments</div>
+                    </div>
+
+                    <div id="deadlinesContainer">
+                        <div style="color:var(--text-faint); text-align:center; padding:20px; font-size:14px;">No upcoming assessments. Add one above.</div>
+                    </div>
+                </div>
+
+                <div class="section">
+                    <div class="section-header">
+                        <h2>📌 Sticky Notes</h2>
+                        <button class="btn-add-sticky" id="addStickyBtn">+</button>
+                    </div>
+                    <div class="sticky-grid" id="stickyGrid"></div>
+                </div>
+            </div>
+
+            <!-- Ad Banner -->
+            <div style="text-align:center; margin:32px 0 10px 0; min-height:250px;">
+                <script>
+                    atOptions = {
+                        'key' : '719bf0cf4128ee5007524312970acf62',
+                        'format' : 'iframe',
+                        'height' : 250,
+                        'width' : 300,
+                        'params' : {}
+                    };
+                </script>
+                <script src="https://www.highrevenueformat.com/719bf0cf4128ee5007524312970acf62/invoke.js"></script>
+            </div>
+        </div>
+
+        <!-- NOTES -->
+        <div id="section-notes" class="page-section">
+            <div class="page-title"><h1>📝 Notes</h1><p>Upload and manage your notes. Click any note to view it.</p></div>
+            <div class="section">
+                <div class="section-header">
+                    <h2>📄 Your Notes</h2>
+                    <span style="font-size:13px; color:var(--text-faint); font-weight:600;" id="noteCount">0 notes</span>
+                </div>
+                <div class="notes-list" id="notesList">
+                    <div style="color:var(--text-faint); text-align:center; padding:20px;">No notes yet. Upload one below.</div>
+                </div>
+                <div class="upload-area" id="uploadArea">
+                    <p>📤 Click or drag & drop to upload notes</p>
+                    <p style="font-size:11.5px; margin-top:6px;">Supports .txt, .pdf, .docx, .jpg, .png</p>
+                    <input type="file" id="fileInput" multiple accept=".txt,.pdf,.docx,.jpg,.jpeg,.png">
+                </div>
+                <div style="margin-top:14px;">
+                    <button class="btn-action" id="draftNoteBtn">📝 Create Draft</button>
+                </div>
+            </div>
+            <div class="section">
+                <div class="section-header">
+                    <h2>📑 Drafts</h2>
+                    <span style="font-size:13px; color:var(--text-faint); font-weight:600;" id="draftCount">0 drafts</span>
+                </div>
+                <div class="notes-list" id="draftsList">
+                    <div style="color:var(--text-faint); text-align:center; padding:20px;">No drafts yet.</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- AI HUMANIZER -->
+        <div id="section-humanizer" class="page-section">
+            <div class="page-title"><h1>✨ AI Humanizer</h1><p>Paraphrase and humanize your text</p></div>
+            <div class="section">
+                <div style="text-align:center; padding:36px 24px; background:linear-gradient(135deg,#6366f1 0%,#8b5cf6 50%,#4a9eff 100%); border-radius:16px; color:white; box-shadow: 0 12px 32px rgba(99,102,241,0.28);">
+                    <h2 style="margin:0 0 12px 0; color:white; font-size:22px; letter-spacing:-0.02em;">Bypass AI detectors & make text human</h2>
+                    <p style="opacity:0.92; margin-bottom:24px; font-size:14.5px;">Click below to open the tool</p>
+                    <a href="https://study-pd-ai-paraphraser-tool.vercel.app/" target="_blank" rel="noopener noreferrer"
+                       style="display:inline-block; padding:14px 32px; background:white; color:#6366f1; border-radius:999px; text-decoration:none; font-weight:800; cursor:pointer; position:relative; z-index:10; box-shadow: 0 6px 20px rgba(0,0,0,0.15);">
+                        🚀 Open AI Humanizer
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <!-- ASSIGNMENTS -->
+        <div id="section-assignments" class="page-section">
+            <div class="page-title"><h1>✅ Assignments</h1><p>Create and manage your assignments. They appear on your dashboard too.</p></div>
+            <div class="section">
+                <div class="section-header">
+                    <h2>📋 All Assignments</h2>
+                    <button class="btn-action" id="showAssignmentForm">+ New</button>
+                </div>
+                <div class="assignment-form" id="assignmentForm" style="display:none;">
+                    <h3 style="margin-bottom:10px; font-size:15px;">✏️ Create Assignment</h3>
+                    <input type="text" id="assignmentTitle" placeholder="Assignment Title">
+                    <textarea id="assignmentDesc" placeholder="Description / Instructions"></textarea>
+                    <input type="date" id="assignmentDue">
+                    <div class="form-actions">
+                        <button class="btn-action" id="saveAssignment" style="flex:2;">💾 Save</button>
+                        <button class="btn-action" id="cancelAssignment" style="flex:1;">Cancel</button>
+                    </div>
+                </div>
+                <div id="assignmentsContainer">
+                    <div style="color:var(--text-faint); text-align:center; padding:20px; font-size:14px;">No assignments yet. Create one above.</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- CALENDAR -->
+        <div id="section-calendar" class="page-section">
+            <div class="page-title"><h1>📆 Calendar</h1><p>South African Time (SAST)</p></div>
+            <div class="section">
+                <div class="calendar-header">
+                    <button id="prevMonth">◀</button>
+                    <h2 id="calendarMonthYear">January 2026</h2>
+                    <button id="nextMonth">▶</button>
+                </div>
+                <div class="calendar-grid" id="calendarGrid"></div>
+                <div style="margin-top:16px; text-align:center; color:var(--text-muted); font-size:13px; font-weight:600;">
+                    🕒 SAST: <span id="sastTime" style="font-variant-numeric: tabular-nums;">--:--:--</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- TIMER -->
+        <div id="section-timer" class="page-section">
+            <div class="page-title"><h1>⏱️ Study Timer</h1><p>Stay focused with timed sessions. Your latest session is tracked in Study Hours.</p></div>
+            <div class="section">
+                <div class="timer-display" id="timerDisplay">25:00</div>
+                <div class="timer-controls">
+                    <button class="start-btn" id="timerStart">▶ Start</button>
+                    <button class="pause-btn" id="timerPause">⏸ Pause</button>
+                    <button class="reset-btn" id="timerReset">⟲ Reset</button>
+                </div>
+                <div class="timer-status" id="timerStatus">⏳ Ready</div>
+                <div class="timer-alert" id="timerAlert">⏰ TIME'S UP! 🎯</div>
+                <div style="margin-top:14px; text-align:center;">
+                    <button class="btn-action" id="setCustomTimer">⏱ Set Custom Time</button>
+                </div>
+                <div style="margin-top:16px; padding:14px; background:var(--surface-2); border-radius:var(--radius-md); border:1px solid var(--border); text-align:center;">
+                    <div style="font-size:11px; color:var(--text-faint); text-transform:uppercase; letter-spacing:0.06em; font-weight:700; margin-bottom:4px;">Last Session Logged</div>
+                    <div style="font-size:18px; font-weight:800; color:var(--accent); font-variant-numeric: tabular-nums;" id="lastSessionDisplay">—</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- STICKY NOTES -->
+        <div id="section-stickies" class="page-section">
+            <div class="page-title"><h1>📌 Sticky Notes</h1><p>15 colors available. Drag to rearrange, click to edit.</p></div>
+            <div class="section">
+                <div class="section-header">
+                    <h2>All Sticky Notes</h2>
+                    <button class="btn-add-sticky" id="addStickyFullBtn">+</button>
+                </div>
+                <div class="sticky-grid" id="stickyGridFull"></div>
+            </div>
+        </div>
+
+        <!-- TIMETABLE -->
+        <div id="section-timetable" class="page-section">
+            <div class="page-title"><h1>📅 Timetable</h1><p>Manage your weekly schedule.</p></div>
+            <div class="section">
+                <div class="section-header">
+                    <h2>📋 Weekly Schedule</h2>
+                    <button class="btn-action" id="addEventBtn">+ Add Event</button>
+                </div>
+                <div class="timetable-grid" id="timetableGrid">
+                    <div class="time-slot">Time</div>
+                    <div class="time-slot">Event</div>
+                </div>
+                <div id="timetableContainer" style="margin-top:10px;">
+                    <div style="color:var(--text-faint); text-align:center; padding:20px; font-size:14px;">No events scheduled. Add one above.</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- GRADES -->
+        <div id="section-grades" class="page-section">
+            <div class="page-title"><h1>📊 Grades</h1><p>Track your academic performance with automatic calculation.</p></div>
+            <div class="section">
+                <div class="section-header">
+                    <h2>📈 Subjects & Assessments</h2>
+                    <button class="btn-action" id="addSubjectBtn">+ Add Subject</button>
+                </div>
+                <div id="gradesContainer">
+                    <div style="color:var(--text-faint); text-align:center; padding:20px; font-size:14px;">No subjects added yet. Click "Add Subject" to start.</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- STUDY TIPS -->
+        <div id="section-tips" class="page-section">
+            <div class="page-title"><h1>💡 Study Tips</h1><p>Everything you need to study smarter, not harder.</p></div>
+
+            <div class="section">
+                <div class="section-header"><h2>📚 Preparation Strategies</h2></div>
+                <div class="tips-grid">
+                    <div class="tip-card">
+                        <span class="tip-icon">🌱</span>
+                        <h3>Early Preparation</h3>
+                        <p>Start at least 2–3 weeks before an exam. This gives your brain time to move information from short-term to long-term memory.</p>
+                        <ul>
+                            <li>Review notes within 24 hours of each class</li>
+                            <li>Create a study schedule and stick to it</li>
+                            <li>Break subjects into small daily chunks</li>
+                            <li>Use active recall instead of re-reading</li>
+                        </ul>
+                    </div>
+                    <div class="tip-card">
+                        <span class="tip-icon">⏰</span>
+                        <h3>Late Preparation</h3>
+                        <p>Short on time? Focus on high-yield material first. Prioritize what's most likely to appear on the exam.</p>
+                        <ul>
+                            <li>Identify key topics from past papers</li>
+                            <li>Use the Pomodoro technique (25 min focus, 5 min break)</li>
+                            <li>Focus on understanding, not memorizing</li>
+                            <li>Get at least 6 hours of sleep — it helps memory</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <div class="section">
+                <div class="section-header"><h2>🍎 Food & Brain Fuel</h2></div>
+                <div class="tips-grid">
+                    <div class="tip-card">
+                        <span class="tip-icon">🐟</span>
+                        <h3>Brain-Boosting Foods</h3>
+                        <p>What you eat directly affects focus, memory, and energy levels.</p>
+                        <ul>
+                            <li><strong>Fatty fish</strong> (salmon, sardines) — rich in Omega-3</li>
+                            <li><strong>Blueberries</strong> — antioxidants for memory</li>
+                            <li><strong>Dark chocolate</strong> — boosts focus & mood</li>
+                            <li><strong>Nuts & seeds</strong> — vitamin E for brain health</li>
+                            <li><strong>Whole grains</strong> — steady energy release</li>
+                            <li><strong>Eggs</strong> — choline for memory retention</li>
+                        </ul>
+                    </div>
+                    <div class="tip-card">
+                        <span class="tip-icon">💧</span>
+                        <h3>Hydration & Snacks</h3>
+                        <p>Even mild dehydration reduces concentration and memory by up to 10%.</p>
+                        <ul>
+                            <li>Drink 2–3 litres of water daily</li>
+                            <li>Green tea — caffeine + L-theanine for calm focus</li>
+                            <li>Avoid sugary drinks — they cause energy crashes</li>
+                            <li>Snack on fruit, yogurt, or trail mix</li>
+                            <li>Limit coffee to 1–2 cups per study session</li>
+                        </ul>
+                    </div>
+                    <div class="tip-card">
+                        <span class="tip-icon">🚫</span>
+                        <h3>Foods to Avoid</h3>
+                        <p>Some foods slow you down and make it harder to concentrate.</p>
+                        <ul>
+                            <li>Heavy fried foods — cause sluggishness</li>
+                            <li>Energy drinks — crash after 2 hours</li>
+                            <li>Excess sugar — brain fog & fatigue</li>
+                            <li>Alcohol — disrupts memory consolidation</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <div class="section">
+                <div class="section-header"><h2>🧠 Memory Techniques</h2></div>
+                <div class="tips-grid">
+                    <div class="tip-card">
+                        <span class="tip-icon">🔁</span>
+                        <h3>Spaced Repetition</h3>
+                        <p>Review material at increasing intervals: 1 day → 3 days → 1 week → 2 weeks → 1 month. This beats cramming every time.</p>
+                    </div>
+                    <div class="tip-card">
+                        <span class="tip-icon">🃏</span>
+                        <h3>Active Recall</h3>
+                        <p>Close the book and try to write down everything you remember. Then check. This forces your brain to retrieve information, strengthening memory.</p>
+                    </div>
+                    <div class="tip-card">
+                        <span class="tip-icon">🏛️</span>
+                        <h3>Method of Loci</h3>
+                        <p>Imagine walking through a familiar place. Place items you need to remember at specific spots along the route. Walk through it mentally to recall.</p>
+                    </div>
+                    <div class="tip-card">
+                        <span class="tip-icon">📖</span>
+                        <h3>Storytelling</h3>
+                        <p>Turn facts into a story. Our brains remember narratives 22× better than isolated facts.</p>
+                    </div>
+                    <div class="tip-card">
+                        <span class="tip-icon">🗣️</span>
+                        <h3>Teach It</h3>
+                        <p>Explain the topic out loud as if teaching someone else. Gaps in your understanding become obvious instantly.</p>
+                    </div>
+                    <div class="tip-card">
+                        <span class="tip-icon">🎵</span>
+                        <h3>Mnemonics</h3>
+                        <p>Use acronyms, rhymes, or songs. e.g. "My Very Educated Mother Just Served Us Noodles" for the planets.</p>
+                    </div>
+                    <div class="tip-card">
+                        <span class="tip-icon">✍️</span>
+                        <h3>Handwriting</h3>
+                        <p>Writing by hand engages more brain regions than typing and improves retention by up to 30%.</p>
+                    </div>
+                    <div class="tip-card">
+                        <span class="tip-icon">😴</span>
+                        <h3>Sleep & Memory</h3>
+                        <p>During deep sleep, your brain replays what you learned and stores it long-term. 7–8 hours is non-negotiable.</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="section">
+                <div class="section-header"><h2>⚡ Focus & Productivity</h2></div>
+                <div class="tips-grid">
+                    <div class="tip-card">
+                        <span class="tip-icon">🍅</span>
+                        <h3>Pomodoro Technique</h3>
+                        <p>Study for 25 min, break for 5 min. After 4 rounds, take a 20-min break. Prevents burnout and keeps focus sharp.</p>
+                    </div>
+                    <div class="tip-card">
+                        <span class="tip-icon">📱</span>
+                        <h3>Eliminate Distractions</h3>
+                        <p>Put your phone in another room. Even a silent phone on your desk reduces focus by 20%.</p>
+                    </div>
+                    <div class="tip-card">
+                        <span class="tip-icon">🎯</span>
+                        <h3>Set Clear Goals</h3>
+                        <p>Instead of "study biology," say "understand cell division and draw it from memory." Specific = effective.</p>
+                    </div>
+                    <div class="tip-card">
+                        <span class="tip-icon">🌅</span>
+                        <h3>Study in the Morning</h3>
+                        <p>Your brain is freshest 1–2 hours after waking. Use this window for the hardest subjects.</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="section">
+                <div class="section-header"><h2>😌 Stress & Wellbeing</h2></div>
+                <div class="tips-grid">
+                    <div class="tip-card">
+                        <span class="tip-icon">🧘</span>
+                        <h3>Manage Stress</h3>
+                        <p>Take 5 deep breaths before each study session. Stress blocks memory retrieval — calm minds learn faster.</p>
+                    </div>
+                    <div class="tip-card">
+                        <span class="tip-icon">🚶</span>
+                        <h3>Move Your Body</h3>
+                        <p>A 10-minute walk before studying increases blood flow to the brain and boosts focus for up to 2 hours.</p>
+                    </div>
+                    <div class="tip-card">
+                        <span class="tip-icon">🎯</span>
+                        <h3>Celebrate Small Wins</h3>
+                        <p>Reward yourself after each session. Positive reinforcement keeps motivation high over long study periods.</p>
+                    </div>
+                    <div class="tip-card">
+                        <span class="tip-icon">🤝</span>
+                        <h3>Study with Others</h3>
+                        <p>Group study works when done right — explain concepts to each other, quiz each other, stay on topic.</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="section">
+                <div class="section-header"><h2>📝 Exam Day Tips</h2></div>
+                <div class="tips-grid">
+                    <div class="tip-card">
+                        <span class="tip-icon">🌙</span>
+                        <h3>Night Before</h3>
+                        <ul>
+                            <li>No cramming — review light notes only</li>
+                            <li>Prepare everything (pen, calculator, ID)</li>
+                            <li>Sleep 7–8 hours minimum</li>
+                            <li>Set two alarms</li>
+                        </ul>
+                    </div>
+                    <div class="tip-card">
+                        <span class="tip-icon">🌅</span>
+                        <h3>Morning Of</h3>
+                        <ul>
+                            <li>Eat a protein-rich breakfast</li>
+                            <li>Arrive 15 minutes early</li>
+                            <li>Avoid panicked last-minute cramming</li>
+                            <li>Take 5 deep breaths before starting</li>
+                        </ul>
+                    </div>
+                    <div class="tip-card">
+                        <span class="tip-icon">✍️</span>
+                        <h3>During the Exam</h3>
+                        <ul>
+                            <li>Read all questions first</li>
+                            <li>Start with what you know best</li>
+                            <li>Manage time — don't get stuck</li>
+                            <li>Leave 10 minutes to review</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- SETTINGS -->
+        <div id="section-settings" class="page-section">
+            <div class="page-title"><h1>⚙️ Settings</h1><p>Manage your account and preferences.</p></div>
+            <div class="section">
+                <div class="setting-group">
+                    <label>Profile Name</label>
+                    <input type="text" id="profileName" placeholder="Enter your name" value="name">
+                </div>
+                <div class="setting-group">
+                    <label>Email</label>
+                    <input type="email" id="profileEmail" placeholder="Enter your email" value="email">
+                </div>
+                <div class="setting-group">
+                    <label>Theme</label>
+                    <select id="themeSelect">
+                        <option value="light">Light</option>
+                        <option value="dark">Dark</option>
+                        <option value="auto">System Default</option>
+                    </select>
+                </div>
+                <div class="setting-group">
+                    <label>Notifications</label>
+                    <div class="checkbox-group">
+                        <input type="checkbox" id="notifToggle" checked>
+                        <label for="notifToggle" style="font-weight:400; font-size:13.5px; margin:0;">Enable voice notifications</label>
+                    </div>
+                </div>
+                <div class="setting-group">
+                    <button class="btn-action" id="saveSettingsBtn">💾 Save Settings</button>
+                </div>
+                <div id="settingsMessage" style="color:var(--success); margin-top:10px; display:none; font-weight:600;">Settings saved successfully!</div>
+            </div>
+        </div>
+
+    </main>
+
+    <!-- DOC VIEWER -->
+    <div class="doc-viewer-overlay" id="docViewerOverlay">
+        <div class="doc-viewer">
+            <div class="doc-viewer-header">
+                <h3 id="docViewerTitle">Document</h3>
+                <button class="close-viewer" id="docViewerClose">✕</button>
+            </div>
+            <div class="doc-viewer-body" id="docViewerBody">
+                <div class="doc-content" id="docViewerContent">
+                    <div class="preview-unavailable">Loading...</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        (function() {
+
+            // AUDIO
+            let audioContext = null;
+            function playBeep() {
+                try {
+                    if (!audioContext) audioContext = new (window.AudioContext || window.webkitAudioContext)();
+                    const o = audioContext.createOscillator(), g = audioContext.createGain();
+                    o.connect(g); g.connect(audioContext.destination);
+                    o.frequency.value = 800; o.type = 'sine';
+                    g.gain.setValueAtTime(0.3, audioContext.currentTime);
+                    g.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.5);
+                    o.start(audioContext.currentTime); o.stop(audioContext.currentTime + 0.5);
+                    setTimeout(() => {
+                        const o2 = audioContext.createOscillator(), g2 = audioContext.createGain();
+                        o2.connect(g2); g2.connect(audioContext.destination);
+                        o2.frequency.value = 600; o2.type = 'sine';
+                        g2.gain.setValueAtTime(0.3, audioContext.currentTime);
+                        g2.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.5);
+                        o2.start(audioContext.currentTime); o2.stop(audioContext.currentTime + 0.5);
+                    }, 200);
+                    setTimeout(() => {
+                        const o3 = audioContext.createOscillator(), g3 = audioContext.createGain();
+                        o3.connect(g3); g3.connect(audioContext.destination);
+                        o3.frequency.value = 1000; o3.type = 'sine';
+                        g3.gain.setValueAtTime(0.3, audioContext.currentTime);
+                        g3.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.5);
+                        o3.start(audioContext.currentTime); o3.stop(audioContext.currentTime + 0.5);
+                    }, 400);
+                } catch(e) { console.log('Audio error:', e); }
+            }
+
+            let voiceEnabled = true;
+            function speakMessage(message) {
+                if (!voiceEnabled) return;
+                if ('speechSynthesis' in window) {
+                    window.speechSynthesis.cancel();
+                    const u = new SpeechSynthesisUtterance(message);
+                    u.rate = 0.9; u.pitch = 1.1; u.volume = 1;
+                    const voices = speechSynthesis.getVoices();
+                    const fv = voices.find(v =>
+                        v.name.toLowerCase().includes('female') || v.name.toLowerCase().includes('samantha') ||
+                        v.name.toLowerCase().includes('victoria') || v.name.toLowerCase().includes('zira') ||
+                        v.name.toLowerCase().includes('google uk') || v.name.toLowerCase().includes('siri')
+                    );
+                    if (fv) u.voice = fv;
+                    window.speechSynthesis.speak(u);
+                }
+            }
+            if ('speechSynthesis' in window) {
+                speechSynthesis.getVoices();
+                speechSynthesis.onvoiceschanged = () => speechSynthesis.getVoices();
+            }
+
+            // THEME
+            function applyTheme(theme) {
+                let resolved = theme;
+                if (theme === 'auto') resolved = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+                document.documentElement.setAttribute('data-theme', resolved);
+                const meta = document.querySelector('meta[name="theme-color"]');
+                if (meta) meta.setAttribute('content', resolved === 'dark' ? '#060913' : '#0a1e3c');
+            }
+            function loadTheme() {
+                const saved = localStorage.getItem('settings');
+                let theme = 'light';
+                if (saved) { try { theme = JSON.parse(saved).theme || 'light'; } catch(e) {} }
+                applyTheme(theme);
+                document.getElementById('themeSelect').value = theme;
+            }
+            window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', () => {
+                if (document.getElementById('themeSelect').value === 'auto') applyTheme('auto');
+            });
+
+            // SIDEBAR
+            const sidebar = document.getElementById('sidebar');
+            const overlay = document.getElementById('sidebarOverlay');
+            const menuToggle = document.getElementById('menuToggle');
+            const main = document.getElementById('main');
+            function toggleSidebar() {
+                sidebar.classList.toggle('open'); overlay.classList.toggle('active'); main.classList.toggle('expanded');
+            }
+            function closeSidebar() {
+                sidebar.classList.remove('open'); overlay.classList.remove('active'); main.classList.remove('expanded');
+            }
+            menuToggle.addEventListener('click', toggleSidebar);
+            overlay.addEventListener('click', closeSidebar);
+            document.querySelectorAll('.menu-item').forEach(item => {
+                item.addEventListener('click', () => { if (window.innerWidth <= 768) closeSidebar(); });
+            });
+
+            // GREETING
+            function updateGreeting() {
+                const now = new Date();
+                const sast = new Date(now.toLocaleString('en-US', { timeZone: 'Africa/Johannesburg' }));
+                const h = sast.getHours();
+                let g = '';
+                if (h >= 5 && h < 12) g = 'Good morning 🌅';
+                else if (h >= 12 && h < 17) g = 'Good afternoon ☀️';
+                else if (h >= 17 && h < 21) g = 'Good evening 🌆';
+                else g = 'Good night 🌙';
+                const el = document.getElementById('greeting');
+                if (el) el.textContent = g + ' 👋';
+            }
+            updateGreeting();
+            setInterval(updateGreeting, 60000);
+
+            // Galaxy clock
+            function updateGalaxyClock() {
+                const now = new Date();
+                const sast = new Date(now.toLocaleString('en-US', { timeZone: 'Africa/Johannesburg' }));
+                const hh = String(sast.getHours()).padStart(2, '0');
+                const mm = String(sast.getMinutes()).padStart(2, '0');
+                document.getElementById('galaxyTime').textContent = `${hh}:${mm}`;
+                const days = ['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
+                const months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+                document.getElementById('galaxyDateLabel').textContent = `${days[sast.getDay()]}, ${sast.getDate()} ${months[sast.getMonth()]}`;
+            }
+            updateGalaxyClock();
+            setInterval(updateGalaxyClock, 30000);
+
+            // NAVIGATION
+            const menuItems = document.querySelectorAll('.menu-item');
+            const sections = {
+                dashboard: document.getElementById('section-dashboard'),
+                timetable: document.getElementById('section-timetable'),
+                notes: document.getElementById('section-notes'),
+                humanizer: document.getElementById('section-humanizer'),
+                assignments: document.getElementById('section-assignments'),
+                calendar: document.getElementById('section-calendar'),
+                stickies: document.getElementById('section-stickies'),
+                timer: document.getElementById('section-timer'),
+                grades: document.getElementById('section-grades'),
+                tips: document.getElementById('section-tips'),
+                settings: document.getElementById('section-settings')
+            };
+            function switchSection(id) {
+                Object.values(sections).forEach(el => { if (el) el.classList.remove('active-section'); });
+                if (sections[id]) sections[id].classList.add('active-section');
+                menuItems.forEach(i => i.classList.remove('active'));
+                const a = document.querySelector(`.menu-item[data-section="${id}"]`);
+                if (a) a.classList.add('active');
+            }
+            menuItems.forEach(item => {
+                item.addEventListener('click', function() {
+                    const s = this.dataset.section;
+                    if (s) switchSection(s);
+                });
+            });
+
+            document.getElementById('notifBtn').addEventListener('click', () => {
+                alert('🔔 No new notifications right now.');
+            });
+
+            // LIBRARY — opens the StudyPad-Library page (same folder on GitHub)
+            const LIBRARY_URL = 'library.html';
+            const libraryNavBtn = document.getElementById('libraryNavBtn');
+            if (libraryNavBtn) {
+                libraryNavBtn.addEventListener('click', () => {
+                    window.location.href = LIBRARY_URL;
+                });
+            }
+
+            // STICKY COLORS
+            const STICKY_COLORS = [
+                { name: 'Lemon', bg: 'linear-gradient(160deg, #fff9c4 0%, #fef3c7 100%)', text: '#422006', sub: '#57534e' },
+                { name: 'Sky', bg: 'linear-gradient(160deg, #dbeafe 0%, #bfdbfe 100%)', text: '#1e3a8a', sub: '#3730a3' },
+                { name: 'Mint', bg: 'linear-gradient(160deg, #d1fae5 0%, #a7f3d0 100%)', text: '#064e3b', sub: '#065f46' },
+                { name: 'Rose', bg: 'linear-gradient(160deg, #fce7f3 0%, #fbcfe8 100%)', text: '#831843', sub: '#9d174d' },
+                { name: 'Lavender', bg: 'linear-gradient(160deg, #ede9fe 0%, #ddd6fe 100%)', text: '#4c1d95', sub: '#5b21b6' },
+                { name: 'Peach', bg: 'linear-gradient(160deg, #fed7aa 0%, #fdba74 100%)', text: '#7c2d12', sub: '#9a3412' },
+                { name: 'Cyan', bg: 'linear-gradient(160deg, #cffafe 0%, #a5f3fc 100%)', text: '#164e63', sub: '#155e75' },
+                { name: 'Lime', bg: 'linear-gradient(160deg, #ecfccb 0%, #d9f99d 100%)', text: '#365314', sub: '#3f6212' },
+                { name: 'Coral', bg: 'linear-gradient(160deg, #ffe4e6 0%, #fecdd3 100%)', text: '#881337', sub: '#9f1239' },
+                { name: 'Sand', bg: 'linear-gradient(160deg, #fef3c7 0%, #fde68a 100%)', text: '#78350f', sub: '#92400e' },
+                { name: 'Periwinkle', bg: 'linear-gradient(160deg, #e0e7ff 0%, #c7d2fe 100%)', text: '#312e81', sub: '#3730a3' },
+                { name: 'Fuchsia', bg: 'linear-gradient(160deg, #fae8ff 0%, #f5d0fe 100%)', text: '#701a75', sub: '#86198f' },
+                { name: 'Teal', bg: 'linear-gradient(160deg, #ccfbf1 0%, #99f6e4 100%)', text: '#134e4a', sub: '#115e59' },
+                { name: 'Amber', bg: 'linear-gradient(160deg, #fef3c7 0%, #fcd34d 100%)', text: '#78350f', sub: '#92400e' },
+                { name: 'Slate', bg: 'linear-gradient(160deg, #f1f5f9 0%, #e2e8f0 100%)', text: '#1e293b', sub: '#334155' }
+            ];
+
+            // ASSESSMENTS
+            let assessments = [];
+            let assessmentIdCounter = 0;
+            let countdownIntervals = {};
+            let alertedAssessments = new Set();
+
+            function loadAssessments() {
+                const saved = localStorage.getItem('assessments');
+                if (saved) {
+                    try {
+                        assessments = JSON.parse(saved);
+                        assessmentIdCounter = assessments.length > 0 ? Math.max(...assessments.map(a => a.id)) + 1 : 0;
+                    } catch(e) { assessments = []; }
+                }
+                renderAssessments(); updateStats(); checkDeadlineAlerts();
+            }
+            function saveAssessments() { localStorage.setItem('assessments', JSON.stringify(assessments)); }
+
+            function checkDeadlineAlerts() {
+                const now = new Date();
+                assessments.forEach(a => {
+                    if (a.completed) return;
+                    const due = new Date(a.date);
+                    const hl = (due - now) / 3600000;
+                    if (hl <= 24 && hl > 0 && !alertedAssessments.has(a.id)) {
+                        alertedAssessments.add(a.id);
+                        playBeep();
+                        speakMessage(`Attention! Your assessment "${a.name}" is due in less than 24 hours.`);
+                    }
+                });
+            }
+
+            function renderAssessments() {
+                const container = document.getElementById('deadlinesContainer');
+                const combined = [];
+                assessments.forEach(a => combined.push({ id: 'A-' + a.id, type: 'assessment', name: a.name, date: a.date, completed: a.completed || false, raw: a }));
+                assignmentsList.forEach((a, i) => {
+                    if (!a.due || a.due === 'No date set') return;
+                    combined.push({ id: 'S-' + i, type: 'assignment', name: '📋 ' + a.title, date: a.due, completed: a.completed || false, raw: a, index: i });
+                });
+                if (combined.length === 0) {
+                    container.innerHTML = '<div style="color:var(--text-faint); text-align:center; padding:20px; font-size:14px;">No upcoming assessments or assignments. Add one above.</div>';
+                    return;
+                }
+                combined.sort((a, b) => new Date(a.date) - new Date(b.date));
+                container.innerHTML = combined.map(item => {
+                    const isC = item.completed;
+                    const due = new Date(item.date); const now = new Date();
+                    const isP = due < now && !isC;
+                    const isA = item.type === 'assignment';
+                    return `
+                        <div class="deadline" data-id="${item.id}">
+                            <div class="deadline-title" style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px;">
+                                <span>${item.name}${isA ? ' <span style="font-size:11px; color:var(--accent); font-weight:600;">(Assignment)</span>' : ''}</span>
+                                <div style="display:flex; gap:6px; flex-wrap:wrap; align-items:center;">
+                                    <span style="font-size:11.5px; color:var(--text-faint); font-weight:500;">${item.date}</span>
+                                    ${!isC ? `<button class="btn-action" style="padding:3px 10px; font-size:11px;" onclick="markComplete('${item.id}','${item.type}')">✅ Done</button>` : '<span style="color:var(--success); font-weight:700; font-size:12px;">✅ Completed</span>'}
+                                    <button class="btn-action" style="padding:3px 10px; font-size:11px; background:#fee2e2; border-color:#fecaca; color:var(--danger);" onclick="deleteItem('${item.id}','${item.type}')">🗑️</button>
+                                </div>
+                            </div>
+                            <div class="countdown" id="countdown-${item.id}">
+                                ${isC ? '🎉 Completed!' : isP ? '⏰ Past Due' : 'Loading...'}
+                            </div>
+                            <div class="progress">
+                                <div class="progress-bar" style="width: ${isC ? 100 : isP ? 100 : calculateProgress(item.date)}%; background: ${isC ? 'linear-gradient(90deg,#059669,#10b981)' : isP ? 'linear-gradient(90deg,#dc2626,#ef4444)' : 'linear-gradient(90deg,#6366f1,#8b5cf6)'};"></div>
+                            </div>
+                        </div>
+                    `;
+                }).join('');
+                combined.forEach(item => { if (!item.completed && item.type === 'assessment') startCountdown(item.raw.id, item.id); });
+                updateStats(); checkDeadlineAlerts();
+            }
+
+            function calculateProgress(dateStr) {
+                const due = new Date(dateStr); const now = new Date();
+                const created = new Date(due); created.setDate(created.getDate() - 30);
+                const total = due - created; const elapsed = now - created;
+                if (elapsed <= 0) return 5;
+                if (elapsed >= total) return 100;
+                return Math.min(100, Math.max(5, (elapsed / total) * 100));
+            }
+
+            function startCountdown(rawId, displayId) {
+                if (countdownIntervals[displayId]) clearInterval(countdownIntervals[displayId]);
+                const a = assessments.find(x => x.id === rawId);
+                if (!a || a.completed) return;
+                function upd() {
+                    const el = document.getElementById(`countdown-${displayId}`);
+                    if (!el) {
+                        if (countdownIntervals[displayId]) {
+                            clearInterval(countdownIntervals[displayId]);
+                            delete countdownIntervals[displayId];
+                        }
+                        return;
+                    }
+                    const now = new Date(); const due = new Date(a.date); const diff = due - now;
+                    if (diff <= 0) {
+                        el.textContent = '⏰ Past Due';
+                        if (countdownIntervals[displayId]) {
+                            clearInterval(countdownIntervals[displayId]);
+                            delete countdownIntervals[displayId];
+                        }
+                        renderAssessments();
+                        return;
+                    }
+                    const d = Math.floor(diff / 86400000);
+                    const h = Math.floor((diff % 86400000) / 3600000);
+                    const m = Math.floor((diff % 3600000) / 60000);
+                    const s = Math.floor((diff % 60000) / 1000);
+                    el.textContent = `${String(d).padStart(2,'0')} : ${String(h).padStart(2,'0')} : ${String(m).padStart(2,'0')} : ${String(s).padStart(2,'0')}`;
+                }
+                upd();
+                countdownIntervals[displayId] = setInterval(upd, 1000);
+            }
+
+            window.markComplete = function(displayId, type) {
+                if (type === 'assessment') {
+                    const rawId = parseInt(displayId.replace('A-', ''));
+                    const a = assessments.find(x => x.id === rawId);
+                    if (a) {
+                        a.completed = true;
+                        if (countdownIntervals[displayId]) {
+                            clearInterval(countdownIntervals[displayId]);
+                            delete countdownIntervals[displayId];
+                        }
+                        saveAssessments(); renderAssessments(); updateStats();
+                        playBeep(); speakMessage(`Congratulations! You have completed "${a.name}".`);
+                    }
+                } else {
+                    const idx = parseInt(displayId.replace('S-', ''));
+                    if (assignmentsList[idx]) {
+                        assignmentsList[idx].completed = true;
+                        saveAssignments(); renderAssignments(); renderAssessments();
+                        playBeep(); speakMessage(`Assignment "${assignmentsList[idx].title}" marked as complete.`);
+                    }
+                }
+            };
+
+            window.deleteItem = function(displayId, type) {
+                if (!confirm('Delete this item?')) return;
+                if (type === 'assessment') {
+                    const rawId = parseInt(displayId.replace('A-', ''));
+                    if (countdownIntervals[displayId]) {
+                        clearInterval(countdownIntervals[displayId]);
+                        delete countdownIntervals[displayId];
+                    }
+                    alertedAssessments.delete(rawId);
+                    assessments = assessments.filter(a => a.id !== rawId);
+                    saveAssessments(); renderAssessments(); updateStats();
+                } else {
+                    const idx = parseInt(displayId.replace('S-', ''));
+                    assignmentsList.splice(idx, 1);
+                    saveAssignments(); renderAssignments(); renderAssessments();
+                }
+            };
+
+            function updateStats() {
+                const total = assessments.length + assignmentsList.length;
+                const completed = assessments.filter(a => a.completed).length + assignmentsList.filter(a => a.completed).length;
+                const pending = total - completed;
+                document.getElementById('totalAssessments').textContent = total;
+                document.getElementById('completedAssessments').textContent = completed;
+                document.getElementById('pendingAssessments').textContent = pending;
+            }
+
+            const form = document.getElementById('assessmentForm');
+            const showFormBtn = document.getElementById('showAssessmentForm');
+            const cancelBtn = document.getElementById('cancelAssessment');
+            showFormBtn.addEventListener('click', () => {
+                if (assessments.length >= 10) { alert('Maximum 10 assessments allowed!'); return; }
+                form.style.display = 'block'; showFormBtn.textContent = 'Hide';
+            });
+            cancelBtn.addEventListener('click', () => {
+                form.style.display = 'none'; showFormBtn.textContent = '+ Add';
+                document.getElementById('assessmentName').value = ''; document.getElementById('assessmentDate').value = '';
+            });
+            document.getElementById('saveAssessment').addEventListener('click', () => {
+                const name = document.getElementById('assessmentName').value.trim();
+                const date = document.getElementById('assessmentDate').value;
+                if (!name) { alert('Please enter an assessment name.'); return; }
+                if (!date) { alert('Please select a due date.'); return; }
+                if (assessments.length >= 10) { alert('Maximum 10 assessments allowed!'); return; }
+                const dd = new Date(date); const now = new Date();
+                if (dd <= now) { alert('Please select a future date.'); return; }
+                assessments.push({ id: assessmentIdCounter++, name, date, completed: false });
+                saveAssessments(); renderAssessments(); updateStats();
+                document.getElementById('assessmentName').value = ''; document.getElementById('assessmentDate').value = '';
+                form.style.display = 'none'; showFormBtn.textContent = '+ Add';
+                speakMessage(`Assessment "${name}" has been created. Countdown activated.`);
+            });
+
+            // ASSIGNMENTS
+            let assignmentsList = [];
+            function loadAssignments() {
+                const saved = localStorage.getItem('assignments');
+                if (saved) { try { assignmentsList = JSON.parse(saved); } catch(e) { assignmentsList = []; } }
+                renderAssignments();
+            }
+            function saveAssignments() { localStorage.setItem('assignments', JSON.stringify(assignmentsList)); }
+
+            function renderAssignments() {
+                const container = document.getElementById('assignmentsContainer');
+                if (assignmentsList.length === 0) {
+                    container.innerHTML = '<div style="color:var(--text-faint); text-align:center; padding:20px; font-size:14px;">No assignments yet. Create one above.</div>';
+                    return;
+                }
+                container.innerHTML = assignmentsList.map((a, i) => `
+                    <div class="assignment-card">
+                        <div class="assignment-title">${a.title}</div>
+                        <div class="assignment-desc">${a.description || 'No description'}</div>
+                        <div class="assignment-meta">📅 Due: ${a.due || 'No due date'} • Status: ${a.completed ? '✅ Completed' : '⏳ Pending'}</div>
+                        <div class="assignment-actions">
+                            ${!a.completed ? `<button class="btn-action" onclick="completeAssignment(${i})" style="padding:3px 12px; font-size:11.5px;">✅ Done</button>` : ''}
+                            <button class="btn-action" onclick="deleteAssignment(${i})" style="padding:3px 12px; font-size:11.5px; background:#fee2e2; border-color:#fecaca; color:var(--danger);">🗑️</button>
+                        </div>
+                    </div>
+                `).join('');
+            }
+            window.completeAssignment = function(i) {
+                assignmentsList[i].completed = true;
+                saveAssignments(); renderAssignments(); renderAssessments();
+                playBeep(); speakMessage(`Assignment "${assignmentsList[i].title}" marked as complete.`);
+            };
+            window.deleteAssignment = function(i) {
+                if (confirm('Delete this assignment?')) {
+                    assignmentsList.splice(i, 1);
+                    saveAssignments(); renderAssignments(); renderAssessments();
+                }
+            };
+            const assignForm = document.getElementById('assignmentForm');
+            const showAssignBtn = document.getElementById('showAssignmentForm');
+            const cancelAssignBtn = document.getElementById('cancelAssignment');
+            showAssignBtn.addEventListener('click', () => { assignForm.style.display = 'block'; showAssignBtn.textContent = 'Hide'; });
+            cancelAssignBtn.addEventListener('click', () => {
+                assignForm.style.display = 'none'; showAssignBtn.textContent = '+ New';
+                document.getElementById('assignmentTitle').value = ''; document.getElementById('assignmentDesc').value = ''; document.getElementById('assignmentDue').value = '';
+            });
+            document.getElementById('saveAssignment').addEventListener('click', () => {
+                const title = document.getElementById('assignmentTitle').value.trim();
+                const description = document.getElementById('assignmentDesc').value.trim();
+                const due = document.getElementById('assignmentDue').value;
+                if (!title) { alert('Please enter an assignment title.'); return; }
+                assignmentsList.push({ title, description, due: due || 'No date set', completed: false });
+                saveAssignments(); renderAssignments(); renderAssessments();
+                document.getElementById('assignmentTitle').value = ''; document.getElementById('assignmentDesc').value = ''; document.getElementById('assignmentDue').value = '';
+                assignForm.style.display = 'none'; showAssignBtn.textContent = '+ New';
+                speakMessage(`Assignment "${title}" has been created.`);
+            });
+
+            // NOTES
+            let notes = [], drafts = [];
+            function loadNotes() {
+                const saved = localStorage.getItem('notes');
+                if (saved) { try { notes = JSON.parse(saved); } catch(e) { notes = []; } }
+                renderNotes();
+            }
+            function saveNotes() { localStorage.setItem('notes', JSON.stringify(notes)); }
+            function loadDrafts() {
+                const saved = localStorage.getItem('drafts');
+                if (saved) { try { drafts = JSON.parse(saved); } catch(e) { drafts = []; } }
+                renderDrafts();
+            }
+            function saveDrafts() { localStorage.setItem('drafts', JSON.stringify(drafts)); }
+
+            function renderNotes() {
+                const list = document.getElementById('notesList');
+                if (notes.length === 0) {
+                    list.innerHTML = '<div style="color:var(--text-faint); text-align:center; padding:20px;">No notes yet. Upload one below.</div>';
+                } else {
+                    list.innerHTML = notes.map((note, i) => `
+                        <div class="note-item">
+                            <div style="flex:1; cursor:pointer;" onclick="viewNote(${i})">
+                                <div class="note-title">${getFileIcon(note.name)} ${note.name}</div>
+                                <div class="note-meta">${note.size} • ${note.date}</div>
+                            </div>
+                            <div class="note-actions">
+                                <button onclick="viewNote(${i})" title="Open">👁️</button>
+                                <button class="delete" onclick="deleteNote(${i})" title="Delete">🗑️</button>
+                            </div>
+                        </div>
+                    `).join('');
+                }
+                document.getElementById('noteCount').textContent = `${notes.length} notes`;
+            }
+
+            function renderDrafts() {
+                const list = document.getElementById('draftsList');
+                if (drafts.length === 0) {
+                    list.innerHTML = '<div style="color:var(--text-faint); text-align:center; padding:20px;">No drafts yet.</div>';
+                } else {
+                    list.innerHTML = drafts.map((d, i) => `
+                        <div class="note-item">
+                            <div>
+                                <div class="note-title">${d.title}</div>
+                                <div class="note-meta">${d.date}</div>
+                            </div>
+                            <div class="note-actions">
+                                <button class="delete" onclick="deleteDraft(${i})">🗑️</button>
+                            </div>
+                        </div>
+                    `).join('');
+                }
+                document.getElementById('draftCount').textContent = `${drafts.length} drafts`;
+            }
+            window.viewNote = function(i) {
+                const note = notes[i];
+                if (!note) return;
+                openViewer(note.name, note.content, note.type);
+            };
+            window.deleteNote = function(i) {
+                if (confirm('Delete this note?')) { notes.splice(i, 1); saveNotes(); renderNotes(); }
+            };
+            window.deleteDraft = function(i) {
+                if (confirm('Delete this draft?')) { drafts.splice(i, 1); saveDrafts(); renderDrafts(); }
+            };
+            const uploadArea = document.getElementById('uploadArea');
+            const fileInput = document.getElementById('fileInput');
+            uploadArea.addEventListener('click', () => fileInput.click());
+            uploadArea.addEventListener('dragover', e => { e.preventDefault(); uploadArea.classList.add('dragover'); });
+            uploadArea.addEventListener('dragleave', () => uploadArea.classList.remove('dragover'));
+            uploadArea.addEventListener('drop', e => { e.preventDefault(); uploadArea.classList.remove('dragover'); handleNoteFiles(e.dataTransfer.files); });
+            fileInput.addEventListener('change', e => { handleNoteFiles(e.target.files); fileInput.value = ''; });
+
+            function handleNoteFiles(files) {
+                const total = files.length;
+                let done = 0;
+                Array.from(files).forEach(file => {
+                    const date = new Date().toLocaleDateString('en-ZA', { timeZone: 'Africa/Johannesburg' });
+                    const obj = { name: file.name, size: (file.size/1024).toFixed(1) + ' KB', date, type: file.type };
+                    if (isTextFile(file.name)) {
+                        const r = new FileReader();
+                        r.onload = e => { obj.content = e.target.result; notes.push(obj); saveNotes(); renderNotes(); done++; if (done === total) speakMessage(`${total} note(s) uploaded successfully.`); };
+                        r.readAsText(file);
+                    } else if (isImageFile(file.name)) {
+                        const r = new FileReader();
+                        r.onload = e => { obj.content = e.target.result; notes.push(obj); saveNotes(); renderNotes(); done++; if (done === total) speakMessage(`${total} note(s) uploaded successfully.`); };
+                        r.readAsDataURL(file);
+                    } else {
+                        notes.push(obj); saveNotes(); renderNotes(); done++;
+                        if (done === total) speakMessage(`${total} note(s) uploaded successfully.`);
+                    }
+                });
+            }
+
+            document.getElementById('draftNoteBtn').addEventListener('click', () => {
+                const title = prompt('Enter draft title:');
+                if (title && title.trim()) {
+                    const date = new Date().toLocaleDateString('en-ZA', { timeZone: 'Africa/Johannesburg' });
+                    drafts.push({ title: title.trim(), date });
+                    saveDrafts(); renderDrafts();
+                    speakMessage(`Draft "${title.trim()}" saved.`);
+                }
+            });
+
+            // FILE TYPE HELPERS (used by Notes)
+            function getFileIcon(f) {
+                const ext = f.split('.').pop().toLowerCase();
+                const i = { pdf:'📄', docx:'📝', doc:'📝', txt:'📃', jpg:'🖼️', jpeg:'🖼️', png:'🖼️', gif:'🖼️', svg:'🖼️', xlsx:'📊', xls:'📊', pptx:'📊', ppt:'📊', zip:'📦', rar:'📦' };
+                return i[ext] || '📎';
+            }
+            function getFileExtension(f) { return f.split('.').pop().toLowerCase(); }
+            function isImageFile(f) { return ['jpg','jpeg','png','gif','svg','webp','bmp'].includes(getFileExtension(f)); }
+            function isTextFile(f) { return ['txt','csv','json','xml','html','css','js','md','log'].includes(getFileExtension(f)); }
+
+            // DOC VIEWER (used by Notes)
+            const viewerOverlay = document.getElementById('docViewerOverlay');
+            const viewerTitle = document.getElementById('docViewerTitle');
+            const viewerContent = document.getElementById('docViewerContent');
+            function openViewer(name, content, type) {
+                viewerTitle.textContent = name;
+                viewerContent.innerHTML = '';
+                const ext = getFileExtension(name);
+                const icon = getFileIcon(name);
+                if (isImageFile(name) && content) {
+                    viewerContent.innerHTML = `<div class="file-type-badge">${icon} <span class="ext">${ext.toUpperCase()}</span></div><img src="${content}" alt="${name}">`;
+                } else if (isTextFile(name) && content) {
+                    viewerContent.innerHTML = `<div class="file-type-badge">${icon} <span class="ext">${ext.toUpperCase()}</span></div><div style="background:var(--surface-2); padding:16px; border-radius:4px; font-family:ui-monospace,monospace; font-size:14px; white-space:pre-wrap; word-wrap:break-word; max-height:500px; overflow:auto;">${content}</div>`;
+                } else if (content) {
+                    viewerContent.innerHTML = `<div class="file-type-badge">${icon} <span class="ext">${ext.toUpperCase()}</span></div><div style="padding:16px; white-space:pre-wrap; word-wrap:break-word;">${content}</div>`;
+                } else {
+                    viewerContent.innerHTML = `<div class="file-type-badge">${icon} <span class="ext">${ext.toUpperCase()}</span></div><div class="preview-unavailable"><p style="font-size:48px; margin-bottom:16px;">📄</p><p>Preview not available for this file type</p><p style="font-size:12px; color:var(--text-faint); margin-top:8px;">Download to view</p></div>`;
+                }
+                viewerOverlay.classList.add('active');
+            }
+            document.getElementById('docViewerClose').addEventListener('click', () => viewerOverlay.classList.remove('active'));
+            viewerOverlay.addEventListener('click', e => { if (e.target === viewerOverlay) viewerOverlay.classList.remove('active'); });
+
+            // TIMETABLE
+            let timetableEvents = [];
+            function loadTimetable() {
+                const saved = localStorage.getItem('timetable');
+                if (saved) { try { timetableEvents = JSON.parse(saved); } catch(e) { timetableEvents = []; } }
+                renderTimetable();
+            }
+            function saveTimetable() { localStorage.setItem('timetable', JSON.stringify(timetableEvents)); }
+            function renderTimetable() {
+                const c = document.getElementById('timetableContainer');
+                if (timetableEvents.length === 0) {
+                    c.innerHTML = '<div style="color:var(--text-faint); text-align:center; padding:20px; font-size:14px;">No events scheduled. Add one above.</div>';
+                    return;
+                }
+                c.innerHTML = timetableEvents.map((e, i) => `
+                    <div class="timetable-grid" style="border-bottom:1px solid var(--border); padding:6px 0;">
+                        <div class="time-slot" style="border-bottom:none;">${e.time}</div>
+                        <div class="event-slot" style="border-bottom:none;">
+                            <div class="event-name">${e.name}</div>
+                            <div class="event-desc">${e.description || ''}
+                                <button onclick="deleteTimetableEvent(${i})">🗑️</button>
+                            </div>
+                        </div>
+                    </div>
+                `).join('');
+            }
+            window.deleteTimetableEvent = function(i) {
+                if (confirm('Delete this event?')) { timetableEvents.splice(i, 1); saveTimetable(); renderTimetable(); }
+            };
+            document.getElementById('addEventBtn').addEventListener('click', () => {
+                const name = prompt('Enter event name:');
+                if (!name || !name.trim()) return;
+                const time = prompt('Enter time (e.g., 10:00 AM):');
+                if (!time || !time.trim()) return;
+                const description = prompt('Enter description (optional):');
+                timetableEvents.push({ name: name.trim(), time: time.trim(), description: description ? description.trim() : '' });
+                saveTimetable(); renderTimetable();
+                speakMessage(`Event "${name.trim()}" added to timetable.`);
+            });
+
+            // GRADES
+            let subjects = [];
+            const ASSESSMENT_NAMES = ['Assessment 1','Assessment 2','Assessment 3','Assessment 4','Assessment 5','Assessment 6'];
+            function loadGrades() {
+                const saved = localStorage.getItem('subjects');
+                if (saved) { try { subjects = JSON.parse(saved); } catch(e) { subjects = []; } }
+                renderGrades();
+            }
+            function saveGrades() { localStorage.setItem('subjects', JSON.stringify(subjects)); }
+            function calculateFinal(s) {
+                let t = 0, c = 0;
+                (s.assessments || []).forEach(a => {
+                    if (a.value !== '' && a.value !== null && !isNaN(a.value)) { t += parseFloat(a.value); c++; }
+                });
+                if (c === 0) return null;
+                return Math.round((t/c) * 10) / 10;
+            }
+            function renderGrades() {
+                const c = document.getElementById('gradesContainer');
+                if (subjects.length === 0) {
+                    c.innerHTML = '<div style="color:var(--text-faint); text-align:center; padding:20px; font-size:14px;">No subjects added yet. Click "Add Subject" to start.</div>';
+                    return;
+                }
+                c.innerHTML = subjects.map((s, si) => {
+                    const fm = calculateFinal(s);
+                    const a = s.assessments || [];
+                    while (a.length < 6) a.push({ name: ASSESSMENT_NAMES[a.length], value: '' });
+                    return `
+                        <div class="grade-subject" data-index="${si}">
+                            <div class="subject-header">
+                                <div>
+                                    <span class="subject-name">${s.name}</span>
+                                    <span style="font-size:12px; color:var(--text-faint); margin-left:8px; font-weight:600;">${a.filter(x => x.value !== '').length}/6 assessments</span>
+                                </div>
+                                <div>
+                                    <span class="subject-final ${fm !== null && fm >= 50 ? '' : 'fail'}">
+                                        ${fm !== null ? fm + '%' : 'No marks'}
+                                    </span>
+                                </div>
+                            </div>
+                            <div class="assessment-grid">
+                                ${a.map((ass, ai) => `
+                                    <div class="assessment-item">
+                                        <label>${ass.name}</label>
+                                        <input type="number" min="0" max="100" placeholder="Score %" value="${ass.value || ''}" data-subject="${si}" data-assessment="${ai}" class="assessment-input">
+                                    </div>
+                                `).join('')}
+                            </div>
+                            <div class="subject-actions">
+                                <button class="btn-action" onclick="deleteSubject(${si})" style="background:#fee2e2; border-color:#fecaca; color:var(--danger);">🗑️ Delete Subject</button>
+                                <button class="btn-action" onclick="resetSubject(${si})">🔄 Reset All</button>
+                            </div>
+                        </div>
+                    `;
+                }).join('');
+                document.querySelectorAll('.assessment-input').forEach(input => {
+                    input.addEventListener('input', function() {
+                        const si = parseInt(this.dataset.subject);
+                        const ai = parseInt(this.dataset.assessment);
+                        if (subjects[si] && subjects[si].assessments) {
+                            subjects[si].assessments[ai].value = this.value;
+                            saveGrades(); renderGrades();
+                        }
+                    });
+                });
+            }
+            window.deleteSubject = function(i) {
+                if (confirm(`Delete subject "${subjects[i].name}"?`)) { subjects.splice(i, 1); saveGrades(); renderGrades(); }
+            };
+            window.resetSubject = function(i) {
+                if (confirm(`Reset all assessments for "${subjects[i].name}"?`)) {
+                    subjects[i].assessments = subjects[i].assessments.map(a => ({ ...a, value: '' }));
+                    saveGrades(); renderGrades();
+                }
+            };
+            document.getElementById('addSubjectBtn').addEventListener('click', () => {
+                if (subjects.length >= 7) { alert('Maximum 7 subjects allowed!'); return; }
+                const name = prompt('Enter subject name:');
+                if (!name || !name.trim()) return;
+                const a = ASSESSMENT_NAMES.map(n => ({ name: n, value: '' }));
+                subjects.push({ name: name.trim(), assessments: a });
+                saveGrades(); renderGrades();
+            });
+
+            // STICKY NOTES
+            let stickyNotes = [];
+            function loadStickyNotes() {
+                const saved = localStorage.getItem('stickyNotes');
+                if (saved) { try { stickyNotes = JSON.parse(saved); } catch(e) { stickyNotes = []; } }
+                renderAllStickies();
+            }
+            function saveStickyNotes() { localStorage.setItem('stickyNotes', JSON.stringify(stickyNotes)); }
+            function renderAllStickies() {
+                const html = stickyNotes.map((n, i) => {
+                    const ci = n.colorIdx !== undefined ? n.colorIdx : (i % STICKY_COLORS.length);
+                    const c = STICKY_COLORS[ci] || STICKY_COLORS[0];
+                    return `
+                        <div class="sticky" data-index="${i}" style="background: ${c.bg};">
+                            <button class="delete-sticky" onclick="deleteSticky(${i})">✕</button>
+                            <button class="sticky-color-toggle" onclick="toggleColorPicker(event, ${i})" title="Change color">🎨</button>
+                            <div class="sticky-color-picker" id="colorPicker-${i}">
+                                ${STICKY_COLORS.map((cc, cci) => `<button style="background:${cc.bg};" onclick="setStickyColor(event, ${i}, ${cci})" title="${cc.name}"></button>`).join('')}
+                            </div>
+                            <h3 contenteditable="false" style="color:${c.text};">${n.title || 'New Note'}</h3>
+                            <p contenteditable="false" style="color:${c.sub};">${n.content || 'Click to edit'}</p>
+                        </div>
+                    `;
+                }).join('');
+                const g1 = document.getElementById('stickyGrid');
+                const g2 = document.getElementById('stickyGridFull');
+                if (g1) g1.innerHTML = html;
+                if (g2) g2.innerHTML = html;
+                initAllStickies();
+            }
+            window.toggleColorPicker = function(e, i) {
+                e.stopPropagation();
+                document.querySelectorAll('.sticky-color-picker.show').forEach(p => { if (p.id !== `colorPicker-${i}`) p.classList.remove('show'); });
+                const p = document.getElementById(`colorPicker-${i}`);
+                if (p) p.classList.toggle('show');
+            };
+            window.setStickyColor = function(e, i, ci) {
+                e.stopPropagation();
+                if (stickyNotes[i]) { stickyNotes[i].colorIdx = ci; saveStickyNotes(); renderAllStickies(); }
+            };
+            document.addEventListener('click', e => {
+                if (!e.target.closest('.sticky-color-picker') && !e.target.closest('.sticky-color-toggle')) {
+                    document.querySelectorAll('.sticky-color-picker.show').forEach(p => p.classList.remove('show'));
+                }
+            });
+
+            function makeStickyInteractive(sticky) {
+                const idx = sticky.dataset.index;
+                if (idx === undefined) return;
+                const title = sticky.querySelector('h3');
+                const content = sticky.querySelector('p');
+                if (title) {
+                    title.addEventListener('click', function(e) {
+                        e.stopPropagation();
+                        const cur = this.textContent;
+                        const txt = prompt('Edit title:', cur);
+                        if (txt !== null && txt.trim() !== '') { stickyNotes[idx].title = txt.trim(); saveStickyNotes(); renderAllStickies(); }
+                    });
+                }
+                if (content) {
+                    content.addEventListener('click', function(e) {
+                        e.stopPropagation();
+                        const cur = this.textContent;
+                        const txt = prompt('Edit note content:', cur);
+                        if (txt !== null && txt.trim() !== '') { stickyNotes[idx].content = txt.trim(); saveStickyNotes(); renderAllStickies(); }
+                    });
+                }
+                let isD = false, sx, sy, ox, oy;
+                sticky.addEventListener('mousedown', function(e) {
+                    if (e.target.classList.contains('delete-sticky')) return;
+                    if (e.target.classList.contains('sticky-color-toggle')) return;
+                    if (e.target.closest('.sticky-color-picker')) return;
+                    if (e.target.tagName === 'H3' || e.target.tagName === 'P') return;
+                    isD = true;
+                    const r = sticky.getBoundingClientRect();
+                    const pr = sticky.parentElement.getBoundingClientRect();
+                    sx = e.clientX; sy = e.clientY;
+                    ox = r.left - pr.left; oy = r.top - pr.top;
+                    sticky.classList.add('dragging');
+                    sticky.style.position = 'absolute';
+                    sticky.style.width = r.width + 'px';
+                    sticky.style.zIndex = 9999;
+                    sticky.style.left = ox + 'px';
+                    sticky.style.top = oy + 'px';
+                    document.addEventListener('mousemove', onDrag);
+                    document.addEventListener('mouseup', onDrop);
+                    e.preventDefault();
+                });
+                function onDrag(e) {
+                    if (!isD) return;
+                    sticky.style.left = (ox + e.clientX - sx) + 'px';
+                    sticky.style.top = (oy + e.clientY - sy) + 'px';
+                }
+                function onDrop() {
+                    if (isD) {
+                        isD = false;
+                        sticky.classList.remove('dragging');
+                        sticky.style.position = ''; sticky.style.width = ''; sticky.style.zIndex = ''; sticky.style.left = ''; sticky.style.top = '';
+                    }
+                    document.removeEventListener('mousemove', onDrag);
+                    document.removeEventListener('mouseup', onDrop);
+                }
+            }
+            window.deleteSticky = function(i) {
+                if (confirm('Delete this sticky note?')) { stickyNotes.splice(i, 1); saveStickyNotes(); renderAllStickies(); }
+            };
+            function addStickyNote() {
+                stickyNotes.push({ title: '📌 New Note', content: 'Click to edit this sticky note.', colorIdx: Math.floor(Math.random() * STICKY_COLORS.length) });
+                saveStickyNotes(); renderAllStickies();
+            }
+            document.getElementById('addStickyBtn').addEventListener('click', addStickyNote);
+            document.getElementById('addStickyFullBtn').addEventListener('click', addStickyNote);
+            function initAllStickies() { document.querySelectorAll('.sticky').forEach(s => makeStickyInteractive(s)); }
+
+            // CALENDAR
+            let currentDate = new Date();
+            function renderCalendar(date) {
+                const grid = document.getElementById('calendarGrid');
+                const my = document.getElementById('calendarMonthYear');
+                const y = date.getFullYear(), m = date.getMonth();
+                my.textContent = date.toLocaleDateString('en-ZA', { month: 'long', year: 'numeric', timeZone: 'Africa/Johannesburg' });
+                const fd = new Date(y, m, 1).getDay();
+                const dim = new Date(y, m+1, 0).getDate();
+                const dipm = new Date(y, m, 0).getDate();
+                const wd = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
+                let html = wd.map(d => `<div class="day weekday">${d}</div>`).join('');
+                for (let i = fd - 1; i >= 0; i--) html += `<div class="day other-month">${dipm - i}</div>`;
+                const td = new Date().getDate(), tm = new Date().getMonth(), ty = new Date().getFullYear();
+                for (let i = 1; i <= dim; i++) {
+                    const isT = (i === td && m === tm && y === ty);
+                    html += `<div class="day ${isT ? 'today' : ''}">${i}</div>`;
+                }
+                const tc = fd + dim;
+                const rem = (7 - (tc % 7)) % 7;
+                for (let i = 1; i <= rem; i++) html += `<div class="day other-month">${i}</div>`;
+                grid.innerHTML = html;
+            }
+            document.getElementById('prevMonth').addEventListener('click', () => { currentDate.setMonth(currentDate.getMonth() - 1); renderCalendar(currentDate); });
+            document.getElementById('nextMonth').addEventListener('click', () => { currentDate.setMonth(currentDate.getMonth() + 1); renderCalendar(currentDate); });
+            function updateSASTTime() {
+                const now = new Date();
+                document.getElementById('sastTime').textContent = now.toLocaleTimeString('en-ZA', { timeZone: 'Africa/Johannesburg', hour12: false });
+            }
+            setInterval(updateSASTTime, 1000);
+            updateSASTTime();
+            renderCalendar(currentDate);
+
+            // TIMER
+            let timerSeconds = 1500, timerInterval = null, isRunning = false, isPaused = false;
+            let timerAlertShown = false, timerStartTime = null, timerRemaining = 1500, sessionStartSeconds = 1500;
+            const timerDisplay = document.getElementById('timerDisplay');
+            const timerStatus = document.getElementById('timerStatus');
+            const timerAlert = document.getElementById('timerAlert');
+            const studyHoursEl = document.getElementById('studyHours');
+            const lastSessionDisplay = document.getElementById('lastSessionDisplay');
+
+            function loadStudyHours() {
+                const saved = parseFloat(localStorage.getItem('studyHoursTotal') || '0');
+                if (studyHoursEl) studyHoursEl.textContent = saved.toFixed(1) + 'h';
+                const ls = localStorage.getItem('lastSessionMinutes');
+                if (ls && lastSessionDisplay) lastSessionDisplay.textContent = `${ls} min`;
+            }
+            function addStudyTime(seconds) {
+                const cur = parseFloat(localStorage.getItem('studyHoursTotal') || '0');
+                const nt = cur + (seconds / 3600);
+                localStorage.setItem('studyHoursTotal', nt.toFixed(4));
+                const mins = Math.round(seconds / 60);
+                localStorage.setItem('lastSessionMinutes', mins);
+                if (studyHoursEl) studyHoursEl.textContent = nt.toFixed(1) + 'h';
+                if (lastSessionDisplay) lastSessionDisplay.textContent = `${mins} min`;
+            }
+            function updateTimerDisplay() {
+                const m = Math.floor(timerSeconds / 60), s = timerSeconds % 60;
+                timerDisplay.textContent = `${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}`;
+            }
+            function triggerTimerAlert() {
+                if (timerAlertShown) return;
+                timerAlertShown = true;
+                timerAlert.style.display = 'block';
+                playBeep();
+                setTimeout(playBeep, 500); setTimeout(playBeep, 1000); setTimeout(playBeep, 1500);
+                speakMessage("Time is up! Great job on your study session. Take a break now.");
+                addStudyTime(sessionStartSeconds);
+                setTimeout(() => { timerAlert.style.display = 'none'; }, 8000);
+            }
+            function startTimer() {
+                if (isRunning && !isPaused) return;
+                if (timerSeconds <= 0) { timerSeconds = 1500; timerRemaining = 1500; timerAlertShown = false; timerAlert.style.display = 'none'; updateTimerDisplay(); }
+                isRunning = true; isPaused = false;
+                timerStartTime = Date.now();
+                timerRemaining = timerSeconds;
+                sessionStartSeconds = timerSeconds;
+                timerStatus.textContent = '⏳ Running...';
+                if (timerInterval) clearInterval(timerInterval);
+                timerInterval = setInterval(function() {
+                    if (!isRunning || isPaused) return;
+                    const now = Date.now();
+                    const el = Math.floor((now - timerStartTime) / 1000);
+                    const ns = timerRemaining - el;
+                    if (ns <= 0) {
+                        timerSeconds = 0; updateTimerDisplay();
+                        clearInterval(timerInterval); timerInterval = null;
+                        isRunning = false;
+                        timerStatus.textContent = '⏰ Time\'s up!';
+                        triggerTimerAlert();
+                        timerRemaining = 1500;
+                        return;
+                    }
+                    timerSeconds = ns; updateTimerDisplay();
+                }, 500);
+            }
+            function pauseTimer() {
+                if (!isRunning || isPaused) return;
+                isPaused = true;
+                timerStatus.textContent = '⏸ Paused';
+                timerRemaining = timerSeconds;
+                if (timerInterval) { clearInterval(timerInterval); timerInterval = null; }
+                const el = sessionStartSeconds - timerSeconds;
+                if (el > 30) { addStudyTime(el); sessionStartSeconds = timerSeconds; }
+            }
+            function resumeTimer() {
+                if (!isRunning || !isPaused) return;
+                isPaused = false;
+                timerStartTime = Date.now();
+                timerStatus.textContent = '⏳ Running...';
+                timerInterval = setInterval(function() {
+                    if (!isRunning || isPaused) return;
+                    const now = Date.now();
+                    const el = Math.floor((now - timerStartTime) / 1000);
+                    const ns = timerRemaining - el;
+                    if (ns <= 0) {
+                        timerSeconds = 0; updateTimerDisplay();
+                        clearInterval(timerInterval); timerInterval = null;
+                        isRunning = false;
+                        timerStatus.textContent = '⏰ Time\'s up!';
+                        triggerTimerAlert();
+                        timerRemaining = 1500;
+                        return;
+                    }
+                    timerSeconds = ns; updateTimerDisplay();
+                }, 500);
+            }
+            function resetTimer() {
+                if (timerInterval) { clearInterval(timerInterval); timerInterval = null; }
+                const el = sessionStartSeconds - timerSeconds;
+                if (el > 30 && isRunning) addStudyTime(el);
+                timerSeconds = 1500; timerRemaining = 1500; sessionStartSeconds = 1500;
+                isRunning = false; isPaused = false; timerAlertShown = false;
+                timerAlert.style.display = 'none';
+                updateTimerDisplay(); timerStatus.textContent = '⏳ Ready';
+                timerStartTime = null;
+            }
+            document.addEventListener('visibilitychange', () => {
+                if (!document.hidden && isRunning && !isPaused) updateTimerDisplay();
+            });
+            document.getElementById('timerStart').addEventListener('click', () => isPaused ? resumeTimer() : startTimer());
+            document.getElementById('timerPause').addEventListener('click', pauseTimer);
+            document.getElementById('timerReset').addEventListener('click', resetTimer);
+            document.getElementById('setCustomTimer').addEventListener('click', () => {
+                const mins = prompt('Enter custom time in minutes:', '25');
+                if (mins !== null && !isNaN(mins) && mins > 0) {
+                    if (timerInterval) { clearInterval(timerInterval); timerInterval = null; }
+                    timerSeconds = parseInt(mins) * 60;
+                    timerRemaining = timerSeconds; sessionStartSeconds = timerSeconds;
+                    isRunning = false; isPaused = false; timerAlertShown = false;
+                    timerAlert.style.display = 'none';
+                    updateTimerDisplay();
+                    timerStatus.textContent = `⏳ ${mins} min set`;
+                }
+            });
+
+            // SETTINGS
+            function loadSettings() {
+                const saved = localStorage.getItem('settings');
+                if (saved) {
+                    try {
+                        const s = JSON.parse(saved);
+                        document.getElementById('profileName').value = s.name || 'name';
+                        document.getElementById('profileEmail').value = s.email || 'email';
+                        document.getElementById('themeSelect').value = s.theme || 'light';
+                        document.getElementById('notifToggle').checked = s.notifications !== false;
+                        voiceEnabled = s.notifications !== false;
+                        const ini = (s.name || 'N').trim().charAt(0).toUpperCase() || 'N';
+                        document.getElementById('profileAvatar').textContent = ini;
+                    } catch(e) {}
+                }
+                loadTheme();
+            }
+            document.getElementById('saveSettingsBtn').addEventListener('click', () => {
+                const name = document.getElementById('profileName').value.trim() || 'name';
+                const email = document.getElementById('profileEmail').value.trim() || 'email';
+                const theme = document.getElementById('themeSelect').value;
+                const notifications = document.getElementById('notifToggle').checked;
+                localStorage.setItem('settings', JSON.stringify({ name, email, theme, notifications }));
+                voiceEnabled = notifications;
+                applyTheme(theme);
+                const ini = name.trim().charAt(0).toUpperCase() || 'N';
+                document.getElementById('profileAvatar').textContent = ini;
+                const msg = document.getElementById('settingsMessage');
+                msg.style.display = 'block';
+                setTimeout(() => { msg.style.display = 'none'; }, 3000);
+                speakMessage('Settings saved successfully.');
+            });
+
+            // INIT
+            loadAssessments();
+            loadAssignments();
+            loadTimetable();
+            loadGrades();
+            loadSettings();
+            loadStickyNotes();
+            loadNotes();
+            loadDrafts();
+            loadStudyHours();
+
+            const observer = new MutationObserver(() => initAllStickies());
+            document.querySelectorAll('.sticky-grid').forEach(grid => observer.observe(grid, { childList: true, subtree: true }));
+
+            window.addEventListener('resize', () => { if (window.innerWidth > 768) closeSidebar(); });
+            setInterval(() => checkDeadlineAlerts(), 60000);
+
+            document.addEventListener('click', function initAudio() {
+                if (!audioContext) { try { audioContext = new (window.AudioContext || window.webkitAudioContext)(); } catch(e) {} }
+            }, { once: true });
+
+            switchSection('dashboard');
+
+        })();
+    </script>
+
+    <script>
+        if ('serviceWorker' in navigator) {
+            navigator.serviceWorker.register('sw.js')
+                .then(() => console.log('✅ Service worker registered'))
+                .catch(err => console.log('❌ SW registration failed:', err));
+        }
+    </script>
+
+    <script async src="https://pl31266276.profitableratecpmnetwork.com/3f/21/5d/3f215ded2a3b17cc90e30d7afc022ac5.js"></script>
+</body>
+</html>
