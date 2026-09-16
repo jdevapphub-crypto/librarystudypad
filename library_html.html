@@ -1,0 +1,1050 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>StudyPad-Library — Learn • Study • Grow | Joheliv Labs</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+<style>
+:root{
+  --bg:#060a18;
+  --panel:#0e1a30;
+  --panel2:#0b1628;
+  --border:#1a2f54;
+  --blue:#4f7bff;
+  --blue2:#6b8fff;
+  --text:#e8eeff;
+  --muted:#8ba3c9;
+  --accent:#a78bfa;
+  --glow:rgba(107,143,255,0.35);
+  --star:rgba(255,255,255,0.85);
+  --nebula1:rgba(139,92,246,0.28);
+  --nebula2:rgba(79,123,255,0.22);
+  --nebula3:rgba(236,72,153,0.12);
+  --header-h:68px;
+  --sidebar-w:216px;
+}
+*{margin:0;padding:0;box-sizing:border-box;font-family:'Inter',sans-serif}
+html,body{height:100%;overflow:hidden}
+body{background:var(--bg);color:var(--text);position:relative}
+body::before{content:'';position:fixed;inset:0;background:
+  radial-gradient(ellipse at 15% 0%, rgba(139,92,246,0.15) 0%, transparent 45%),
+  radial-gradient(ellipse at 85% 100%, rgba(79,123,255,0.12) 0%, transparent 50%),
+  radial-gradient(ellipse at 50% 50%, rgba(236,72,153,0.06) 0%, transparent 60%);
+  pointer-events:none;z-index:0}
+button{font-family:inherit;cursor:pointer;border:none;background:none;color:inherit}
+input,textarea,select{font-family:inherit;color:inherit}
+::-webkit-scrollbar{width:8px;height:8px}
+::-webkit-scrollbar-track{background:transparent}
+::-webkit-scrollbar-thumb{background:#233c66;border-radius:8px}
+::-webkit-scrollbar-thumb:hover{background:#2f5088}
+
+/* STARFIELD */
+.starfield{position:fixed;inset:0;pointer-events:none;z-index:0;overflow:hidden}
+.starfield::before,.starfield::after{content:'';position:absolute;inset:-50%;background-image:
+  radial-gradient(1.5px 1.5px at 20px 30px, var(--star), transparent),
+  radial-gradient(1px 1px at 40px 70px, var(--star), transparent),
+  radial-gradient(1.5px 1.5px at 90px 40px, var(--star), transparent),
+  radial-gradient(1px 1px at 130px 80px, var(--star), transparent),
+  radial-gradient(2px 2px at 160px 120px, #fff, transparent),
+  radial-gradient(1px 1px at 200px 50px, var(--star), transparent),
+  radial-gradient(1.5px 1.5px at 240px 180px, var(--star), transparent),
+  radial-gradient(1px 1px at 280px 90px, var(--star), transparent),
+  radial-gradient(1px 1px at 320px 200px, var(--star), transparent),
+  radial-gradient(2px 2px at 360px 140px, #fff, transparent),
+  radial-gradient(1px 1px at 400px 60px, var(--star), transparent),
+  radial-gradient(1.5px 1.5px at 440px 220px, var(--star), transparent),
+  radial-gradient(1px 1px at 480px 100px, var(--star), transparent),
+  radial-gradient(1px 1px at 520px 260px, var(--star), transparent),
+  radial-gradient(2px 2px at 560px 160px, #fff, transparent),
+  radial-gradient(1px 1px at 600px 300px, var(--star), transparent),
+  radial-gradient(1.5px 1.5px at 640px 80px, var(--star), transparent),
+  radial-gradient(1px 1px at 680px 240px, var(--star), transparent),
+  radial-gradient(1px 1px at 720px 180px, var(--star), transparent),
+  radial-gradient(2px 2px at 760px 320px, #fff, transparent);
+  background-size:800px 400px;background-repeat:repeat;
+  animation:twinkle 5s ease-in-out infinite}
+.starfield::after{background-size:600px 300px;animation:twinkle 7s ease-in-out infinite 2s;opacity:0.6}
+@keyframes twinkle{0%,100%{opacity:0.55;transform:scale(1)}50%{opacity:1;transform:scale(1.02)}}
+.shooting{position:fixed;height:2px;background:linear-gradient(90deg,#a5b4fc,transparent);border-radius:50%;filter:drop-shadow(0 0 6px rgba(165,180,252,0.6));opacity:0;z-index:0;pointer-events:none}
+.shooting::before{content:'';position:absolute;right:0;top:50%;transform:translateY(-50%);width:4px;height:4px;border-radius:50%;background:#fff;box-shadow:0 0 10px #fff,0 0 20px #a5b4fc}
+.shooting.s1{top:12%;left:60%;width:120px;animation:shoot 5s linear infinite}
+.shooting.s2{top:45%;left:80%;width:90px;animation:shoot 6s linear infinite 3s}
+.shooting.s3{top:70%;left:40%;width:100px;animation:shoot 7s linear infinite 5s}
+@keyframes shoot{0%{opacity:0;transform:translate(0,0) rotate(-35deg)}5%{opacity:1}60%{opacity:1}100%{opacity:0;transform:translate(-450px,320px) rotate(-35deg)}}
+
+/* TOPBAR — FIXED */
+.topbar{position:fixed;top:0;left:0;right:0;height:var(--header-h);background:rgba(9,18,36,0.72);backdrop-filter:blur(20px) saturate(180%);-webkit-backdrop-filter:blur(20px) saturate(180%);border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;padding:0 16px;z-index:100;box-shadow:0 4px 24px rgba(0,0,0,0.4)}
+.brand{display:flex;align-items:center;gap:12px}
+.logo-img{width:42px;height:42px;border-radius:10px;object-fit:cover;border:1px solid var(--border)}
+.logo-fallback{width:42px;height:42px;border-radius:10px;display:none;align-items:center;justify-content:center;background:linear-gradient(135deg,#4f7bff,#a78bfa);color:#fff;font-size:20px;box-shadow:0 4px 12px rgba(79,123,255,0.35)}
+.brand h1{font-size:20px;font-weight:800;letter-spacing:-0.02em;background:linear-gradient(135deg,#fff 0%,#c7d2fe 100%);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.brand>span{color:var(--muted);font-size:11px;margin-left:8px;font-weight:500;letter-spacing:0.02em}
+.hamburger{width:38px;height:38px;border-radius:10px;background:var(--panel);border:1px solid var(--border);display:grid;place-items:center;transition:0.2s}
+.hamburger:hover{background:#122040;border-color:#2a4a86;transform:translateY(-1px)}
+.hamburger span{display:block;width:16px;height:2px;background:var(--text);position:relative;transition:0.2s}
+.hamburger span::before,.hamburger span::after{content:'';position:absolute;left:0;width:16px;height:2px;background:var(--text)}
+.hamburger span::before{top:-5px}
+.hamburger span::after{top:5px}
+.top-actions{display:flex;align-items:center;gap:10px}
+.icon-btn{width:36px;height:36px;border-radius:50%;background:var(--panel);border:1px solid var(--border);display:grid;place-items:center;transition:0.2s;cursor:pointer}
+.icon-btn:hover{background:#122040;border-color:#2a4a86;transform:translateY(-1px)}
+
+/* MAIN LAYOUT — FIXED */
+.main{position:fixed;top:var(--header-h);left:0;right:0;bottom:0;display:flex;z-index:1}
+
+/* SIDEBAR — FIXED */
+.sidebar{
+  width:var(--sidebar-w);
+  background:rgba(7,13,26,0.82);
+  backdrop-filter:blur(14px);
+  -webkit-backdrop-filter:blur(14px);
+  border-right:1px solid var(--border);
+  padding:14px 10px;
+  display:flex;
+  flex-direction:column;
+  gap:3px;
+  flex-shrink:0;
+  transition:width .22s ease, padding .22s ease, opacity .22s ease;
+  overflow-y:auto;
+  overflow-x:hidden;
+  height:100%;
+}
+.sidebar.collapsed{width:0;padding:14px 0;opacity:0;border-right:0}
+.nav-item{display:flex;align-items:center;gap:12px;padding:11px 12px;border-radius:10px;cursor:pointer;color:var(--muted);font-size:13.5px;white-space:nowrap;transition:0.18s;font-weight:500}
+.nav-item:hover{background:var(--panel);color:var(--text)}
+.nav-item.active{background:linear-gradient(135deg,#4f7bff,#6b8fff);color:#fff;box-shadow:0 6px 20px rgba(79,123,255,0.4)}
+
+/* CONTENT — SCROLLABLE */
+.content{
+  flex:1;
+  min-width:0;
+  padding:16px;
+  background:radial-gradient(1200px 600px at 20% 0%,rgba(79,123,255,0.08) 0%,transparent 60%),transparent;
+  overflow-y:auto;
+  overflow-x:hidden;
+  height:100%;
+}
+
+.view{display:none}
+.view.active{display:block;animation:fadeIn 0.25s ease}
+@keyframes fadeIn{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:translateY(0)}}
+
+/* DOCS */
+.doc-layout{display:grid;grid-template-columns:2.1fr .75fr;gap:14px;align-items:start}
+.doc-panel{background:var(--panel);border:1px solid var(--border);border-radius:16px;overflow:hidden;display:flex;flex-direction:column;min-height:700px;box-shadow:0 8px 32px rgba(0,0,0,0.3)}
+.doc-header{padding:14px 16px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid #14284a;flex-wrap:wrap;gap:10px}
+.doc-title{display:flex;align-items:center;gap:10px;min-width:0;cursor:pointer;padding:4px 8px;border-radius:10px;transition:0.18s}
+.doc-title:hover{background:#0e1f3d}
+.doc-title .ico{width:32px;height:28px;background:#15305c;border-radius:6px;display:grid;place-items:center}
+.doc-title h3{font-size:14px;font-weight:600}
+.doc-title p{font-size:11px;color:var(--muted)}
+.arr{width:32px;height:32px;border-radius:10px;background:#0e1f3d;border:1px solid var(--border);display:grid;place-items:center;cursor:pointer;transition:0.18s;font-size:16px;user-select:none}
+.arr:hover{background:#15305c;border-color:#2a4a86}
+.lookup-bar{border-bottom:1px solid #14284a;padding:10px 16px;display:flex;gap:8px;flex-wrap:wrap;background:#0d1c34}
+.lookup-bar input{flex:1;min-width:140px;background:#0a1830;border:1px solid var(--border);border-radius:10px;padding:8px 12px;font-size:13px;outline:none;transition:0.18s}
+.lookup-bar input:focus{border-color:var(--blue);box-shadow:0 0 0 3px rgba(79,123,255,0.15)}
+.lk-btn{font-size:12.5px;padding:8px 12px;border-radius:10px;background:#0e1f3d;border:1px solid var(--border);transition:0.18s;font-weight:500}
+.lk-btn:hover{background:#15305c;border-color:#2a4a86}
+.lk-btn.primary{background:linear-gradient(135deg,#4f7bff,#6b8fff);border-color:transparent;box-shadow:0 4px 12px rgba(79,123,255,0.3)}
+.lk-btn.primary:hover{transform:translateY(-1px);box-shadow:0 6px 18px rgba(79,123,255,0.4)}
+.lookup-results{border-bottom:1px solid #14284a;padding:12px 16px;font-size:12.5px;background:#0a1830;max-height:220px;overflow:auto;display:none}
+.lookup-results.show{display:block}
+.lk-word{font-size:15px;font-weight:700}
+.lk-phon{color:var(--muted);font-size:12px;margin-bottom:6px}
+.lk-def{margin:0 0 8px 14px;line-height:1.5}
+.lk-pos{color:#7fa8ff;font-weight:700;font-size:11px;margin-top:6px;text-transform:uppercase;letter-spacing:0.06em}
+.lk-chip{background:#132846;border:1px solid #1c3661;padding:5px 10px;border-radius:20px;font-size:11.5px;color:#a9c4f5;display:inline-block;margin:3px;transition:0.18s}
+.lk-chip:hover{background:#1c3661;border-color:#2a4a86;color:#fff}
+.viewer{padding:12px;background:#081425;flex:1;display:flex;min-height:0}
+.viewer-inner{background:#0b1b33;border:1px solid #1a335b;border-radius:12px;padding:8px;flex:1;display:flex;min-height:0}
+.slide-frame{background:#fff;border-radius:8px;flex:1;display:flex;flex-direction:column;color:#0f2442;overflow:hidden}
+.slide-top{height:30px;background:#2d4a7a;color:#fff;display:flex;align-items:center;justify-content:space-between;padding:0 12px;font-size:11px}
+.slide-body{padding:22px;flex:1;overflow:auto}
+.slide-body h2{font-size:22px;color:#10264a;margin-bottom:8px}
+.slide-body .desc{font-size:13px;color:#4a5f82;line-height:1.7;margin-bottom:14px}
+.cards{display:grid;grid-template-columns:repeat(5,1fr);gap:12px}
+.ecard{text-align:center;padding:10px;border-right:1px solid #eef2f7}
+.ecard:last-child{border-right:0}
+.eico{width:52px;height:52px;border-radius:50%;margin:0 auto 8px;display:grid;place-items:center;color:#fff;font-size:20px}
+.e-title{font-size:11px;font-weight:700;color:#112a50}
+.e-desc{font-size:9.5px;color:#6b7d9a;line-height:1.4;margin-top:4px}
+.pdf-viewport{flex:1;display:none;flex-direction:column;align-items:center;overflow:auto;background:#1c2a41;border-radius:8px;padding:10px}
+.pdf-viewport canvas{margin:10px auto;box-shadow:0 6px 24px rgba(0,0,0,0.4);max-width:100%;background:#fff}
+.progress-bar{height:44px;background:var(--panel);border-top:1px solid var(--border);display:flex;align-items:center;gap:14px;padding:0 16px}
+.progress-bar span{font-size:12px;color:var(--muted)}
+.range{flex:1;appearance:none;height:6px;background:#1a2f54;border-radius:10px;outline:none}
+.range::-webkit-slider-thumb{appearance:none;width:16px;height:16px;border-radius:50%;background:var(--blue2);border:2px solid #a6c1ff;cursor:pointer;box-shadow:0 0 8px rgba(107,143,255,0.5)}
+
+.right{display:flex;flex-direction:column;gap:10px}
+.card{background:var(--panel);border:1px solid var(--border);border-radius:14px;padding:11px}
+.card-head{display:flex;align-items:center;gap:8px;margin-bottom:9px;font-weight:600;font-size:12.5px}
+.snd-row{display:flex;align-items:center;gap:7px;background:#0d1e3a;border:1px solid #1a335b;border-radius:10px;padding:6px 8px;margin-bottom:6px}
+.snd-ico{width:26px;height:26px;border-radius:8px;display:grid;place-items:center;font-size:12px;flex-shrink:0}
+.snd-info{flex:1;min-width:0}
+.snd-info b{font-size:11.5px;display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.snd-info span{font-size:9.5px;color:var(--muted)}
+.snd-vol{width:42px;accent-color:var(--blue2);cursor:pointer}
+.snd-toggle{width:26px;height:26px;border-radius:50%;background:#16284a;display:grid;place-items:center;font-size:11px;cursor:pointer;transition:0.18s}
+.snd-toggle:hover{background:#1c3661}
+.snd-toggle.on{background:linear-gradient(135deg,#4f7bff,#6b8fff);box-shadow:0 0 12px rgba(79,123,255,0.5)}
+.snd-remove{width:18px;height:18px;border-radius:50%;background:#1c3355;display:grid;place-items:center;font-size:9px;color:var(--muted);cursor:pointer;transition:0.18s;flex-shrink:0}
+.snd-remove:hover{background:#e53935;color:#fff}
+.music-upload{display:flex;justify-content:center;gap:6px;background:#0e1f3d;border:1px dashed #2a4a86;border-radius:10px;padding:8px;font-size:11px;color:var(--muted);margin-top:6px;cursor:pointer;transition:0.18s;text-align:center}
+.music-upload:hover{border-color:var(--blue2);color:#fff;background:#122040}
+.section-head{display:flex;justify-content:space-between;margin:4px 0 14px;flex-wrap:wrap;gap:10px}
+.section-head h2{font-size:19px;font-weight:700;letter-spacing:-0.02em}
+.section-head p{font-size:12.5px;color:var(--muted);margin-top:2px}
+.shelf-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(170px,1fr));gap:16px;margin-bottom:30px}
+.book{background:var(--panel);border:1px solid var(--border);border-radius:14px;overflow:hidden;transition:.18s;text-align:left;width:100%;cursor:pointer}
+.book:hover{transform:translateY(-3px);border-color:#2a4a86;box-shadow:0 12px 32px rgba(79,123,255,0.15)}
+.book-cover{height:120px;display:flex;align-items:center;justify-content:center;font-size:40px;position:relative;overflow:hidden}
+.book-cover::after{content:'';position:absolute;inset:0;background:radial-gradient(circle at 30% 20%,rgba(255,255,255,0.15),transparent 60%)}
+.book-info{padding:12px}
+.book-info h4{font-size:13px;font-weight:600}
+.book-info span{font-size:11px;color:var(--muted)}
+.upload-zone{background:var(--panel);border:1.5px dashed var(--border);border-radius:14px;padding:26px;text-align:center;margin-bottom:16px;cursor:pointer;transition:0.18s;display:block}
+.upload-zone:hover{border-color:var(--blue2);background:#0e1f3d}
+.upload-zone b{font-size:14px;display:block;margin-bottom:6px}
+.upload-zone p{font-size:12px;color:var(--muted);margin-bottom:10px}
+.mylib-item{display:flex;align-items:center;gap:12px;background:var(--panel);border:1px solid var(--border);border-radius:12px;padding:10px 14px;margin-bottom:8px;transition:0.18s}
+.mylib-item:hover{border-color:#2a4a86;background:#0e1f3d}
+.pdf-icon{width:32px;height:36px;background:#e53935;border-radius:6px;display:grid;place-items:center;font-weight:700;font-size:9px;color:#fff;flex-shrink:0}
+.mylib-item button{margin-left:auto;font-size:12px;background:#0e1f3d;border:1px solid var(--border);padding:7px 12px;border-radius:9px;transition:0.18s;color:var(--text)}
+.mylib-item button:hover{background:#15305c;border-color:#2a4a86}
+
+.modal-backdrop{position:fixed;inset:0;background:rgba(4,9,20,0.75);backdrop-filter:blur(6px);display:none;align-items:center;justify-content:center;z-index:200;padding:20px}
+.modal-backdrop.show{display:flex;animation:fadeIn 0.2s ease}
+.modal-box{background:var(--panel);border:1px solid var(--border);border-radius:16px;max-width:520px;width:100%;max-height:80vh;overflow:hidden;display:flex;flex-direction:column;box-shadow:0 20px 60px rgba(0,0,0,0.6)}
+.modal-head{display:flex;justify-content:space-between;padding:14px 18px;border-bottom:1px solid var(--border)}
+.modal-head h3{font-size:15px;font-weight:700}
+.modal-head .close-x{cursor:pointer;width:28px;height:28px;border-radius:8px;display:grid;place-items:center;transition:0.18s}
+.modal-head .close-x:hover{background:#1c3355}
+.modal-body{padding:12px 14px;overflow-y:auto}
+.modal-book-row{display:flex;align-items:center;gap:12px;padding:9px 8px;border-radius:10px;cursor:pointer;width:100%;text-align:left;transition:0.18s}
+.modal-book-row:hover{background:#0e1f3d}
+.modal-book-ico{width:36px;height:36px;border-radius:9px;display:grid;place-items:center;font-size:17px;flex-shrink:0}
+.modal-book-row b{font-size:13px;font-weight:600;display:block}
+.modal-book-row span{font-size:11px;color:var(--muted)}
+
+@media(max-width:1100px){.doc-layout{grid-template-columns:1fr}.cards{grid-template-columns:repeat(2,1fr)}}
+@media(max-width:700px){
+  .brand>span{display:none}
+  .content{padding:12px}
+  .doc-panel{min-height:500px}
+  :root{--sidebar-w:200px}
+}
+</style>
+</head>
+<body>
+<div class="starfield"></div>
+<div class="shooting s1"></div>
+<div class="shooting s2"></div>
+<div class="shooting s3"></div>
+
+<div class="topbar">
+  <div class="brand">
+    <div class="hamburger" onclick="toggleSidebar()"><span></span></div>
+    <img src="logo.png" class="logo-img" onerror="this.style.display='none';document.getElementById('logoFallback').style.display='grid'">
+    <div class="logo-fallback" id="logoFallback">📚</div>
+    <h1>StudyPad-Library</h1><span>Learn • Study • Grow • Joheliv Labs</span>
+  </div>
+  <div class="top-actions"><div class="icon-btn">🔔</div><div class="icon-btn">👤</div></div>
+</div>
+
+<div class="main">
+  <div class="sidebar" id="sidebar">
+    <div class="nav-item active" data-view="documents"><span>📁</span> Documents</div>
+    <div class="nav-item" data-view="bookshelf"><span>📚</span> Book Shelf</div>
+    <div class="nav-item" data-view="writing"><span>✍️</span> Writing Guide</div>
+    <div class="nav-item" data-view="english"><span>🇬🇧</span> English Full Book</div>
+    <div class="nav-item" data-view="documents" data-focus="music"><span>🎵</span> Music Player</div>
+    <div class="nav-item" data-view="settings"><span>⚙️</span> Settings</div>
+  </div>
+
+  <div class="content" id="content">
+
+    <!-- DOCUMENTS VIEW -->
+    <div class="view active" id="view-documents">
+      <div class="doc-layout">
+        <div class="doc-panel">
+          <div class="doc-header">
+            <button class="doc-title" onclick="openBookPicker()">
+              <div class="ico" id="docIco">📄</div>
+              <div>
+                <h3 id="docTitleTxt">Engineering_Basics.pdf</h3>
+                <p id="docSubTxt">PDF • Click to change book</p>
+              </div>
+            </button>
+            <div style="display:flex;align-items:center;gap:10px">
+              <div class="arr" id="prevBtn" onclick="prevPage()">‹</div>
+              <span style="font-size:13px;color:#a9bfd9"><span id="curTop">1</span>/<span id="totTop">10</span></span>
+              <div class="arr" id="nextBtn" onclick="nextPage()">›</div>
+            </div>
+          </div>
+
+          <div class="lookup-bar">
+            <span style="font-size:12px;color:var(--muted)">🔎</span>
+            <input id="lookupInput" placeholder="Type any word (e.g. furthermore) + Enter" onkeydown="if(event.key==='Enter')lookupDictionary()">
+            <button class="lk-btn primary" onclick="lookupDictionary()">Define</button>
+            <button class="lk-btn" onclick="lookupSynonyms()">Synonyms</button>
+            <button class="lk-btn" onclick="clearLookup()">Clear</button>
+          </div>
+          <div class="lookup-results" id="lookupResults"></div>
+
+          <div class="viewer"><div class="viewer-inner">
+            <div class="slide-frame" id="slideFrame"></div>
+            <div class="pdf-viewport" id="pdfViewport"></div>
+          </div></div>
+          <div class="progress-bar">
+            <span id="curBot">1 / 10</span>
+            <input type="range" class="range" id="pageRange" min="1" max="10" value="1" oninput="goToPage(this.value)">
+            <span id="progLabel">Engineering Basics</span>
+          </div>
+        </div>
+
+        <div class="right">
+          <div class="card" id="musicCard">
+            <div class="card-head">🎵 Music Player - Upload Unlimited</div>
+            <div class="snd-row">
+              <div class="snd-ico" style="background:#4f7bff">🎹</div>
+              <div class="snd-info"><b>Study Focus</b><span>Ambient pad (synth)</span></div>
+              <input type="range" class="snd-vol" min="0" max="1" step="0.01" value="0.5" oninput="setVol('focus',this.value)">
+              <div class="snd-toggle" id="toggle-focus" onclick="toggleSound('focus')">▶</div>
+            </div>
+            <div class="snd-row">
+              <div class="snd-ico" style="background:#6b8fff">🌧️</div>
+              <div class="snd-info"><b>Rain</b><span>Rooftop rain</span></div>
+              <input type="range" class="snd-vol" min="0" max="1" step="0.01" value="0.5" oninput="setVol('rain',this.value)">
+              <div class="snd-toggle" id="toggle-rain" onclick="toggleSound('rain')">▶</div>
+            </div>
+            <div class="snd-row">
+              <div class="snd-ico" style="background:#5a7396">🍃</div>
+              <div class="snd-info"><b>Wind</b><span>Breeze</span></div>
+              <input type="range" class="snd-vol" min="0" max="1" step="0.01" value="0.5" oninput="setVol('wind',this.value)">
+              <div class="snd-toggle" id="toggle-wind" onclick="toggleSound('wind')">▶</div>
+            </div>
+            <div id="userTracksList"></div>
+            <label class="music-upload" for="musicUpload">📥 Upload Your Music (MP3, WAV - unlimited)</label>
+            <input type="file" id="musicUpload" accept="audio/*" multiple hidden onchange="handleMusicUpload(event)">
+            <div style="font-size:9.5px;color:var(--muted);margin-top:6px;text-align:center">Mix focus + rain + your songs. Each loops independently.</div>
+          </div>
+
+          <div class="card">
+            <div class="card-head">📊 Progress</div>
+            <div style="display:flex;align-items:center;gap:10px;background:#0d1e3a;border:1px solid #1a335b;border-radius:10px;padding:9px">
+              <div class="pdf-icon">PDF</div>
+              <div style="flex:1;min-width:0">
+                <b id="pdfBarLabel" style="font-size:12px;display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">Engineering Basics</b>
+                <div style="height:5px;background:#1a2f54;border-radius:10px;margin-top:5px;overflow:hidden">
+                  <div id="pdfBar" style="height:100%;background:linear-gradient(90deg,#4f7bff,#6b8fff);width:10%;transition:width 0.3s ease"></div>
+                </div>
+              </div>
+              <div style="font-size:12px;font-variant-numeric:tabular-nums" id="pdfCount">1/10</div>
+            </div>
+          </div>
+          <div class="card">
+            <div class="card-head">👥 Group</div>
+            <div style="display:flex;gap:10px;align-items:center;background:#0d1e3a;border:1px solid #1a335b;border-radius:10px;padding:8px">
+              <div style="width:30px;height:30px;border-radius:50%;background:linear-gradient(135deg,#4f7bff,#6b8fff);display:grid;place-items:center">👥</div>
+              <div><div style="font-size:13px;font-weight:600">Study Group A</div><div style="font-size:11px;color:var(--muted)">4 Members • Online</div></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- WRITING GUIDE -->
+    <div class="view" id="view-writing">
+      <div class="section-head"><div><h2>✍️ Writing Guide — Paragraph, Essay, Citations</h2><p>How to write like a professor, with APA, Harvard, Chicago, MLA examples.</p></div></div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px" id="writingGrid"></div>
+    </div>
+
+    <!-- ENGLISH FULL BOOK -->
+    <div class="view" id="view-english">
+      <div class="section-head"><div><h2>🇬🇧 English Full Book — Complete Learning</h2><p>12 chapters • Grammar • 500+ words • Must for SA students</p></div></div>
+      <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:14px" id="engTabs"></div>
+      <div class="card" id="engContent" style="line-height:1.8;font-size:13.5px;min-height:400px"></div>
+    </div>
+
+    <!-- BOOKSHELF -->
+    <div class="view" id="view-bookshelf">
+      <div class="section-head"><div><h2>📚 Book Shelf</h2><p>Built-in + your PDFs. Click any to open in Documents.</p></div></div>
+      <div class="shelf-grid" id="shelfGrid"></div>
+      <div class="section-head"><div><h2>📖 My Library — Your Uploads</h2><p>PDFs you upload appear here and in Documents.</p></div></div>
+      <label class="upload-zone" for="pdfUpload">
+        <b>📥 Add PDF Books (unlimited)</b>
+        <p>Lecture notes, past papers, textbooks — all open in viewer</p>
+        <span class="lk-btn primary">Choose PDFs</span>
+      </label>
+      <input type="file" id="pdfUpload" accept="application/pdf" multiple hidden onchange="handleUpload(event)">
+      <div id="mylibList"></div>
+    </div>
+
+    <div class="view" id="view-settings">
+      <div class="section-head"><div><h2>⚙️ Settings</h2></div></div>
+      <div class="card" style="max-width:500px">
+        <div style="font-weight:700;font-size:15px;margin-bottom:6px">StudyPad-Library</div>
+        <div style="color:var(--muted);font-size:12.5px;line-height:1.7">
+          Where Code Becomes Codex<br>
+          By Joheliv Labs<br>
+          All systems wired.
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<div class="modal-backdrop" id="bookPickerBackdrop" onclick="if(event.target===this)closeBookPicker()">
+  <div class="modal-box">
+    <div class="modal-head">
+      <h3>Choose Book</h3>
+      <div class="close-x" onclick="closeBookPicker()">✕</div>
+    </div>
+    <div class="modal-body" id="bookPickerBody"></div>
+  </div>
+</div>
+
+<script>
+/* ══════════════════════════════════════════════════════════
+   NAVIGATION
+   ══════════════════════════════════════════════════════════ */
+let sidebarOpen = true;
+function toggleSidebar() {
+  sidebarOpen = !sidebarOpen;
+  document.getElementById('sidebar').classList.toggle('collapsed', !sidebarOpen);
+}
+function goTo(v) {
+  document.querySelectorAll('.view').forEach(x => x.classList.remove('active'));
+  const target = document.getElementById('view-' + v);
+  if (target) target.classList.add('active');
+  document.querySelectorAll('.nav-item').forEach(n => n.classList.toggle('active', n.dataset.view === v));
+  // Reset scroll to top on view change
+  const content = document.getElementById('content');
+  if (content) content.scrollTop = 0;
+  if (v === 'english') loadEnglish(0);
+  if (v === 'writing') renderWriting();
+}
+document.querySelectorAll('.nav-item').forEach(i => i.addEventListener('click', () => {
+  goTo(i.dataset.view);
+  if (i.dataset.focus === 'music') {
+    setTimeout(() => document.getElementById('musicCard').scrollIntoView({ behavior: 'smooth' }), 80);
+  }
+}));
+
+/* ══════════════════════════════════════════════════════════
+   BOOKS DATA
+   ══════════════════════════════════════════════════════════ */
+const BOOKS = [
+  {
+    id: 'engineering', title: 'Engineering Basics', icon: '🛠️', color: '#4f7bff',
+    slides: [
+      { title: 'Introduction to Engineering', desc: 'Engineering is the application of science, mathematics, and creativity to design solutions for real-world problems. From bridges to microchips, engineers shape how the modern world works.' },
+      { title: 'A Brief History', desc: 'Engineering began with ancient irrigation systems in Mesopotamia, moved through Roman aqueducts, the Industrial Revolution, and now AI-assisted design. Each era solved the problems of its time.' },
+      { title: 'What Engineers Do', desc: 'Engineers follow a cycle: identify a problem → design a solution → test a prototype → refine until it is safe, efficient, and affordable.' },
+      { title: 'The Design Process', desc: 'Define the problem. Research existing solutions. Brainstorm ideas. Design and model. Build a prototype. Test it. Improve. Repeat until the solution meets all requirements.' },
+      { title: 'The Five Branches', desc: 'Civil, Chemical, Electrical, Mechanical, and Industrial engineering — each with a distinct focus and career path.', type: 'grid', grid: [
+        { icon: '🏢', color: '#4f7bff', title: 'Civil', desc: 'Roads, bridges, buildings' },
+        { icon: '🧪', color: '#0bbd8a', title: 'Chemical', desc: 'Chemicals & materials' },
+        { icon: '⚡', color: '#ffb300', title: 'Electrical', desc: 'Power & electronics' },
+        { icon: '⚙️', color: '#e53935', title: 'Mechanical', desc: 'Machines & systems' },
+        { icon: '🏭', color: '#a78bfa', title: 'Industrial', desc: 'Efficiency & productivity' }
+      ]},
+      { title: 'Tools & Software', desc: 'CAD (AutoCAD, SolidWorks) for design. MATLAB and Python for analysis. 3D printers for rapid prototyping. Simulation tools for testing before building.' },
+      { title: 'Ethics in Engineering', desc: 'Engineers must prioritize public safety, honesty, and sustainability. A bridge that fails endangers lives. Ethics is not optional — it is central to the profession.' },
+      { title: 'Engineering & Society', desc: 'Clean water, electricity, transport, and communications all depend on engineers. Their work affects billions of lives every single day.' },
+      { title: 'Careers & Skills', desc: 'Strong math, problem-solving, teamwork, and communication. Careers range from aerospace to biomedical, from renewable energy to robotics.' },
+      { title: 'Final Review', desc: 'You covered what engineering is, its history, the design process, five branches, tools, ethics, and careers. Next step: pick one branch and go deep.' }
+    ]
+  },
+  {
+    id: 'writing', title: 'Writing Guide', icon: '✍️', color: '#0bbd8a',
+    slides: [
+      { title: 'PEEL Paragraphs', desc: 'Point: one clear idea. Evidence: "According to Smith (2023)..." Explanation: "This suggests that..." Link: "Therefore..." Every paragraph needs all four.' },
+      { title: 'Introduction Formula', desc: 'Hook (question or statistic) + Context (background) + Thesis ("This essay argues...") + Outline ("Firstly... Secondly... Finally...").' },
+      { title: 'Essay Structure', desc: 'Intro 10% — Body 1 25% — Body 2 25% — Body 3 25% — Conclusion 15%. Use connectors: Furthermore, However, Consequently.' },
+      { title: 'APA Referencing', desc: 'In-text: (Smith, 2023). Reference: Smith, J. (2023). Title. Publisher. Aim for at least 1 citation per paragraph.' },
+      { title: 'Harvard vs Chicago vs MLA', desc: 'Harvard: (Smith 2023, p.45). Chicago: footnote 1 Smith, Title (Place: Publisher, 2023), 45. MLA: (Smith 45).' },
+      { title: 'Common Errors', desc: 'There/their/they\'re. Its/it\'s. Affect (verb) / Effect (noun). Then/than. Your/you\'re. Double negatives. Avoid "According to me" — use "In my opinion".' },
+      { title: 'Academic Tone', desc: 'Avoid contractions (don\'t → do not). Avoid slang. Avoid first person unless required. Use formal verbs: "demonstrate" not "show", "utilize" not "use".' },
+      { title: 'Connectors Cheat Sheet', desc: 'Addition: Furthermore, Moreover, In addition. Contrast: However, Nevertheless, On the other hand. Cause: Therefore, Consequently, Thus. Example: For instance, Such as.' },
+      { title: 'Editing Checklist', desc: 'Read aloud. Check each paragraph for one clear idea. Verify every citation. Remove repeated words. Simplify long sentences. Proofread twice.' },
+      { title: 'Final Review', desc: 'Master PEEL, structure, referencing, and tone. Practice one essay per week. Read academic papers to absorb style.' }
+    ]
+  },
+  {
+    id: 'english', title: 'English Full Book', icon: '🇬🇧', color: '#a78bfa',
+    slides: [{ title: 'Open Full Book', desc: 'Click to open the 12-chapter English course — grammar A–Z, 500+ academic words, and academic phrases.' }]
+  },
+  {
+    id: 'lifescience', title: 'Life Science', icon: '🧬', color: '#0bbd8a',
+    slides: [
+      { title: 'Introduction', desc: 'Life Science is the study of living organisms — from microscopic bacteria to the largest whales — and how they interact with each other and their environment.' },
+      { title: 'The Cell', desc: 'The cell is the basic unit of life. Prokaryotic cells (bacteria) lack a nucleus. Eukaryotic cells (plants, animals, fungi) have a nucleus and organelles.' },
+      { title: 'DNA & Genetics', desc: 'DNA carries genetic instructions. Genes are segments of DNA. Heredity follows Mendelian patterns: dominant, recessive, and co-dominant traits.' },
+      { title: 'Evolution', desc: 'Species change over time through natural selection. Darwin\'s finches and antibiotic-resistant bacteria are classic examples.' },
+      { title: 'Human Body Systems', desc: 'Circulatory, respiratory, digestive, nervous, endocrine, and immune systems — each with specialized organs and functions.' },
+      { title: 'Ecology', desc: 'Organisms interact in ecosystems. Energy flows through food chains. Biodiversity keeps ecosystems resilient.' },
+      { title: 'Microbiology', desc: 'Bacteria, viruses, fungi, and protists. Some cause disease; many are essential for life (gut bacteria, decomposers).' },
+      { title: 'Botany', desc: 'Plants use photosynthesis to convert sunlight into energy. They produce oxygen and form the base of most food chains.' },
+      { title: 'Biotechnology', desc: 'Genetic engineering, CRISPR, cloning, and vaccines. Biotechnology is transforming medicine and agriculture.' },
+      { title: 'Final Review', desc: 'Life Science connects cells, genetics, evolution, ecology, and biotechnology. Practice diagrams — they carry marks.' }
+    ]
+  },
+  {
+    id: 'math', title: 'Mathematics', icon: '➗', color: '#ffb300',
+    slides: [
+      { title: 'Numbers & Operations', desc: 'Natural numbers, integers, rationals, irrationals, and reals. Learn order of operations (BODMAS/PEMDAS). Practice fractions and decimals daily.' },
+      { title: 'Algebra Basics', desc: 'Variables, expressions, equations, and inequalities. Solve for x. Factorize. Expand brackets. Master linear equations first.' },
+      { title: 'Quadratic Equations', desc: 'ax² + bx + c = 0. Solve by factoring, completing the square, or the quadratic formula: x = (-b ± √(b²-4ac)) / 2a.' },
+      { title: 'Functions & Graphs', desc: 'A function maps input to output. Learn linear, quadratic, cubic, exponential, and logarithmic graphs. Understand domain and range.' },
+      { title: 'Geometry', desc: 'Points, lines, angles, triangles, circles, polygons. Pythagoras: a² + b² = c². Area and perimeter formulas. Angle sum of triangle = 180°.' },
+      { title: 'Trigonometry', desc: 'Sine, cosine, tangent. SOH-CAH-TOA. Unit circle. Solve triangles with the sine rule and cosine rule. Learn common identities.' },
+      { title: 'Calculus — Derivatives', desc: 'A derivative measures rate of change. Power rule: d/dx(xⁿ) = nxⁿ⁻¹. Product, quotient, and chain rules. Find maxima and minima.' },
+      { title: 'Calculus — Integration', desc: 'Integration is the reverse of differentiation. Find area under curves. Learn substitution and integration by parts.' },
+      { title: 'Statistics & Probability', desc: 'Mean, median, mode, range. Standard deviation. Probability = favourable / total. Learn tree diagrams and Venn diagrams.' },
+      { title: 'Final Review', desc: 'Maths is a skill, not a fact. Practice every day. Explain each step out loud. Redo past papers under timed conditions.' }
+    ]
+  },
+  {
+    id: 'physics', title: 'Physics', icon: '⚛️', color: '#a78bfa',
+    slides: [
+      { title: 'Introduction', desc: 'Physics studies matter, energy, motion, and forces. It explains everything from falling apples to black holes.' },
+      { title: 'Kinematics', desc: 'Motion in a straight line. v = u + at. s = ut + ½at². v² = u² + 2as. Understand displacement, velocity, and acceleration.' },
+      { title: 'Newton\'s Laws', desc: '1) An object stays at rest or in uniform motion unless acted on by a force. 2) F = ma. 3) Every action has an equal and opposite reaction.' },
+      { title: 'Work, Energy & Power', desc: 'Work = force × distance. Kinetic energy = ½mv². Potential energy = mgh. Power = work / time. Energy is conserved.' },
+      { title: 'Waves & Sound', desc: 'Wave speed = frequency × wavelength. Sound travels through media. Learn reflection, refraction, and interference.' },
+      { title: 'Light & Optics', desc: 'Light behaves as a wave and a particle. Lenses and mirrors form images. Learn the laws of reflection and refraction.' },
+      { title: 'Electricity', desc: 'Ohm\'s Law: V = IR. Series and parallel circuits. Power = VI. Learn about current, voltage, and resistance.' },
+      { title: 'Magnetism', desc: 'Moving charges create magnetic fields. Motors use electromagnetism. Learn about induction and transformers.' },
+      { title: 'Thermodynamics', desc: 'Heat flows from hot to cold. First law: energy is conserved. Second law: entropy increases.' },
+      { title: 'Final Review', desc: 'Physics requires understanding, not memorizing. Draw diagrams. Track units. Practice numerical problems daily.' }
+    ]
+  },
+  {
+    id: 'chemistry', title: 'Chemistry', icon: '🧪', color: '#e53935',
+    slides: [
+      { title: 'Introduction', desc: 'Chemistry studies matter — its composition, structure, properties, and how it changes. It is the bridge between physics and biology.' },
+      { title: 'Atoms & Elements', desc: 'Atoms have protons, neutrons, and electrons. The periodic table organises 118 elements by atomic number and properties.' },
+      { title: 'Chemical Bonds', desc: 'Ionic bonds transfer electrons. Covalent bonds share electrons. Metallic bonds have delocalized electrons.' },
+      { title: 'Chemical Reactions', desc: 'Reactants → Products. Balance equations. Types: synthesis, decomposition, single replacement, double replacement, combustion.' },
+      { title: 'Acids & Bases', desc: 'pH scale 0–14. Acids give H⁺. Bases give OH⁻. Neutralization: acid + base → salt + water.' },
+      { title: 'Organic Chemistry', desc: 'Carbon-based compounds. Alkanes, alkenes, alkynes, alcohols, acids. Learn functional groups and naming rules.' },
+      { title: 'Stoichiometry', desc: 'Use mole ratios from balanced equations to calculate masses and volumes. Avogadro\'s number: 6.022 × 10²³.' },
+      { title: 'Thermochemistry', desc: 'Exothermic reactions release heat. Endothermic reactions absorb heat. Learn enthalpy and Hess\'s Law.' },
+      { title: 'Lab Safety', desc: 'Goggles, gloves, lab coat. Never taste chemicals. Read labels. Report spills. Know the location of the eyewash station.' },
+      { title: 'Final Review', desc: 'Balance every equation. Learn the periodic table trends. Practice stoichiometry. Chemistry rewards careful, methodical work.' }
+    ]
+  }
+];
+
+/* ══════════════════════════════════════════════════════════
+   BOOKSHELF RENDERING
+   ══════════════════════════════════════════════════════════ */
+function renderBookshelf() {
+  const g = document.getElementById('shelfGrid');
+  g.innerHTML = '';
+  BOOKS.forEach(b => {
+    const el = document.createElement('button');
+    el.className = 'book';
+    el.innerHTML = `
+      <div class="book-cover" style="background:linear-gradient(160deg,${b.color}cc,${b.color}55)">${b.icon}</div>
+      <div class="book-info">
+        <h4>${b.title}</h4>
+        <span>${b.slides.length} slides • Built-in</span>
+      </div>`;
+    el.onclick = () => openBuiltInBook(b.id);
+    g.appendChild(el);
+  });
+}
+
+function openBookPicker() {
+  const body = document.getElementById('bookPickerBody');
+  let html = '<div style="font-size:11px;color:var(--muted);padding:6px 8px 8px;text-transform:uppercase;letter-spacing:0.06em;font-weight:700">Book Shelf</div>';
+  BOOKS.forEach(b => {
+    html += `<button class="modal-book-row" onclick="openBuiltInBook('${b.id}');closeBookPicker()">
+      <div class="modal-book-ico" style="background:${b.color}">${b.icon}</div>
+      <div><b>${b.title}</b><span>${b.slides.length} slides</span></div>
+    </button>`;
+  });
+  html += '<div style="font-size:11px;color:var(--muted);padding:14px 8px 8px;text-transform:uppercase;letter-spacing:0.06em;font-weight:700">My Library</div>';
+  if (myLibrary.length === 0) {
+    html += '<div style="font-size:12px;color:var(--muted);padding:0 8px">No uploads yet</div>';
+  } else {
+    myLibrary.forEach((f, i) => {
+      html += `<button class="modal-book-row" onclick="openUploadedPdf(${i});closeBookPicker()">
+        <div class="modal-book-ico" style="background:#e53935">📕</div>
+        <div><b>${f.name}</b><span>${f.doc ? f.doc.numPages + ' pages' : 'Loading...'}</span></div>
+      </button>`;
+    });
+  }
+  body.innerHTML = html;
+  document.getElementById('bookPickerBackdrop').classList.add('show');
+}
+function closeBookPicker() {
+  document.getElementById('bookPickerBackdrop').classList.remove('show');
+}
+
+/* ══════════════════════════════════════════════════════════
+   SLIDES VIEWER
+   ══════════════════════════════════════════════════════════ */
+let mode = 'slides';
+let currentBook = BOOKS[0];
+let curSlide = 1;
+
+function openBuiltInBook(id) {
+  if (id === 'english') { goTo('english'); loadEnglish(0); return; }
+  if (id === 'writing') { goTo('writing'); return; }
+  currentBook = BOOKS.find(b => b.id === id) || BOOKS[0];
+  mode = 'slides';
+  curSlide = 1;
+  document.getElementById('pdfViewport').style.display = 'none';
+  document.getElementById('slideFrame').style.display = 'flex';
+  document.getElementById('docIco').textContent = '📄';
+  document.getElementById('docTitleTxt').textContent = currentBook.title + '.pdf';
+  document.getElementById('docSubTxt').textContent = 'Book Shelf • ' + currentBook.slides.length + ' slides';
+  document.getElementById('pageRange').max = currentBook.slides.length;
+  renderSlide();
+  goTo('documents');
+}
+
+function renderSlide() {
+  const s = currentBook.slides[curSlide - 1];
+  if (!s) return;
+  const f = document.getElementById('slideFrame');
+  let h = `<div class="slide-top"><span>${currentBook.title}</span><span>Slide ${curSlide}/${currentBook.slides.length}</span></div><div class="slide-body">`;
+  if (s.type === 'grid' && s.grid) {
+    h += `<h2>${s.title}</h2><p class="desc">${s.desc}</p><div class="cards">`;
+    s.grid.forEach(g => {
+      h += `<div class="ecard"><div class="eico" style="background:${g.color}">${g.icon}</div><div class="e-title">${g.title}</div><div class="e-desc">${g.desc}</div></div>`;
+    });
+    h += `</div>`;
+  } else {
+    h += `<h2>${s.title}</h2><p class="desc">${s.desc}</p>`;
+  }
+  h += `</div>`;
+  f.innerHTML = h;
+  updatePageUI(curSlide, currentBook.slides.length);
+}
+
+function updatePageUI(c, t) {
+  document.getElementById('curTop').textContent = c;
+  document.getElementById('totTop').textContent = t;
+  document.getElementById('curBot').textContent = c + ' / ' + t;
+  document.getElementById('pdfBarLabel').textContent = currentBook.title;
+  document.getElementById('pdfBar').style.width = (c / t * 100) + '%';
+  document.getElementById('pdfCount').textContent = c + '/' + t;
+  document.getElementById('pageRange').max = t;
+  document.getElementById('pageRange').value = c;
+  document.getElementById('prevBtn').style.opacity = c <= 1 ? '.35' : '1';
+  document.getElementById('nextBtn').style.opacity = c >= t ? '.35' : '1';
+}
+
+function nextPage() { mode === 'slides' ? nextSlide() : nextPdfPage(); }
+function prevPage() { mode === 'slides' ? prevSlide() : prevPdfPage(); }
+function goToPage(v) { mode === 'slides' ? goToSlide(v) : goToPdfPage(v); }
+function nextSlide() { if (curSlide < currentBook.slides.length) { curSlide++; renderSlide(); } }
+function prevSlide() { if (curSlide > 1) { curSlide--; renderSlide(); } }
+function goToSlide(v) { curSlide = Math.max(1, Math.min(parseInt(v) || 1, currentBook.slides.length)); renderSlide(); }
+
+/* ══════════════════════════════════════════════════════════
+   PDF SYSTEM
+   ══════════════════════════════════════════════════════════ */
+pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
+let myLibrary = [];
+let currentPdf = null;
+let pdfPage = 1;
+
+async function handleUpload(e) {
+  const files = Array.from(e.target.files || []);
+  for (const file of files) {
+    if (file.type !== 'application/pdf') continue;
+    const url = URL.createObjectURL(file);
+    const entry = { name: file.name, url, doc: null, numPages: 1 };
+    myLibrary.push(entry);
+    renderMyLibrary();
+    try {
+      const doc = await pdfjsLib.getDocument(url).promise;
+      entry.doc = doc;
+      entry.numPages = doc.numPages;
+      renderMyLibrary();
+    } catch (err) {
+      console.error('PDF load error:', err);
+    }
+  }
+  e.target.value = '';
+}
+
+function renderMyLibrary() {
+  const w = document.getElementById('mylibList');
+  if (myLibrary.length === 0) {
+    w.innerHTML = '<div style="font-size:12px;color:var(--muted);padding:8px">No uploads yet — add PDF above.</div>';
+    return;
+  }
+  w.innerHTML = '';
+  myLibrary.forEach((f, i) => {
+    const row = document.createElement('div');
+    row.className = 'mylib-item';
+    row.innerHTML = `
+      <div class="pdf-icon">PDF</div>
+      <div style="flex:1;min-width:0">
+        <b style="font-size:13px;display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${f.name}</b>
+        <span style="font-size:11px;color:var(--muted)">${f.doc ? f.doc.numPages + ' pages' : 'Loading...'}</span>
+      </div>
+      <button onclick="openUploadedPdf(${i})">Open</button>`;
+    w.appendChild(row);
+  });
+}
+
+async function openUploadedPdf(i) {
+  const f = myLibrary[i];
+  if (!f) return;
+  if (!f.doc) { alert('Still loading PDF, wait a sec'); return; }
+  currentPdf = f;
+  mode = 'pdf';
+  pdfPage = 1;
+  document.getElementById('slideFrame').style.display = 'none';
+  document.getElementById('pdfViewport').style.display = 'flex';
+  document.getElementById('docIco').textContent = '📕';
+  document.getElementById('docTitleTxt').textContent = f.name;
+  document.getElementById('docSubTxt').textContent = 'My Library • ' + f.numPages + ' pages';
+  document.getElementById('pageRange').max = f.numPages;
+  await renderPdfPage();
+  goTo('documents');
+}
+
+async function renderPdfPage() {
+  const vp = document.getElementById('pdfViewport');
+  const page = await currentPdf.doc.getPage(pdfPage);
+  const v = page.getViewport({ scale: 1.3 });
+  let canvas = document.getElementById('pdfCanvas');
+  if (!canvas) {
+    canvas = document.createElement('canvas');
+    canvas.id = 'pdfCanvas';
+    vp.innerHTML = '';
+    vp.appendChild(canvas);
+  }
+  canvas.width = v.width;
+  canvas.height = v.height;
+  await page.render({ canvasContext: canvas.getContext('2d'), viewport: v }).promise;
+  updatePageUI(pdfPage, currentPdf.numPages);
+  document.getElementById('pdfBarLabel').textContent = currentPdf.name;
+}
+
+function nextPdfPage() { if (pdfPage < currentPdf.numPages) { pdfPage++; renderPdfPage(); } }
+function prevPdfPage() { if (pdfPage > 1) { pdfPage--; renderPdfPage(); } }
+function goToPdfPage(v) { pdfPage = Math.max(1, Math.min(parseInt(v) || 1, currentPdf.numPages)); renderPdfPage(); }
+
+/* ══════════════════════════════════════════════════════════
+   DICTIONARY + SYNONYMS
+   ══════════════════════════════════════════════════════════ */
+async function lookupDictionary() {
+  const w = document.getElementById('lookupInput').value.trim();
+  const b = document.getElementById('lookupResults');
+  if (!w) return;
+  b.classList.add('show');
+  b.innerHTML = '<div style="color:var(--muted)">Searching dictionary...</div>';
+  try {
+    const r = await fetch('https://api.dictionaryapi.dev/api/v2/entries/en/' + encodeURIComponent(w));
+    if (!r.ok) throw 0;
+    const d = await r.json();
+    const e = d[0];
+    let h = `<div class="lk-word">${e.word}</div>${e.phonetic ? `<div class="lk-phon">${e.phonetic}</div>` : ''}`;
+    e.meanings.slice(0, 3).forEach(m => {
+      h += `<div class="lk-pos">${m.partOfSpeech}</div>`;
+      m.definitions.slice(0, 2).forEach(def => {
+        h += `<div class="lk-def">• ${def.definition}${def.example ? `<br><i style="color:var(--muted)">Eg: ${def.example}</i>` : ''}</div>`;
+      });
+    });
+    b.innerHTML = h;
+  } catch {
+    b.innerHTML = `<div style="color:#ff8a80">No dictionary entry for "${w}". Try synonyms.</div>`;
+  }
+}
+
+async function lookupSynonyms() {
+  const w = document.getElementById('lookupInput').value.trim();
+  const b = document.getElementById('lookupResults');
+  if (!w) return;
+  b.classList.add('show');
+  b.innerHTML = '<div style="color:var(--muted)">Searching synonyms...</div>';
+  try {
+    const r = await fetch('https://api.datamuse.com/words?rel_syn=' + encodeURIComponent(w));
+    const d = await r.json();
+    if (!d.length) { b.innerHTML = `<div style="color:#ff8a80">No synonyms for "${w}".</div>`; return; }
+    let h = `<div class="lk-word">Synonyms for "${w}"</div><div style="margin-top:8px">`;
+    d.slice(0, 20).forEach(x => {
+      h += `<span class="lk-chip" style="cursor:pointer" onclick="document.getElementById('lookupInput').value='${x.word}';lookupDictionary()">${x.word}</span>`;
+    });
+    h += `</div><div style="margin-top:8px;font-size:11px;color:var(--muted)">Click any synonym to define it</div>`;
+    b.innerHTML = h;
+  } catch {
+    b.innerHTML = '<div style="color:#ff8a80">Synonym service unreachable. Check internet.</div>';
+  }
+}
+
+function clearLookup() {
+  document.getElementById('lookupResults').classList.remove('show');
+  document.getElementById('lookupInput').value = '';
+}
+
+/* ══════════════════════════════════════════════════════════
+   MUSIC PLAYER
+   ══════════════════════════════════════════════════════════ */
+let actx = null;
+const sounds = {
+  focus: { playing: false, vol: 0.5, kind: 'synth', nodes: null },
+  rain: { playing: false, vol: 0.5, kind: 'audio', el: null, src: 'https://actions.google.com/sounds/v1/weather/rain_on_roof.ogg' },
+  wind: { playing: false, vol: 0.5, kind: 'audio', el: null, src: 'https://actions.google.com/sounds/v1/weather/wind.ogg' }
+};
+
+function ensureCtx() {
+  if (!actx) actx = new (window.AudioContext || window.webkitAudioContext)();
+  if (actx.state === 'suspended') actx.resume();
+  return actx;
+}
+
+function startFocusSynth() {
+  if (sounds.focus.nodes) return;
+  const ctx = ensureCtx();
+  const master = ctx.createGain();
+  master.gain.value = sounds.focus.vol * 0.18;
+  const filter = ctx.createBiquadFilter();
+  filter.type = 'lowpass';
+  filter.frequency.value = 900;
+  master.connect(filter);
+  filter.connect(ctx.destination);
+  const freqs = [130.81, 164.81, 196, 261.63];
+  const oscs = freqs.map(f => {
+    const o = ctx.createOscillator();
+    o.type = 'sine';
+    o.frequency.value = f;
+    const g = ctx.createGain();
+    g.gain.value = 0.9 / freqs.length;
+    o.connect(g);
+    g.connect(master);
+    o.start();
+    return o;
+  });
+  const lfo = ctx.createOscillator();
+  lfo.frequency.value = 0.05;
+  const lfoGain = ctx.createGain();
+  lfoGain.gain.value = 260;
+  lfo.connect(lfoGain);
+  lfoGain.connect(filter.frequency);
+  lfo.start();
+  sounds.focus.nodes = { master, oscs, lfo };
+}
+
+function stopFocusSynth() {
+  const n = sounds.focus.nodes;
+  if (!n) return;
+  n.oscs.forEach(o => { try { o.stop(); } catch {} });
+  try { n.lfo.stop(); } catch {}
+  sounds.focus.nodes = null;
+}
+
+function toggleSound(k) {
+  const s = sounds[k];
+  s.playing = !s.playing;
+  const btn = document.getElementById('toggle-' + k);
+  btn.classList.toggle('on', s.playing);
+  btn.textContent = s.playing ? '⏸' : '▶';
+  if (s.kind === 'synth') {
+    if (s.playing) startFocusSynth();
+    else stopFocusSynth();
+  } else {
+    if (!s.el) {
+      s.el = new Audio(s.src);
+      s.el.loop = true;
+      s.el.volume = s.vol;
+      s.el.addEventListener('error', () => {
+        console.warn('Audio source failed:', s.src);
+      });
+    }
+    if (s.playing) s.el.play().catch(err => console.warn('Play blocked:', err));
+    else s.el.pause();
+  }
+}
+
+function setVol(k, v) {
+  const s = sounds[k];
+  s.vol = parseFloat(v);
+  if (s.kind === 'synth' && s.nodes) s.nodes.master.gain.value = s.vol * 0.18;
+  if (s.kind === 'audio' && s.el) s.el.volume = s.vol;
+}
+
+let userTracks = [];
+function handleMusicUpload(e) {
+  Array.from(e.target.files || []).forEach(file => {
+    if (!file.type.startsWith('audio/')) return;
+    const url = URL.createObjectURL(file);
+    const el = new Audio(url);
+    el.loop = true;
+    el.volume = 0.5;
+    userTracks.push({ name: file.name, url, el, playing: false, vol: 0.5 });
+  });
+  e.target.value = '';
+  renderUserTracks();
+}
+
+function renderUserTracks() {
+  const w = document.getElementById('userTracksList');
+  w.innerHTML = '';
+  userTracks.forEach((t, i) => {
+    const row = document.createElement('div');
+    row.className = 'snd-row';
+    row.innerHTML = `
+      <div class="snd-ico" style="background:#a78bfa">🎧</div>
+      <div class="snd-info"><b title="${t.name}">${t.name}</b><span>Your upload</span></div>
+      <input type="range" class="snd-vol" min="0" max="1" step="0.01" value="${t.vol}" oninput="setUserTrackVol(${i},this.value)">
+      <div class="snd-toggle ${t.playing ? 'on' : ''}" onclick="toggleUserTrack(${i})">${t.playing ? '⏸' : '▶'}</div>
+      <div class="snd-remove" onclick="removeUserTrack(${i})">✕</div>`;
+    w.appendChild(row);
+  });
+}
+
+function toggleUserTrack(i) {
+  const t = userTracks[i];
+  t.playing = !t.playing;
+  if (t.playing) t.el.play().catch(() => {});
+  else t.el.pause();
+  renderUserTracks();
+}
+
+function setUserTrackVol(i, v) {
+  userTracks[i].vol = parseFloat(v);
+  userTracks[i].el.volume = userTracks[i].vol;
+}
+
+function removeUserTrack(i) {
+  const t = userTracks[i];
+  t.el.pause();
+  URL.revokeObjectURL(t.url);
+  userTracks.splice(i, 1);
+  renderUserTracks();
+}
+
+/* ══════════════════════════════════════════════════════════
+   WRITING GUIDE
+   ══════════════════════════════════════════════════════════ */
+const writingCards = [
+  {
+    title: '1. PEEL Paragraph (80–120 words)',
+    content: `<b>P — Point:</b> One clear idea per paragraph. Start with "One major cause is..."<br>
+    <b>E — Evidence:</b> "According to Smith (2023), 60%..."<br>
+    <b>E — Explain:</b> "This suggests that..."<br>
+    <b>L — Link:</b> "Therefore, this leads to..."<br><br>
+    <div style="background:#0a1830;padding:10px;border-radius:10px;line-height:1.7">
+    <b>Example:</b><br>One major cause of student stress is poor time management. According to the WHO (2024), 60% of university students report high stress due to procrastination. This suggests that without planning, academic workload becomes overwhelming. Therefore, mastering time management is essential for academic success.</div>`
+  },
+  {
+    title: '2. Introduction Formula (4 sentences)',
+    content: `1. <b>Hook:</b> Question or shocking stat — "Did you know 70% of students..."<br>
+    2. <b>Context:</b> Background of the topic.<br>
+    3. <b>Thesis:</b> "This essay argues that..."<br>
+    4. <b>Outline:</b> "Firstly,... Secondly,... Finally..."<br><br>
+    <div style="background:#0a1830;padding:10px;border-radius:10px;line-height:1.7">
+    <b>Template:</b><br>In recent years, [topic] has become increasingly important. While some argue [counter], this essay will argue [your thesis]. This essay will first discuss [point 1], then [point 2], and finally [point 3].</div>`
+  },
+  {
+    title: '3. Essay Structure',
+    content: `<b>Intro:</b> 10% of word count.<br>
+    <b>Body 1:</b> Strongest point — 25%.<br>
+    <b>Body 2:</b> Second point + counter-argument — 25%.<br>
+    <b>Body 3:</b> Example or case study — 25%.<br>
+    <b>Conclusion:</b> 15% — summarize, no new info, end with a final thought.<br><br>
+    <b>Connectors:</b> Furthermore, However, In contrast, Consequently, For instance, Therefore.`
+  },
+  {
+    title: '4. Referencing — APA vs Harvard vs Chicago vs MLA',
+    content: `<b>APA (7th) — In-text:</b> (Smith, 2023) or Smith (2023) argues...<br>
+    <b>Reference:</b> Smith, J. (2023). <i>Title</i>. Publisher.<br><br>
+    <b>Harvard — In-text:</b> (Smith 2023, p.45).<br>
+    <b>Reference:</b> Smith, J. 2023, <i>Title</i>, Publisher, Place.<br><br>
+    <b>Chicago (Notes):</b> Footnote <sup>1</sup> John Smith, <i>Title</i> (Place: Publisher, 2023), 45.<br>
+    <b>Bibliography:</b> Smith, John. <i>Title</i>. Place: Publisher, 2023.<br><br>
+    <b>MLA — In-text:</b> (Smith 45).<br>
+    <b>Works Cited:</b> Smith, John. <i>Title</i>. Publisher, 2023.<br><br>
+    <div style="background:#0a1830;padding:10px;border-radius:10px">💡 Always cite! Aim for at least one citation per paragraph.</div>`
+  },
+  {
+    title: '5. Academic Tone',
+    content: `Avoid contractions (don't → do not).<br>
+    Avoid slang and informal phrases.<br>
+    Avoid first person unless the assignment requires it.<br>
+    Use formal verbs: <i>demonstrate</i> not <i>show</i>, <i>utilize</i> not <i>use</i>, <i>obtain</i> not <i>get</i>.<br>
+    Keep sentences clear and varied in length.<br>
+    Define technical terms the first time you use them.`
+  },
+  {
+    title: '6. Editing Checklist',
+    content: `✅ Read your essay aloud — awkward sentences become obvious.<br>
+    ✅ Check each paragraph for ONE clear idea.<br>
+    ✅ Verify every citation has a matching reference.<br>
+    ✅ Remove repeated words and filler phrases.<br>
+    ✅ Simplify long sentences into two shorter ones.<br>
+    ✅ Proofread twice — once for grammar, once for content.`
+  }
+];
+
+function renderWriting() {
+  const grid = document.getElementById('writingGrid');
+  if (!grid) return;
+  grid.innerHTML = writingCards.map(c => `
+    <div class="card">
+      <h3 style="font-size:14px;font-weight:700;margin-bottom:8px">${c.title}</h3>
+      <div style="font-size:12.5px;line-height:1.7;color:var(--text)">${c.content}</div>
+    </div>
+  `).join('');
+}
+
+/* ══════════════════════════════════════════════════════════
+   ENGLISH FULL BOOK
+   ══════════════════════════════════════════════════════════ */
+const englishChapters = [
+  { title: '1. Alphabet & Sounds', content: `<b>ALPHABET:</b> 26 letters. Vowels: A, E, I, O, U. Consonants: the rest.<br><br><b>SOUNDS:</b> English has 44 sounds but only 26 letters. Example: the "th" in <i>this</i> differs from the "th" in <i>think</i>.<br><br><b>PRACTICE:</b> Say Sheep vs Ship, Full vs Fool, Ship vs Chip.` },
+  { title: '2. Nouns & Articles', content: `<b>COUNTABLE:</b> a book → many books.<br><b>UNCOUNTABLE:</b> much water, much information (no plural).<br><br><b>ARTICLES:</b> A (any) — a book. An (before vowel sound) — an hour. The (specific) — the book you gave me.<br><br><b>RULE:</b> General plurals take no article: "Books are useful."` },
+  { title: '3. Tenses Full', content: `<b>Present:</b> I study (habit), I am studying (now), I have studied (result).<br><b>Past:</b> I studied (yesterday), I was studying (interrupted), I had studied (before past).<br><b>Future:</b> I will study, I am going to study, I will be studying.<br><br><b>PERFECT = have + past participle.</b><br><b>CONTINUOUS = be + -ing.</b>` },
+  { title: '4. Verbs & Modals', content: `<b>MODALS:</b> can (ability), could (past ability), may (possibility), might (small possibility), must (necessity), should (advice), will (future).<br><br><b>Examples:</b> You must cite sources. You should paraphrase. You can use StudyPad-Library.` },
+  { title: '5. Academic Vocabulary — Top 100', content: `Analyze, approach, area, assess, assume, authority, available, benefit, concept, consistent, constant, context, contract, create, data, define, derive, distribution, economic, environment, established, estimate, evidence, export, factor, finance, formula, function, identified, income, indicate, individual, interpretation, involved, issue, labour, legal, legislation, major, method, occur, percent, period, policy, principle, procedure, process, required, research, response, role, section, sector, significant, similar, source, specific, structure, theory, variable.<br><br><b>TASK:</b> Use 5 new words in your next assignment.` },
+  { title: '6. Prepositions', content: `<b>TIME:</b> at 7pm, on Monday, in July, in 2024.<br><b>PLACE:</b> at the door, on the table, in the room.<br><b>DIRECTION:</b> to, into, onto, towards.<br><br><b>Common mistakes:</b> Interested IN, Responsible FOR, Dependent ON, Good AT.` },
+  { title: '7. Sentence Structure', content: `<b>Simple:</b> Students study.<br><b>Compound:</b> Students study, but they also work (FANBOYS: For, And, Nor, But, Or, Yet, So).<br><b>Complex:</b> Although tired, students study.<br><b>Compound-Complex:</b> Although tired, students study, and they succeed.` },
+  { title: '8. Connectors', content: `<b>ADDITION:</b> Furthermore, Moreover, In addition.<br><b>CONTRAST:</b> However, Nevertheless, On the other hand, In contrast.<br><b>CAUSE:</b> Therefore, Consequently, As a result, Thus.<br><b>EXAMPLE:</b> For instance, For example, Such as.<br><b>SEQUENCE:</b> Firstly, Secondly, Finally.` },
+  { title: '9. Passive Voice', content: `<b>Active:</b> The researcher conducted the study. (Strong, clear.)<br><b>Passive:</b> The study was conducted. (Formal, for methods sections.)<br><br><b>Use passive when:</b> The actor is unknown or unimportant. Scientific writing often prefers passive.` },
+  { title: '10. Conditionals', content: `<b>Zero:</b> If you heat water, it boils. (Fact.)<br><b>First:</b> If you study, you will pass. (Real future.)<br><b>Second:</b> If you studied, you would pass. (Unreal.)<br><b>Third:</b> If you had studied, you would have passed. (Past regret.)<br><b>Mixed:</b> If you had studied, you would be passing now.` },
+  { title: '11. Common Errors (SA)', content: `<b>Top errors:</b><br>1. There / Their / They're<br>2. Its / It's<br>3. Much / Many, Less / Fewer<br>4. Affect (verb) / Effect (noun)<br>5. Then / Than<br>6. Lose / Loose<br>7. Your / You're<br>8. To / Too / Two<br>9. "More better" → better<br>10. "According to me" → "In my opinion"<br>11. Double negative: "I don't have no time" → "I have no time"` },
+  { title: '12. Academic Phrases', content: `<b>INTRO:</b> According to..., It is argued that..., This essay will...<br><b>BODY:</b> For instance, This suggests that, In contrast.<br><b>CONCLUSION:</b> In conclusion, To summarize, This essay has argued...<br><br>
+  <div style="background:#0a1830;padding:10px;border-radius:10px;margin-top:10px">
+  <b>Full Template:</b><br>One of the main arguments is that [point]. According to [author] (2023), [evidence]. This suggests that [explanation]. Therefore, [link].</div>` }
+];
+
+function loadEnglish(idx) {
+  const tabs = document.getElementById('engTabs');
+  tabs.innerHTML = englishChapters.map((c, i) =>
+    `<button class="lk-btn ${i === idx ? 'primary' : ''}" onclick="loadEnglish(${i})" style="font-size:11px">${c.title}</button>`
+  ).join('');
+  document.getElementById('engContent').innerHTML = `
+    <h3 style="font-size:16px;margin-bottom:10px">${englishChapters[idx].title}</h3>
+    <div style="line-height:1.8">${englishChapters[idx].content}</div>
+    <div style="margin-top:14px;display:flex;gap:8px;flex-wrap:wrap">
+      <button class="lk-btn primary" onclick="document.getElementById('lookupInput').value='';goTo('documents')">🔎 Look up a word →</button>
+    </div>`;
+}
+
+/* ══════════════════════════════════════════════════════════
+   INIT
+   ══════════════════════════════════════════════════════════ */
+renderBookshelf();
+renderWriting();
+(function initDoc() {
+  currentBook = BOOKS[0];
+  renderSlide();
+  loadEnglish(0);
+})();
+renderMyLibrary();
+</script>
+</body>
+</html>
