@@ -74,7 +74,7 @@ input,textarea,select{font-family:inherit;color:inherit}
 .shooting.s3{top:70%;left:40%;width:100px;animation:shoot 7s linear infinite 5s}
 @keyframes shoot{0%{opacity:0;transform:translate(0,0) rotate(-35deg)}5%{opacity:1}60%{opacity:1}100%{opacity:0;transform:translate(-450px,320px) rotate(-35deg)}}
 
-/* TOPBAR — FIXED */
+/* TOPBAR */
 .topbar{position:fixed;top:0;left:0;right:0;height:var(--header-h);background:rgba(9,18,36,0.72);backdrop-filter:blur(20px) saturate(180%);-webkit-backdrop-filter:blur(20px) saturate(180%);border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;padding:0 16px;z-index:100;box-shadow:0 4px 24px rgba(0,0,0,0.4)}
 .brand{display:flex;align-items:center;gap:12px}
 .logo-img{width:42px;height:42px;border-radius:10px;object-fit:cover;border:1px solid var(--border)}
@@ -91,10 +91,10 @@ input,textarea,select{font-family:inherit;color:inherit}
 .icon-btn{width:36px;height:36px;border-radius:50%;background:var(--panel);border:1px solid var(--border);display:grid;place-items:center;transition:0.2s;cursor:pointer}
 .icon-btn:hover{background:#122040;border-color:#2a4a86;transform:translateY(-1px)}
 
-/* MAIN LAYOUT — FIXED */
+/* MAIN LAYOUT */
 .main{position:fixed;top:var(--header-h);left:0;right:0;bottom:0;display:flex;z-index:1}
 
-/* SIDEBAR — FIXED */
+/* SIDEBAR */
 .sidebar{
   width:var(--sidebar-w);
   background:rgba(7,13,26,0.82);
@@ -116,7 +116,7 @@ input,textarea,select{font-family:inherit;color:inherit}
 .nav-item:hover{background:var(--panel);color:var(--text)}
 .nav-item.active{background:linear-gradient(135deg,#4f7bff,#6b8fff);color:#fff;box-shadow:0 6px 20px rgba(79,123,255,0.4)}
 
-/* CONTENT — SCROLLABLE */
+/* CONTENT */
 .content{
   flex:1;
   min-width:0;
@@ -228,6 +228,10 @@ input,textarea,select{font-family:inherit;color:inherit}
 .modal-book-row b{font-size:13px;font-weight:600;display:block}
 .modal-book-row span{font-size:11px;color:var(--muted)}
 
+.ai-card{background:linear-gradient(145deg,#0f1d35,#0a1428);border:1px solid #2a4a86}
+.ai-badge{display:inline-block;background:#1f3a6e;padding:2px 8px;border-radius:20px;font-size:10px;font-weight:700;color:#b8ccff;margin-left:6px}
+.summary-output{background:#0a1830;border-radius:10px;padding:12px;font-size:12.5px;line-height:1.7;max-height:220px;overflow:auto;margin-top:8px;white-space:pre-wrap}
+
 @media(max-width:1100px){.doc-layout{grid-template-columns:1fr}.cards{grid-template-columns:repeat(2,1fr)}}
 @media(max-width:700px){
   .brand>span{display:none}
@@ -305,6 +309,25 @@ input,textarea,select{font-family:inherit;color:inherit}
         </div>
 
         <div class="right">
+          <!-- AI SUMMARIZER CARD -->
+          <div class="card ai-card">
+            <div class="card-head">🧠 AI Summarizer · Quiz · Flashcards <span class="ai-badge">LIVE</span></div>
+            <div style="font-size:10.5px;color:var(--muted);margin-bottom:8px">
+              Worker: gentle-bread-d369.jdevapphub.workers.dev
+            </div>
+            <div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:8px">
+              <select id="aiLevel" class="lk-btn" style="padding:6px;font-size:11px;background:#0a1830;border:1px solid var(--border);border-radius:8px;color:var(--text)">
+                <option value="simple">📘 Simple summary</option>
+                <option value="medium" selected>📗 Medium summary</option>
+                <option value="detailed">📙 Detailed summary</option>
+              </select>
+              <button class="lk-btn primary" style="font-size:11px" onclick="aiSummarizeCurrent()">✨ Summarize</button>
+              <button class="lk-btn" style="font-size:11px" onclick="aiQuizCurrent()">❓ Quiz</button>
+              <button class="lk-btn" style="font-size:11px" onclick="aiFlashcardsCurrent()">🃏 Flashcards</button>
+            </div>
+            <div id="aiOutput" class="summary-output">Click <b>Summarize</b> to get the key points from the current book or PDF. The AI worker reads the text, understands the context, and returns the main ideas in the simplest form.</div>
+          </div>
+
           <div class="card" id="musicCard">
             <div class="card-head">🎵 Music Player - Upload Unlimited</div>
             <div class="snd-row">
@@ -328,7 +351,7 @@ input,textarea,select{font-family:inherit;color:inherit}
             <div id="userTracksList"></div>
             <label class="music-upload" for="musicUpload">📥 Upload Your Music (MP3, WAV - unlimited)</label>
             <input type="file" id="musicUpload" accept="audio/*" multiple hidden onchange="handleMusicUpload(event)">
-            <div style="font-size:9.5px;color:var(--muted);margin-top:6px;text-align:center">Mix focus + rain + your songs. Each loops independently.</div>
+            <div style="font-size:9.5px;color:var(--muted);margin-top:6px;text-align:center">Mix focus + rain + your songs. Each loops independently. Uploads are session-only and vanish on refresh.</div>
           </div>
 
           <div class="card">
@@ -372,7 +395,7 @@ input,textarea,select{font-family:inherit;color:inherit}
     <div class="view" id="view-bookshelf">
       <div class="section-head"><div><h2>📚 Book Shelf</h2><p>Built-in + your PDFs. Click any to open in Documents.</p></div></div>
       <div class="shelf-grid" id="shelfGrid"></div>
-      <div class="section-head"><div><h2>📖 My Library — Your Uploads</h2><p>PDFs you upload appear here and in Documents.</p></div></div>
+      <div class="section-head"><div><h2>📖 My Library — Your Uploads</h2><p>PDFs you upload appear here and in Documents. Session-only — nothing is saved.</p></div></div>
       <label class="upload-zone" for="pdfUpload">
         <b>📥 Add PDF Books (unlimited)</b>
         <p>Lecture notes, past papers, textbooks — all open in viewer</p>
@@ -389,7 +412,8 @@ input,textarea,select{font-family:inherit;color:inherit}
         <div style="color:var(--muted);font-size:12.5px;line-height:1.7">
           Where Code Becomes Codex<br>
           By Joheliv Labs<br>
-          All systems wired.
+          All systems wired.<br><br>
+          <b style="color:var(--text)">Privacy:</b> Nothing is saved. Uploads live only in memory and vanish on refresh.
         </div>
       </div>
     </div>
@@ -421,7 +445,6 @@ function goTo(v) {
   const target = document.getElementById('view-' + v);
   if (target) target.classList.add('active');
   document.querySelectorAll('.nav-item').forEach(n => n.classList.toggle('active', n.dataset.view === v));
-  // Reset scroll to top on view change
   const content = document.getElementById('content');
   if (content) content.scrollTop = 0;
   if (v === 'english') loadEnglish(0);
@@ -433,6 +456,114 @@ document.querySelectorAll('.nav-item').forEach(i => i.addEventListener('click', 
     setTimeout(() => document.getElementById('musicCard').scrollIntoView({ behavior: 'smooth' }), 80);
   }
 }));
+
+/* ══════════════════════════════════════════════════════════
+   AI WORKER INTEGRATION
+   ══════════════════════════════════════════════════════════ */
+const AI_WORKER_URL = 'https://gentle-bread-d369.jdevapphub.workers.dev';
+
+function getCurrentBookText() {
+  // Session-only: pulls text from the currently open built-in book or uploaded PDF.
+  if (mode === 'pdf' && currentPdf && currentPdf.doc) {
+    return `[PDF: ${currentPdf.name}] — ${currentPdf.numPages} pages. Use the PDF's visible content as the source.`;
+  }
+  if (currentBook && currentBook.slides) {
+    return currentBook.slides.map((s, i) => `Slide ${i+1}: ${s.title}\n${s.desc}`).join('\n\n');
+  }
+  return '';
+}
+
+async function callAIWorker(action, extra = {}) {
+  const out = document.getElementById('aiOutput');
+  out.textContent = '🧠 Asking the AI worker...';
+  const level = document.getElementById('aiLevel')?.value || 'medium';
+  const text = getCurrentBookText();
+
+  try {
+    const res = await fetch(AI_WORKER_URL, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ action: action, level: level, text: text, ...extra })
+    });
+    const data = await res.json();
+
+    if (!data.success && data.error) {
+      out.textContent = '❌ ' + data.error;
+      return;
+    }
+
+    // Unwrap the worker's envelope: { success, action, result }
+    const payload = (data.result !== undefined) ? data.result : data;
+
+    // ---- SUMMARY (plain string) ----
+    if (action === 'summarize') {
+      out.textContent = (typeof payload === 'string')
+        ? payload
+        : (payload.summary || JSON.stringify(payload, null, 2));
+      return;
+    }
+
+    // ---- QUIZ ----
+    if (action === 'quiz') {
+      const questions = payload.questions || [];
+      if (!questions.length) {
+        out.textContent = '⚠️ No questions returned.\n\n' + JSON.stringify(payload, null, 2);
+        return;
+      }
+      const title = payload.title ? ('📌 ' + payload.title + '\n\n') : '';
+      out.textContent = title + questions.map((q, i) => {
+        const n = q.id || (i + 1);
+        const qText = q.question || q.q || '';
+        const opts = Array.isArray(q.options) ? q.options : [];
+        const ans = (q.correctAnswer !== undefined) ? q.correctAnswer
+                  : (q.answer !== undefined) ? q.answer
+                  : (q.correct !== undefined) ? q.correct : '?';
+        const expl = q.explanation ? ('\n   💡 ' + q.explanation) : '';
+
+        let block = 'Q' + n + '. ' + qText + '\n';
+        if (opts.length) {
+          block += opts.map(function (o, j) {
+            const letter = String.fromCharCode(65 + j);
+            const isCorrect = (o === ans) || (letter === ans);
+            return '   ' + (isCorrect ? '✅' : '○') + ' ' + letter + '. ' + o;
+          }).join('\n') + '\n';
+        }
+        block += '   ✔ Correct: ' + ans + expl;
+        return block;
+      }).join('\n\n');
+      return;
+    }
+
+    // ---- FLASHCARDS ----
+    if (action === 'flashcards') {
+      const cards = payload.cards || payload.flashcards || [];
+      if (!cards.length) {
+        out.textContent = '⚠️ No flashcards returned.\n\n' + JSON.stringify(payload, null, 2);
+        return;
+      }
+      const title = payload.title ? ('📌 ' + payload.title + '\n\n') : '';
+      out.textContent = title + cards.map(function (c, i) {
+        const front = c.front || c.term || c.question || '';
+        const back  = c.back  || c.definition || c.answer || '';
+        return '🃏 ' + (i + 1) + '. ' + front + '\n   ↳ ' + back;
+      }).join('\n\n');
+      return;
+    }
+
+    // ---- FALLBACK ----
+    out.textContent = (typeof payload === 'string')
+      ? payload
+      : JSON.stringify(payload, null, 2);
+
+  } catch (e) {
+    out.textContent = '❌ Worker request failed: ' + e.message +
+      '\n\n(Check that the worker URL is reachable and accepts POST.)';
+  }
+}
+
+function aiSummarizeCurrent() { callAIWorker('summarize'); }
+function aiQuizCurrent() { callAIWorker('quiz'); }
+function aiFlashcardsCurrent() { callAIWorker('flashcards'); }
 
 /* ══════════════════════════════════════════════════════════
    BOOKS DATA
@@ -650,10 +781,10 @@ function prevSlide() { if (curSlide > 1) { curSlide--; renderSlide(); } }
 function goToSlide(v) { curSlide = Math.max(1, Math.min(parseInt(v) || 1, currentBook.slides.length)); renderSlide(); }
 
 /* ══════════════════════════════════════════════════════════
-   PDF SYSTEM
+   PDF SYSTEM (session-only — nothing saved)
    ══════════════════════════════════════════════════════════ */
 pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
-let myLibrary = [];
+let myLibrary = [];   // in-memory only
 let currentPdf = null;
 let pdfPage = 1;
 
@@ -680,7 +811,7 @@ async function handleUpload(e) {
 function renderMyLibrary() {
   const w = document.getElementById('mylibList');
   if (myLibrary.length === 0) {
-    w.innerHTML = '<div style="font-size:12px;color:var(--muted);padding:8px">No uploads yet — add PDF above.</div>';
+    w.innerHTML = '<div style="font-size:12px;color:var(--muted);padding:8px">No uploads yet — add PDF above. (Session-only.)</div>';
     return;
   }
   w.innerHTML = '';
@@ -791,7 +922,7 @@ function clearLookup() {
 }
 
 /* ══════════════════════════════════════════════════════════
-   MUSIC PLAYER
+   MUSIC PLAYER (session-only — nothing saved)
    ══════════════════════════════════════════════════════════ */
 let actx = null;
 const sounds = {
@@ -876,7 +1007,7 @@ function setVol(k, v) {
   if (s.kind === 'audio' && s.el) s.el.volume = s.vol;
 }
 
-let userTracks = [];
+let userTracks = [];  // in-memory only
 function handleMusicUpload(e) {
   Array.from(e.target.files || []).forEach(file => {
     if (!file.type.startsWith('audio/')) return;
@@ -898,7 +1029,7 @@ function renderUserTracks() {
     row.className = 'snd-row';
     row.innerHTML = `
       <div class="snd-ico" style="background:#a78bfa">🎧</div>
-      <div class="snd-info"><b title="${t.name}">${t.name}</b><span>Your upload</span></div>
+      <div class="snd-info"><b title="${t.name}">${t.name}</b><span>Your upload (session)</span></div>
       <input type="range" class="snd-vol" min="0" max="1" step="0.01" value="${t.vol}" oninput="setUserTrackVol(${i},this.value)">
       <div class="snd-toggle ${t.playing ? 'on' : ''}" onclick="toggleUserTrack(${i})">${t.playing ? '⏸' : '▶'}</div>
       <div class="snd-remove" onclick="removeUserTrack(${i})">✕</div>`;
