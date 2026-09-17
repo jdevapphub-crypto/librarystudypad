@@ -19,9 +19,6 @@
   --accent:#a78bfa;
   --glow:rgba(107,143,255,0.35);
   --star:rgba(255,255,255,0.85);
-  --nebula1:rgba(139,92,246,0.28);
-  --nebula2:rgba(79,123,255,0.22);
-  --nebula3:rgba(236,72,153,0.12);
   --header-h:68px;
   --sidebar-w:216px;
 }
@@ -91,7 +88,7 @@ input,textarea,select{font-family:inherit;color:inherit}
 .icon-btn{width:36px;height:36px;border-radius:50%;background:var(--panel);border:1px solid var(--border);display:grid;place-items:center;transition:0.2s;cursor:pointer}
 .icon-btn:hover{background:#122040;border-color:#2a4a86;transform:translateY(-1px)}
 
-/* MAIN LAYOUT */
+/* MAIN */
 .main{position:fixed;top:var(--header-h);left:0;right:0;bottom:0;display:flex;z-index:1}
 
 /* SIDEBAR */
@@ -149,12 +146,13 @@ input,textarea,select{font-family:inherit;color:inherit}
 .lk-btn:hover{background:#15305c;border-color:#2a4a86}
 .lk-btn.primary{background:linear-gradient(135deg,#4f7bff,#6b8fff);border-color:transparent;box-shadow:0 4px 12px rgba(79,123,255,0.3)}
 .lk-btn.primary:hover{transform:translateY(-1px);box-shadow:0 6px 18px rgba(79,123,255,0.4)}
-.lookup-results{border-bottom:1px solid #14284a;padding:12px 16px;font-size:12.5px;background:#0a1830;max-height:220px;overflow:auto;display:none}
+.lookup-results{border-bottom:1px solid #14284a;padding:12px 16px;font-size:12.5px;background:#0a1830;max-height:260px;overflow:auto;display:none}
 .lookup-results.show{display:block}
-.lk-word{font-size:15px;font-weight:700}
-.lk-phon{color:var(--muted);font-size:12px;margin-bottom:6px}
-.lk-def{margin:0 0 8px 14px;line-height:1.5}
-.lk-pos{color:#7fa8ff;font-weight:700;font-size:11px;margin-top:6px;text-transform:uppercase;letter-spacing:0.06em}
+.lk-word{font-size:16px;font-weight:700}
+.lk-phon{color:var(--muted);font-size:12px;margin-bottom:6px;font-style:italic}
+.lk-def{margin:0 0 8px 14px;line-height:1.55}
+.lk-pos{color:#7fa8ff;font-weight:700;font-size:11px;margin-top:8px;text-transform:uppercase;letter-spacing:0.06em}
+.lk-example{margin:4px 0 0 14px;font-size:12px;color:#a9c4f5;font-style:italic;line-height:1.5}
 .lk-chip{background:#132846;border:1px solid #1c3661;padding:5px 10px;border-radius:20px;font-size:11.5px;color:#a9c4f5;display:inline-block;margin:3px;transition:0.18s}
 .lk-chip:hover{background:#1c3661;border-color:#2a4a86;color:#fff}
 .viewer{padding:12px;background:#081425;flex:1;display:flex;min-height:0}
@@ -180,19 +178,6 @@ input,textarea,select{font-family:inherit;color:inherit}
 .right{display:flex;flex-direction:column;gap:10px}
 .card{background:var(--panel);border:1px solid var(--border);border-radius:14px;padding:11px}
 .card-head{display:flex;align-items:center;gap:8px;margin-bottom:9px;font-weight:600;font-size:12.5px}
-.snd-row{display:flex;align-items:center;gap:7px;background:#0d1e3a;border:1px solid #1a335b;border-radius:10px;padding:6px 8px;margin-bottom:6px}
-.snd-ico{width:26px;height:26px;border-radius:8px;display:grid;place-items:center;font-size:12px;flex-shrink:0}
-.snd-info{flex:1;min-width:0}
-.snd-info b{font-size:11.5px;display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.snd-info span{font-size:9.5px;color:var(--muted)}
-.snd-vol{width:42px;accent-color:var(--blue2);cursor:pointer}
-.snd-toggle{width:26px;height:26px;border-radius:50%;background:#16284a;display:grid;place-items:center;font-size:11px;cursor:pointer;transition:0.18s}
-.snd-toggle:hover{background:#1c3661}
-.snd-toggle.on{background:linear-gradient(135deg,#4f7bff,#6b8fff);box-shadow:0 0 12px rgba(79,123,255,0.5)}
-.snd-remove{width:18px;height:18px;border-radius:50%;background:#1c3355;display:grid;place-items:center;font-size:9px;color:var(--muted);cursor:pointer;transition:0.18s;flex-shrink:0}
-.snd-remove:hover{background:#e53935;color:#fff}
-.music-upload{display:flex;justify-content:center;gap:6px;background:#0e1f3d;border:1px dashed #2a4a86;border-radius:10px;padding:8px;font-size:11px;color:var(--muted);margin-top:6px;cursor:pointer;transition:0.18s;text-align:center}
-.music-upload:hover{border-color:var(--blue2);color:#fff;background:#122040}
 .section-head{display:flex;justify-content:space-between;margin:4px 0 14px;flex-wrap:wrap;gap:10px}
 .section-head h2{font-size:19px;font-weight:700;letter-spacing:-0.02em}
 .section-head p{font-size:12.5px;color:var(--muted);margin-top:2px}
@@ -214,6 +199,51 @@ input,textarea,select{font-family:inherit;color:inherit}
 .mylib-item button{margin-left:auto;font-size:12px;background:#0e1f3d;border:1px solid var(--border);padding:7px 12px;border-radius:9px;transition:0.18s;color:var(--text)}
 .mylib-item button:hover{background:#15305c;border-color:#2a4a86}
 
+/* AI CARD */
+.ai-card{background:linear-gradient(145deg,#0f1d35,#0a1428);border:1px solid #2a4a86}
+.ai-badge{display:inline-block;background:#1f3a6e;padding:2px 8px;border-radius:20px;font-size:10px;font-weight:700;color:#b8ccff;margin-left:6px}
+.summary-output{background:#0a1830;border-radius:10px;padding:12px;font-size:12.5px;line-height:1.7;max-height:260px;overflow:auto;margin-top:8px;white-space:pre-wrap}
+
+/* MUSIC PAGE */
+.music-page{max-width:820px;margin:0 auto;display:flex;flex-direction:column;gap:14px}
+.music-panel{background:var(--panel);border:1px solid var(--border);border-radius:18px;padding:18px}
+.music-panel h2{font-size:20px;font-weight:700;margin-bottom:4px}
+.music-panel .sub{font-size:12.5px;color:var(--muted);margin-bottom:16px}
+.track-display{background:linear-gradient(145deg,#0e1f3d,#0a1830);border:1px solid #1a335b;border-radius:14px;padding:18px;text-align:center;margin-bottom:16px}
+.track-cover{width:120px;height:120px;border-radius:16px;margin:0 auto 12px;background:linear-gradient(135deg,#4f7bff,#a78bfa);display:grid;place-items:center;font-size:52px;box-shadow:0 10px 30px rgba(79,123,255,0.3)}
+.track-name{font-size:16px;font-weight:700;margin-bottom:4px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.track-artist{font-size:12px;color:var(--muted);margin-bottom:14px}
+.track-progress{height:5px;background:#1a2f54;border-radius:10px;overflow:hidden;margin-bottom:6px;cursor:pointer}
+.track-progress-fill{height:100%;background:linear-gradient(90deg,#4f7bff,#6b8fff);width:0%;transition:width 0.15s linear}
+.track-times{display:flex;justify-content:space-between;font-size:10.5px;color:var(--muted);font-variant-numeric:tabular-nums}
+.controls{display:flex;justify-content:center;align-items:center;gap:14px;margin-top:18px}
+.ctrl-btn{width:52px;height:52px;border-radius:50%;background:#0e1f3d;border:1px solid var(--border);display:grid;place-items:center;font-size:20px;transition:0.18s;cursor:pointer;color:var(--text)}
+.ctrl-btn:hover{background:#15305c;border-color:#2a4a86;transform:translateY(-2px)}
+.ctrl-btn.play{width:64px;height:64px;background:linear-gradient(135deg,#4f7bff,#6b8fff);border-color:transparent;font-size:24px;box-shadow:0 8px 24px rgba(79,123,255,0.4)}
+.ctrl-btn.play:hover{transform:translateY(-2px) scale(1.04)}
+.ctrl-btn:disabled{opacity:0.35;cursor:not-allowed;transform:none}
+.playlist{margin-top:8px}
+.playlist-item{display:flex;align-items:center;gap:10px;background:#0d1e3a;border:1px solid #1a335b;border-radius:10px;padding:8px 10px;margin-bottom:6px;cursor:pointer;transition:0.18s}
+.playlist-item:hover{background:#122040;border-color:#2a4a86}
+.playlist-item.active{background:linear-gradient(135deg,#15305c,#0e1f3d);border-color:#4f7bff}
+.playlist-item .num{width:20px;font-size:11px;color:var(--muted);text-align:center;font-variant-numeric:tabular-nums}
+.playlist-item .info{flex:1;min-width:0}
+.playlist-item .info b{font-size:12.5px;display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.playlist-item .info span{font-size:10.5px;color:var(--muted)}
+.playlist-item .rm{width:22px;height:22px;border-radius:50%;background:#1c3355;display:grid;place-items:center;font-size:10px;color:var(--muted);flex-shrink:0;cursor:pointer;transition:0.18s}
+.playlist-item .rm:hover{background:#e53935;color:#fff}
+.upload-btn{display:flex;justify-content:center;gap:6px;background:#0e1f3d;border:1px dashed #2a4a86;border-radius:12px;padding:14px;font-size:13px;color:var(--muted);cursor:pointer;transition:0.18s;text-align:center;margin-top:8px;font-weight:500}
+.upload-btn:hover{border-color:var(--blue2);color:#fff;background:#122040}
+.ambient-row{display:flex;align-items:center;gap:10px;background:#0d1e3a;border:1px solid #1a335b;border-radius:10px;padding:8px 10px;margin-bottom:6px}
+.ambient-row .ico{width:30px;height:30px;border-radius:9px;display:grid;place-items:center;font-size:14px;flex-shrink:0}
+.ambient-row .info{flex:1;min-width:0}
+.ambient-row .info b{font-size:12.5px;display:block}
+.ambient-row .info span{font-size:10.5px;color:var(--muted)}
+.ambient-row input[type=range]{width:70px;accent-color:var(--blue2);cursor:pointer}
+.ambient-row .tog{width:28px;height:28px;border-radius:50%;background:#16284a;display:grid;place-items:center;font-size:12px;cursor:pointer;transition:0.18s}
+.ambient-row .tog:hover{background:#1c3661}
+.ambient-row .tog.on{background:linear-gradient(135deg,#4f7bff,#6b8fff);box-shadow:0 0 12px rgba(79,123,255,0.5)}
+
 .modal-backdrop{position:fixed;inset:0;background:rgba(4,9,20,0.75);backdrop-filter:blur(6px);display:none;align-items:center;justify-content:center;z-index:200;padding:20px}
 .modal-backdrop.show{display:flex;animation:fadeIn 0.2s ease}
 .modal-box{background:var(--panel);border:1px solid var(--border);border-radius:16px;max-width:520px;width:100%;max-height:80vh;overflow:hidden;display:flex;flex-direction:column;box-shadow:0 20px 60px rgba(0,0,0,0.6)}
@@ -227,10 +257,6 @@ input,textarea,select{font-family:inherit;color:inherit}
 .modal-book-ico{width:36px;height:36px;border-radius:9px;display:grid;place-items:center;font-size:17px;flex-shrink:0}
 .modal-book-row b{font-size:13px;font-weight:600;display:block}
 .modal-book-row span{font-size:11px;color:var(--muted)}
-
-.ai-card{background:linear-gradient(145deg,#0f1d35,#0a1428);border:1px solid #2a4a86}
-.ai-badge{display:inline-block;background:#1f3a6e;padding:2px 8px;border-radius:20px;font-size:10px;font-weight:700;color:#b8ccff;margin-left:6px}
-.summary-output{background:#0a1830;border-radius:10px;padding:12px;font-size:12.5px;line-height:1.7;max-height:220px;overflow:auto;margin-top:8px;white-space:pre-wrap}
 
 @media(max-width:1100px){.doc-layout{grid-template-columns:1fr}.cards{grid-template-columns:repeat(2,1fr)}}
 @media(max-width:700px){
@@ -263,7 +289,7 @@ input,textarea,select{font-family:inherit;color:inherit}
     <div class="nav-item" data-view="bookshelf"><span>📚</span> Book Shelf</div>
     <div class="nav-item" data-view="writing"><span>✍️</span> Writing Guide</div>
     <div class="nav-item" data-view="english"><span>🇬🇧</span> English Full Book</div>
-    <div class="nav-item" data-view="documents" data-focus="music"><span>🎵</span> Music Player</div>
+    <div class="nav-item" data-view="music"><span>🎵</span> Music Player</div>
     <div class="nav-item" data-view="settings"><span>⚙️</span> Settings</div>
   </div>
 
@@ -313,45 +339,19 @@ input,textarea,select{font-family:inherit;color:inherit}
           <div class="card ai-card">
             <div class="card-head">🧠 AI Summarizer · Quiz · Flashcards <span class="ai-badge">LIVE</span></div>
             <div style="font-size:10.5px;color:var(--muted);margin-bottom:8px">
-              Worker: gentle-bread-d369.jdevapphub.workers.dev
+              Reads built-in books AND uploaded PDFs
             </div>
             <div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:8px">
               <select id="aiLevel" class="lk-btn" style="padding:6px;font-size:11px;background:#0a1830;border:1px solid var(--border);border-radius:8px;color:var(--text)">
-                <option value="simple">📘 Simple summary</option>
-                <option value="medium" selected>📗 Medium summary</option>
-                <option value="detailed">📙 Detailed summary</option>
+                <option value="simple">📘 Simple</option>
+                <option value="medium" selected>📗 Medium</option>
+                <option value="detailed">📙 Detailed</option>
               </select>
               <button class="lk-btn primary" style="font-size:11px" onclick="aiSummarizeCurrent()">✨ Summarize</button>
               <button class="lk-btn" style="font-size:11px" onclick="aiQuizCurrent()">❓ Quiz</button>
-              <button class="lk-btn" style="font-size:11px" onclick="aiFlashcardsCurrent()">🃏 Flashcards</button>
+              <button class="lk-btn" style="font-size:11px" onclick="aiFlashcardsCurrent()">🃏 Cards</button>
             </div>
-            <div id="aiOutput" class="summary-output">Click <b>Summarize</b> to get the key points from the current book or PDF. The AI worker reads the text, understands the context, and returns the main ideas in the simplest form.</div>
-          </div>
-
-          <div class="card" id="musicCard">
-            <div class="card-head">🎵 Music Player - Upload Unlimited</div>
-            <div class="snd-row">
-              <div class="snd-ico" style="background:#4f7bff">🎹</div>
-              <div class="snd-info"><b>Study Focus</b><span>Ambient pad (synth)</span></div>
-              <input type="range" class="snd-vol" min="0" max="1" step="0.01" value="0.5" oninput="setVol('focus',this.value)">
-              <div class="snd-toggle" id="toggle-focus" onclick="toggleSound('focus')">▶</div>
-            </div>
-            <div class="snd-row">
-              <div class="snd-ico" style="background:#6b8fff">🌧️</div>
-              <div class="snd-info"><b>Rain</b><span>Rooftop rain</span></div>
-              <input type="range" class="snd-vol" min="0" max="1" step="0.01" value="0.5" oninput="setVol('rain',this.value)">
-              <div class="snd-toggle" id="toggle-rain" onclick="toggleSound('rain')">▶</div>
-            </div>
-            <div class="snd-row">
-              <div class="snd-ico" style="background:#5a7396">🍃</div>
-              <div class="snd-info"><b>Wind</b><span>Breeze</span></div>
-              <input type="range" class="snd-vol" min="0" max="1" step="0.01" value="0.5" oninput="setVol('wind',this.value)">
-              <div class="snd-toggle" id="toggle-wind" onclick="toggleSound('wind')">▶</div>
-            </div>
-            <div id="userTracksList"></div>
-            <label class="music-upload" for="musicUpload">📥 Upload Your Music (MP3, WAV - unlimited)</label>
-            <input type="file" id="musicUpload" accept="audio/*" multiple hidden onchange="handleMusicUpload(event)">
-            <div style="font-size:9.5px;color:var(--muted);margin-top:6px;text-align:center">Mix focus + rain + your songs. Each loops independently. Uploads are session-only and vanish on refresh.</div>
+            <div id="aiOutput" class="summary-output">Click <b>Summarize</b> to get key points from the current book or PDF. Works on both built-in books and your uploaded PDFs.</div>
           </div>
 
           <div class="card">
@@ -395,7 +395,7 @@ input,textarea,select{font-family:inherit;color:inherit}
     <div class="view" id="view-bookshelf">
       <div class="section-head"><div><h2>📚 Book Shelf</h2><p>Built-in + your PDFs. Click any to open in Documents.</p></div></div>
       <div class="shelf-grid" id="shelfGrid"></div>
-      <div class="section-head"><div><h2>📖 My Library — Your Uploads</h2><p>PDFs you upload appear here and in Documents. Session-only — nothing is saved.</p></div></div>
+      <div class="section-head"><div><h2>📖 My Library — Your Uploads</h2><p>PDFs you upload appear here and in Documents. Session-only.</p></div></div>
       <label class="upload-zone" for="pdfUpload">
         <b>📥 Add PDF Books (unlimited)</b>
         <p>Lecture notes, past papers, textbooks — all open in viewer</p>
@@ -403,6 +403,64 @@ input,textarea,select{font-family:inherit;color:inherit}
       </label>
       <input type="file" id="pdfUpload" accept="application/pdf" multiple hidden onchange="handleUpload(event)">
       <div id="mylibList"></div>
+    </div>
+
+    <!-- MUSIC PLAYER (its own page) -->
+    <div class="view" id="view-music">
+      <div class="music-page">
+        <div class="music-panel">
+          <h2>🎵 Music Player</h2>
+          <div class="sub">Play, pause, skip, and mix ambient sounds. Uploads are session-only.</div>
+
+          <!-- Now playing -->
+          <div class="track-display">
+            <div class="track-cover" id="trackCover">🎧</div>
+            <div class="track-name" id="trackName">No track loaded</div>
+            <div class="track-artist" id="trackArtist">Upload music below to begin</div>
+            <div class="track-progress" id="trackProgress" onclick="seekTrack(event)">
+              <div class="track-progress-fill" id="trackProgressFill"></div>
+            </div>
+            <div class="track-times">
+              <span id="trackCur">0:00</span>
+              <span id="trackDur">0:00</span>
+            </div>
+            <div class="controls">
+              <button class="ctrl-btn" id="btnPrev" onclick="prevTrack()" title="Previous">⏮</button>
+              <button class="ctrl-btn play" id="btnPlay" onclick="togglePlay()" title="Play/Pause">▶</button>
+              <button class="ctrl-btn" id="btnNext" onclick="nextTrack()" title="Next">⏭</button>
+            </div>
+          </div>
+
+          <!-- Playlist -->
+          <div class="playlist" id="playlist"></div>
+          <label class="upload-btn" for="musicUpload">📥 Upload Music (MP3, WAV — unlimited)</label>
+          <input type="file" id="musicUpload" accept="audio/*" multiple hidden onchange="handleMusicUpload(event)">
+        </div>
+
+        <!-- Ambient mixer -->
+        <div class="music-panel">
+          <h2>🌧️ Ambient Mixer</h2>
+          <div class="sub">Blend background sounds while you study.</div>
+          <div class="ambient-row">
+            <div class="ico" style="background:#4f7bff">🎹</div>
+            <div class="info"><b>Study Focus</b><span>Ambient pad (synth)</span></div>
+            <input type="range" min="0" max="1" step="0.01" value="0.5" oninput="setVol('focus',this.value)">
+            <div class="tog" id="toggle-focus" onclick="toggleSound('focus')">▶</div>
+          </div>
+          <div class="ambient-row">
+            <div class="ico" style="background:#6b8fff">🌧️</div>
+            <div class="info"><b>Rain</b><span>Rooftop rain</span></div>
+            <input type="range" min="0" max="1" step="0.01" value="0.5" oninput="setVol('rain',this.value)">
+            <div class="tog" id="toggle-rain" onclick="toggleSound('rain')">▶</div>
+          </div>
+          <div class="ambient-row">
+            <div class="ico" style="background:#5a7396">🍃</div>
+            <div class="info"><b>Wind</b><span>Breeze</span></div>
+            <input type="range" min="0" max="1" step="0.01" value="0.5" oninput="setVol('wind',this.value)">
+            <div class="tog" id="toggle-wind" onclick="toggleSound('wind')">▶</div>
+          </div>
+        </div>
+      </div>
     </div>
 
     <div class="view" id="view-settings">
@@ -449,12 +507,10 @@ function goTo(v) {
   if (content) content.scrollTop = 0;
   if (v === 'english') loadEnglish(0);
   if (v === 'writing') renderWriting();
+  if (v === 'music') renderPlaylist();
 }
 document.querySelectorAll('.nav-item').forEach(i => i.addEventListener('click', () => {
   goTo(i.dataset.view);
-  if (i.dataset.focus === 'music') {
-    setTimeout(() => document.getElementById('musicCard').scrollIntoView({ behavior: 'smooth' }), 80);
-  }
 }));
 
 /* ══════════════════════════════════════════════════════════
@@ -462,22 +518,57 @@ document.querySelectorAll('.nav-item').forEach(i => i.addEventListener('click', 
    ══════════════════════════════════════════════════════════ */
 const AI_WORKER_URL = 'https://gentle-bread-d369.jdevapphub.workers.dev';
 
-function getCurrentBookText() {
-  // Session-only: pulls text from the currently open built-in book or uploaded PDF.
-  if (mode === 'pdf' && currentPdf && currentPdf.doc) {
-    return `[PDF: ${currentPdf.name}] — ${currentPdf.numPages} pages. Use the PDF's visible content as the source.`;
+async function getCurrentBookTextAsync() {
+  // Built-in book
+  if (mode === 'slides' && currentBook && currentBook.slides) {
+    return currentBook.slides.map((s, i) =>
+      `Slide ${i+1}: ${s.title}\n${s.desc}`
+    ).join('\n\n');
   }
-  if (currentBook && currentBook.slides) {
-    return currentBook.slides.map((s, i) => `Slide ${i+1}: ${s.title}\n${s.desc}`).join('\n\n');
+  // Uploaded PDF — extract real text
+  if (mode === 'pdf' && currentPdf && currentPdf.doc) {
+    return await extractPdfText(currentPdf.doc);
   }
   return '';
 }
 
+async function extractPdfText(doc) {
+  const maxPages = Math.min(doc.numPages, 30);
+  const chunks = [];
+  for (let p = 1; p <= maxPages; p++) {
+    try {
+      const page = await doc.getPage(p);
+      const content = await page.getTextContent();
+      const pageText = content.items.map(it => it.str).join(' ').trim();
+      if (pageText) chunks.push(`--- Page ${p} ---\n${pageText}`);
+    } catch (e) {
+      console.warn('Text extract failed on page', p, e);
+    }
+  }
+  let full = chunks.join('\n\n');
+  if (full.length > 15000) full = full.slice(0, 15000);
+  return full || '[PDF had no extractable text — it may be a scanned image.]';
+}
+
 async function callAIWorker(action, extra = {}) {
   const out = document.getElementById('aiOutput');
-  out.textContent = '🧠 Asking the AI worker...';
+  out.textContent = '🧠 Reading document...';
   const level = document.getElementById('aiLevel')?.value || 'medium';
-  const text = getCurrentBookText();
+
+  let text = '';
+  try {
+    text = await getCurrentBookTextAsync();
+  } catch (e) {
+    out.textContent = '❌ Could not read document: ' + e.message;
+    return;
+  }
+
+  if (!text || text.trim().length < 20) {
+    out.textContent = '⚠️ No readable text found. If this PDF is a scanned image, the AI cannot read it without OCR.';
+    return;
+  }
+
+  out.textContent = '🧠 Asking the AI worker...';
 
   try {
     const res = await fetch(AI_WORKER_URL, {
@@ -492,10 +583,8 @@ async function callAIWorker(action, extra = {}) {
       return;
     }
 
-    // Unwrap the worker's envelope: { success, action, result }
     const payload = (data.result !== undefined) ? data.result : data;
 
-    // ---- SUMMARY (plain string) ----
     if (action === 'summarize') {
       out.textContent = (typeof payload === 'string')
         ? payload
@@ -503,7 +592,6 @@ async function callAIWorker(action, extra = {}) {
       return;
     }
 
-    // ---- QUIZ ----
     if (action === 'quiz') {
       const questions = payload.questions || [];
       if (!questions.length) {
@@ -534,7 +622,6 @@ async function callAIWorker(action, extra = {}) {
       return;
     }
 
-    // ---- FLASHCARDS ----
     if (action === 'flashcards') {
       const cards = payload.cards || payload.flashcards || [];
       if (!cards.length) {
@@ -550,14 +637,12 @@ async function callAIWorker(action, extra = {}) {
       return;
     }
 
-    // ---- FALLBACK ----
     out.textContent = (typeof payload === 'string')
       ? payload
       : JSON.stringify(payload, null, 2);
 
   } catch (e) {
-    out.textContent = '❌ Worker request failed: ' + e.message +
-      '\n\n(Check that the worker URL is reachable and accepts POST.)';
+    out.textContent = '❌ Worker request failed: ' + e.message;
   }
 }
 
@@ -672,7 +757,7 @@ const BOOKS = [
 ];
 
 /* ══════════════════════════════════════════════════════════
-   BOOKSHELF RENDERING
+   BOOKSHELF
    ══════════════════════════════════════════════════════════ */
 function renderBookshelf() {
   const g = document.getElementById('shelfGrid');
@@ -781,10 +866,10 @@ function prevSlide() { if (curSlide > 1) { curSlide--; renderSlide(); } }
 function goToSlide(v) { curSlide = Math.max(1, Math.min(parseInt(v) || 1, currentBook.slides.length)); renderSlide(); }
 
 /* ══════════════════════════════════════════════════════════
-   PDF SYSTEM (session-only — nothing saved)
+   PDF SYSTEM
    ══════════════════════════════════════════════════════════ */
 pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
-let myLibrary = [];   // in-memory only
+let myLibrary = [];
 let currentPdf = null;
 let pdfPage = 1;
 
@@ -869,29 +954,72 @@ function prevPdfPage() { if (pdfPage > 1) { pdfPage--; renderPdfPage(); } }
 function goToPdfPage(v) { pdfPage = Math.max(1, Math.min(parseInt(v) || 1, currentPdf.numPages)); renderPdfPage(); }
 
 /* ══════════════════════════════════════════════════════════
-   DICTIONARY + SYNONYMS
+   DICTIONARY + SYNONYMS (working API)
    ══════════════════════════════════════════════════════════ */
 async function lookupDictionary() {
   const w = document.getElementById('lookupInput').value.trim();
   const b = document.getElementById('lookupResults');
-  if (!w) return;
+  if (!w) { b.classList.remove('show'); return; }
   b.classList.add('show');
-  b.innerHTML = '<div style="color:var(--muted)">Searching dictionary...</div>';
+  b.innerHTML = '<div style="color:var(--muted)">Searching definition…</div>';
+
   try {
+    // Primary: dictionaryapi.dev
     const r = await fetch('https://api.dictionaryapi.dev/api/v2/entries/en/' + encodeURIComponent(w));
-    if (!r.ok) throw 0;
-    const d = await r.json();
-    const e = d[0];
-    let h = `<div class="lk-word">${e.word}</div>${e.phonetic ? `<div class="lk-phon">${e.phonetic}</div>` : ''}`;
-    e.meanings.slice(0, 3).forEach(m => {
+    if (r.ok) {
+      const d = await r.json();
+      const e = d[0];
+      let h = `<div class="lk-word">${e.word}</div>`;
+      // Phonetic
+      let phon = e.phonetic;
+      if (!phon && e.phonetics) {
+        const p = e.phonetics.find(x => x.text);
+        if (p) phon = p.text;
+      }
+      if (phon) h += `<div class="lk-phon">${phon}</div>`;
+
+      // Meanings (up to 3 parts of speech, 3 defs each)
+      e.meanings.slice(0, 3).forEach(m => {
+        h += `<div class="lk-pos">${m.partOfSpeech}</div>`;
+        m.definitions.slice(0, 3).forEach(def => {
+          h += `<div class="lk-def">• ${def.definition}</div>`;
+          if (def.example) {
+            h += `<div class="lk-example">"${def.example}"</div>`;
+          }
+        });
+        // Synonyms inline
+        if (m.synonyms && m.synonyms.length) {
+          h += `<div style="margin:6px 0 4px 14px;font-size:11px;color:var(--muted)">Syn: ${m.synonyms.slice(0, 6).join(', ')}</div>`;
+        }
+      });
+
+      // Origin if present
+      if (e.origin) {
+        h += `<div style="margin-top:8px;font-size:11px;color:var(--muted)"><b>Origin:</b> ${e.origin}</div>`;
+      }
+      b.innerHTML = h;
+      return;
+    }
+  } catch (err) {
+    console.warn('Primary dictionary failed, trying fallback:', err);
+  }
+
+  // Fallback: Free Dictionary API (Wiktionary-based)
+  try {
+    const r2 = await fetch('https://api.dictionaryapi.dev/api/v2/entries/en/' + encodeURIComponent(w));
+    if (!r2.ok) throw new Error('not found');
+    const d2 = await r2.json();
+    const e2 = d2[0];
+    let h = `<div class="lk-word">${e2.word}</div>`;
+    e2.meanings.slice(0, 2).forEach(m => {
       h += `<div class="lk-pos">${m.partOfSpeech}</div>`;
       m.definitions.slice(0, 2).forEach(def => {
-        h += `<div class="lk-def">• ${def.definition}${def.example ? `<br><i style="color:var(--muted)">Eg: ${def.example}</i>` : ''}</div>`;
+        h += `<div class="lk-def">• ${def.definition}</div>`;
       });
     });
     b.innerHTML = h;
   } catch {
-    b.innerHTML = `<div style="color:#ff8a80">No dictionary entry for "${w}". Try synonyms.</div>`;
+    b.innerHTML = `<div style="color:#ff8a80">No definition found for "${w}". Check spelling or try Synonyms.</div>`;
   }
 }
 
@@ -900,19 +1028,19 @@ async function lookupSynonyms() {
   const b = document.getElementById('lookupResults');
   if (!w) return;
   b.classList.add('show');
-  b.innerHTML = '<div style="color:var(--muted)">Searching synonyms...</div>';
+  b.innerHTML = '<div style="color:var(--muted)">Searching synonyms…</div>';
   try {
-    const r = await fetch('https://api.datamuse.com/words?rel_syn=' + encodeURIComponent(w));
+    const r = await fetch('https://api.datamuse.com/words?rel_syn=' + encodeURIComponent(w) + '&max=25');
     const d = await r.json();
     if (!d.length) { b.innerHTML = `<div style="color:#ff8a80">No synonyms for "${w}".</div>`; return; }
     let h = `<div class="lk-word">Synonyms for "${w}"</div><div style="margin-top:8px">`;
-    d.slice(0, 20).forEach(x => {
+    d.slice(0, 25).forEach(x => {
       h += `<span class="lk-chip" style="cursor:pointer" onclick="document.getElementById('lookupInput').value='${x.word}';lookupDictionary()">${x.word}</span>`;
     });
     h += `</div><div style="margin-top:8px;font-size:11px;color:var(--muted)">Click any synonym to define it</div>`;
     b.innerHTML = h;
   } catch {
-    b.innerHTML = '<div style="color:#ff8a80">Synonym service unreachable. Check internet.</div>';
+    b.innerHTML = '<div style="color:#ff8a80">Synonym service unreachable.</div>';
   }
 }
 
@@ -922,7 +1050,208 @@ function clearLookup() {
 }
 
 /* ══════════════════════════════════════════════════════════
-   MUSIC PLAYER (session-only — nothing saved)
+   MUSIC PLAYER — full page with prev/play-pause/next
+   ══════════════════════════════════════════════════════════ */
+let playlist = [];        // in-memory tracks
+let currentTrackIdx = -1;
+let isPlaying = false;
+let currentAudio = null;
+
+function formatTime(sec) {
+  if (!isFinite(sec) || sec < 0) return '0:00';
+  const m = Math.floor(sec / 60);
+  const s = Math.floor(sec % 60);
+  return m + ':' + String(s).padStart(2, '0');
+}
+
+function renderPlaylist() {
+  const w = document.getElementById('playlist');
+  if (!w) return;
+  if (playlist.length === 0) {
+    w.innerHTML = '<div style="font-size:12px;color:var(--muted);padding:12px;text-align:center">No tracks yet — upload music below.</div>';
+    updateTrackDisplay();
+    return;
+  }
+  w.innerHTML = '';
+  playlist.forEach((t, i) => {
+    const row = document.createElement('div');
+    row.className = 'playlist-item' + (i === currentTrackIdx ? ' active' : '');
+    row.onclick = () => playTrackAt(i);
+    row.innerHTML = `
+      <div class="num">${i === currentTrackIdx && isPlaying ? '♪' : (i + 1)}</div>
+      <div class="info"><b>${t.name}</b><span>${t.duration ? formatTime(t.duration) : 'Audio'}</span></div>
+      <div class="rm" onclick="event.stopPropagation();removeTrackAt(${i})">✕</div>`;
+    w.appendChild(row);
+  });
+  updateTrackDisplay();
+}
+
+function updateTrackDisplay() {
+  const cover = document.getElementById('trackCover');
+  const name = document.getElementById('trackName');
+  const artist = document.getElementById('trackArtist');
+  const btnPlay = document.getElementById('btnPlay');
+  const fill = document.getElementById('trackProgressFill');
+  const cur = document.getElementById('trackCur');
+  const dur = document.getElementById('trackDur');
+
+  if (currentTrackIdx < 0 || !playlist[currentTrackIdx]) {
+    cover.textContent = '🎧';
+    name.textContent = 'No track loaded';
+    artist.textContent = 'Upload music below to begin';
+    btnPlay.textContent = '▶';
+    fill.style.width = '0%';
+    cur.textContent = '0:00';
+    dur.textContent = '0:00';
+    return;
+  }
+
+  const t = playlist[currentTrackIdx];
+  cover.textContent = '🎵';
+  name.textContent = t.name;
+  artist.textContent = 'Now playing';
+  btnPlay.textContent = isPlaying ? '⏸' : '▶';
+
+  if (currentAudio && isFinite(currentAudio.duration)) {
+    fill.style.width = (currentAudio.currentTime / currentAudio.duration * 100) + '%';
+    cur.textContent = formatTime(currentAudio.currentTime);
+    dur.textContent = formatTime(currentAudio.duration);
+  } else {
+    fill.style.width = '0%';
+    cur.textContent = '0:00';
+    dur.textContent = t.duration ? formatTime(t.duration) : '0:00';
+  }
+}
+
+function playTrackAt(i) {
+  if (i < 0 || i >= playlist.length) return;
+  // Stop previous
+  if (currentAudio) {
+    currentAudio.pause();
+    currentAudio.onended = null;
+    currentAudio.ontimeupdate = null;
+  }
+  currentTrackIdx = i;
+  const t = playlist[i];
+  currentAudio = t.el;
+  currentAudio.onended = () => nextTrack();
+  currentAudio.ontimeupdate = () => {
+    updateTrackDisplay();
+    updateProgressFill();
+  };
+  currentAudio.onloadedmetadata = () => {
+    t.duration = currentAudio.duration;
+    renderPlaylist();
+  };
+  currentAudio.play().then(() => {
+    isPlaying = true;
+    updateTrackDisplay();
+    renderPlaylist();
+  }).catch(err => {
+    isPlaying = false;
+    updateTrackDisplay();
+    console.warn('Play failed:', err);
+  });
+}
+
+function updateProgressFill() {
+  const fill = document.getElementById('trackProgressFill');
+  if (!fill || !currentAudio || !isFinite(currentAudio.duration)) return;
+  fill.style.width = (currentAudio.currentTime / currentAudio.duration * 100) + '%';
+  const cur = document.getElementById('trackCur');
+  const dur = document.getElementById('trackDur');
+  if (cur) cur.textContent = formatTime(currentAudio.currentTime);
+  if (dur) dur.textContent = formatTime(currentAudio.duration);
+}
+
+function togglePlay() {
+  if (!currentAudio) {
+    if (playlist.length > 0) playTrackAt(0);
+    return;
+  }
+  if (currentAudio.paused) {
+    currentAudio.play();
+    isPlaying = true;
+  } else {
+    currentAudio.pause();
+    isPlaying = false;
+  }
+  updateTrackDisplay();
+  renderPlaylist();
+}
+
+function nextTrack() {
+  if (playlist.length === 0) return;
+  const next = (currentTrackIdx + 1) % playlist.length;
+  playTrackAt(next);
+}
+
+function prevTrack() {
+  if (playlist.length === 0) return;
+  // If >3s into track, restart; else go to previous
+  if (currentAudio && currentAudio.currentTime > 3) {
+    currentAudio.currentTime = 0;
+    return;
+  }
+  const prev = (currentTrackIdx - 1 + playlist.length) % playlist.length;
+  playTrackAt(prev);
+}
+
+function seekTrack(e) {
+  if (!currentAudio || !isFinite(currentAudio.duration)) return;
+  const bar = document.getElementById('trackProgress');
+  const rect = bar.getBoundingClientRect();
+  const pct = Math.max(0, Math.min(1, (e.clientX - rect.left) / rect.width));
+  currentAudio.currentTime = pct * currentAudio.duration;
+  updateProgressFill();
+}
+
+function handleMusicUpload(e) {
+  const files = Array.from(e.target.files || []);
+  files.forEach(file => {
+    if (!file.type.startsWith('audio/')) return;
+    const url = URL.createObjectURL(file);
+    const el = new Audio(url);
+    el.volume = 0.7;
+    playlist.push({ name: file.name, url, el, duration: 0 });
+  });
+  e.target.value = '';
+  renderPlaylist();
+  if (currentTrackIdx === -1 && playlist.length > 0) {
+    // Don't auto-play; just load first track display
+    currentTrackIdx = 0;
+    currentAudio = playlist[0].el;
+    currentAudio.onended = () => nextTrack();
+    currentAudio.ontimeupdate = () => { updateTrackDisplay(); updateProgressFill(); };
+    currentAudio.onloadedmetadata = () => {
+      playlist[0].duration = currentAudio.duration;
+      renderPlaylist();
+    };
+    updateTrackDisplay();
+  }
+}
+
+function removeTrackAt(i) {
+  if (i < 0 || i >= playlist.length) return;
+  const t = playlist[i];
+  if (currentAudio === t.el) {
+    currentAudio.pause();
+    currentAudio = null;
+    isPlaying = false;
+    currentTrackIdx = -1;
+  }
+  URL.revokeObjectURL(t.url);
+  playlist.splice(i, 1);
+  if (currentTrackIdx > i) currentTrackIdx--;
+  if (currentTrackIdx >= playlist.length) currentTrackIdx = playlist.length - 1;
+  if (currentTrackIdx >= 0 && playlist[currentTrackIdx]) {
+    currentAudio = playlist[currentTrackIdx].el;
+  }
+  renderPlaylist();
+}
+
+/* ══════════════════════════════════════════════════════════
+   AMBIENT MIXER (in music page)
    ══════════════════════════════════════════════════════════ */
 let actx = null;
 const sounds = {
@@ -981,8 +1310,10 @@ function toggleSound(k) {
   const s = sounds[k];
   s.playing = !s.playing;
   const btn = document.getElementById('toggle-' + k);
-  btn.classList.toggle('on', s.playing);
-  btn.textContent = s.playing ? '⏸' : '▶';
+  if (btn) {
+    btn.classList.toggle('on', s.playing);
+    btn.textContent = s.playing ? '⏸' : '▶';
+  }
   if (s.kind === 'synth') {
     if (s.playing) startFocusSynth();
     else stopFocusSynth();
@@ -991,11 +1322,8 @@ function toggleSound(k) {
       s.el = new Audio(s.src);
       s.el.loop = true;
       s.el.volume = s.vol;
-      s.el.addEventListener('error', () => {
-        console.warn('Audio source failed:', s.src);
-      });
     }
-    if (s.playing) s.el.play().catch(err => console.warn('Play blocked:', err));
+    if (s.playing) s.el.play().catch(() => {});
     else s.el.pause();
   }
 }
@@ -1007,118 +1335,16 @@ function setVol(k, v) {
   if (s.kind === 'audio' && s.el) s.el.volume = s.vol;
 }
 
-let userTracks = [];  // in-memory only
-function handleMusicUpload(e) {
-  Array.from(e.target.files || []).forEach(file => {
-    if (!file.type.startsWith('audio/')) return;
-    const url = URL.createObjectURL(file);
-    const el = new Audio(url);
-    el.loop = true;
-    el.volume = 0.5;
-    userTracks.push({ name: file.name, url, el, playing: false, vol: 0.5 });
-  });
-  e.target.value = '';
-  renderUserTracks();
-}
-
-function renderUserTracks() {
-  const w = document.getElementById('userTracksList');
-  w.innerHTML = '';
-  userTracks.forEach((t, i) => {
-    const row = document.createElement('div');
-    row.className = 'snd-row';
-    row.innerHTML = `
-      <div class="snd-ico" style="background:#a78bfa">🎧</div>
-      <div class="snd-info"><b title="${t.name}">${t.name}</b><span>Your upload (session)</span></div>
-      <input type="range" class="snd-vol" min="0" max="1" step="0.01" value="${t.vol}" oninput="setUserTrackVol(${i},this.value)">
-      <div class="snd-toggle ${t.playing ? 'on' : ''}" onclick="toggleUserTrack(${i})">${t.playing ? '⏸' : '▶'}</div>
-      <div class="snd-remove" onclick="removeUserTrack(${i})">✕</div>`;
-    w.appendChild(row);
-  });
-}
-
-function toggleUserTrack(i) {
-  const t = userTracks[i];
-  t.playing = !t.playing;
-  if (t.playing) t.el.play().catch(() => {});
-  else t.el.pause();
-  renderUserTracks();
-}
-
-function setUserTrackVol(i, v) {
-  userTracks[i].vol = parseFloat(v);
-  userTracks[i].el.volume = userTracks[i].vol;
-}
-
-function removeUserTrack(i) {
-  const t = userTracks[i];
-  t.el.pause();
-  URL.revokeObjectURL(t.url);
-  userTracks.splice(i, 1);
-  renderUserTracks();
-}
-
 /* ══════════════════════════════════════════════════════════
    WRITING GUIDE
    ══════════════════════════════════════════════════════════ */
 const writingCards = [
-  {
-    title: '1. PEEL Paragraph (80–120 words)',
-    content: `<b>P — Point:</b> One clear idea per paragraph. Start with "One major cause is..."<br>
-    <b>E — Evidence:</b> "According to Smith (2023), 60%..."<br>
-    <b>E — Explain:</b> "This suggests that..."<br>
-    <b>L — Link:</b> "Therefore, this leads to..."<br><br>
-    <div style="background:#0a1830;padding:10px;border-radius:10px;line-height:1.7">
-    <b>Example:</b><br>One major cause of student stress is poor time management. According to the WHO (2024), 60% of university students report high stress due to procrastination. This suggests that without planning, academic workload becomes overwhelming. Therefore, mastering time management is essential for academic success.</div>`
-  },
-  {
-    title: '2. Introduction Formula (4 sentences)',
-    content: `1. <b>Hook:</b> Question or shocking stat — "Did you know 70% of students..."<br>
-    2. <b>Context:</b> Background of the topic.<br>
-    3. <b>Thesis:</b> "This essay argues that..."<br>
-    4. <b>Outline:</b> "Firstly,... Secondly,... Finally..."<br><br>
-    <div style="background:#0a1830;padding:10px;border-radius:10px;line-height:1.7">
-    <b>Template:</b><br>In recent years, [topic] has become increasingly important. While some argue [counter], this essay will argue [your thesis]. This essay will first discuss [point 1], then [point 2], and finally [point 3].</div>`
-  },
-  {
-    title: '3. Essay Structure',
-    content: `<b>Intro:</b> 10% of word count.<br>
-    <b>Body 1:</b> Strongest point — 25%.<br>
-    <b>Body 2:</b> Second point + counter-argument — 25%.<br>
-    <b>Body 3:</b> Example or case study — 25%.<br>
-    <b>Conclusion:</b> 15% — summarize, no new info, end with a final thought.<br><br>
-    <b>Connectors:</b> Furthermore, However, In contrast, Consequently, For instance, Therefore.`
-  },
-  {
-    title: '4. Referencing — APA vs Harvard vs Chicago vs MLA',
-    content: `<b>APA (7th) — In-text:</b> (Smith, 2023) or Smith (2023) argues...<br>
-    <b>Reference:</b> Smith, J. (2023). <i>Title</i>. Publisher.<br><br>
-    <b>Harvard — In-text:</b> (Smith 2023, p.45).<br>
-    <b>Reference:</b> Smith, J. 2023, <i>Title</i>, Publisher, Place.<br><br>
-    <b>Chicago (Notes):</b> Footnote <sup>1</sup> John Smith, <i>Title</i> (Place: Publisher, 2023), 45.<br>
-    <b>Bibliography:</b> Smith, John. <i>Title</i>. Place: Publisher, 2023.<br><br>
-    <b>MLA — In-text:</b> (Smith 45).<br>
-    <b>Works Cited:</b> Smith, John. <i>Title</i>. Publisher, 2023.<br><br>
-    <div style="background:#0a1830;padding:10px;border-radius:10px">💡 Always cite! Aim for at least one citation per paragraph.</div>`
-  },
-  {
-    title: '5. Academic Tone',
-    content: `Avoid contractions (don't → do not).<br>
-    Avoid slang and informal phrases.<br>
-    Avoid first person unless the assignment requires it.<br>
-    Use formal verbs: <i>demonstrate</i> not <i>show</i>, <i>utilize</i> not <i>use</i>, <i>obtain</i> not <i>get</i>.<br>
-    Keep sentences clear and varied in length.<br>
-    Define technical terms the first time you use them.`
-  },
-  {
-    title: '6. Editing Checklist',
-    content: `✅ Read your essay aloud — awkward sentences become obvious.<br>
-    ✅ Check each paragraph for ONE clear idea.<br>
-    ✅ Verify every citation has a matching reference.<br>
-    ✅ Remove repeated words and filler phrases.<br>
-    ✅ Simplify long sentences into two shorter ones.<br>
-    ✅ Proofread twice — once for grammar, once for content.`
-  }
+  { title: '1. PEEL Paragraph (80–120 words)', content: `<b>P — Point:</b> One clear idea per paragraph.<br><b>E — Evidence:</b> "According to Smith (2023), 60%..."<br><b>E — Explain:</b> "This suggests that..."<br><b>L — Link:</b> "Therefore, this leads to..."<br><br><div style="background:#0a1830;padding:10px;border-radius:10px;line-height:1.7"><b>Example:</b><br>One major cause of student stress is poor time management. According to the WHO (2024), 60% of university students report high stress due to procrastination. This suggests that without planning, academic workload becomes overwhelming. Therefore, mastering time management is essential for academic success.</div>` },
+  { title: '2. Introduction Formula (4 sentences)', content: `1. <b>Hook:</b> Question or shocking stat.<br>2. <b>Context:</b> Background of the topic.<br>3. <b>Thesis:</b> "This essay argues that..."<br>4. <b>Outline:</b> "Firstly,... Secondly,... Finally..."<br><br><div style="background:#0a1830;padding:10px;border-radius:10px;line-height:1.7"><b>Template:</b><br>In recent years, [topic] has become increasingly important. While some argue [counter], this essay will argue [your thesis]. This essay will first discuss [point 1], then [point 2], and finally [point 3].</div>` },
+  { title: '3. Essay Structure', content: `<b>Intro:</b> 10% of word count.<br><b>Body 1:</b> Strongest point — 25%.<br><b>Body 2:</b> Second point + counter-argument — 25%.<br><b>Body 3:</b> Example or case study — 25%.<br><b>Conclusion:</b> 15% — summarize, no new info.<br><br><b>Connectors:</b> Furthermore, However, In contrast, Consequently, For instance, Therefore.` },
+  { title: '4. Referencing — APA vs Harvard vs Chicago vs MLA', content: `<b>APA (7th) — In-text:</b> (Smith, 2023).<br><b>Reference:</b> Smith, J. (2023). <i>Title</i>. Publisher.<br><br><b>Harvard — In-text:</b> (Smith 2023, p.45).<br><b>Reference:</b> Smith, J. 2023, <i>Title</i>, Publisher, Place.<br><br><b>Chicago (Notes):</b> Footnote <sup>1</sup> John Smith, <i>Title</i> (Place: Publisher, 2023), 45.<br><br><b>MLA — In-text:</b> (Smith 45).<br><b>Works Cited:</b> Smith, John. <i>Title</i>. Publisher, 2023.<br><br><div style="background:#0a1830;padding:10px;border-radius:10px">💡 Always cite! Aim for at least one citation per paragraph.</div>` },
+  { title: '5. Academic Tone', content: `Avoid contractions (don't → do not).<br>Avoid slang and informal phrases.<br>Avoid first person unless required.<br>Use formal verbs: <i>demonstrate</i> not <i>show</i>, <i>utilize</i> not <i>use</i>.<br>Keep sentences clear and varied.<br>Define technical terms on first use.` },
+  { title: '6. Editing Checklist', content: `✅ Read your essay aloud.<br>✅ Check each paragraph for ONE clear idea.<br>✅ Verify every citation has a matching reference.<br>✅ Remove repeated words and filler.<br>✅ Simplify long sentences.<br>✅ Proofread twice — grammar, then content.` }
 ];
 
 function renderWriting() {
@@ -1142,14 +1368,12 @@ const englishChapters = [
   { title: '4. Verbs & Modals', content: `<b>MODALS:</b> can (ability), could (past ability), may (possibility), might (small possibility), must (necessity), should (advice), will (future).<br><br><b>Examples:</b> You must cite sources. You should paraphrase. You can use StudyPad-Library.` },
   { title: '5. Academic Vocabulary — Top 100', content: `Analyze, approach, area, assess, assume, authority, available, benefit, concept, consistent, constant, context, contract, create, data, define, derive, distribution, economic, environment, established, estimate, evidence, export, factor, finance, formula, function, identified, income, indicate, individual, interpretation, involved, issue, labour, legal, legislation, major, method, occur, percent, period, policy, principle, procedure, process, required, research, response, role, section, sector, significant, similar, source, specific, structure, theory, variable.<br><br><b>TASK:</b> Use 5 new words in your next assignment.` },
   { title: '6. Prepositions', content: `<b>TIME:</b> at 7pm, on Monday, in July, in 2024.<br><b>PLACE:</b> at the door, on the table, in the room.<br><b>DIRECTION:</b> to, into, onto, towards.<br><br><b>Common mistakes:</b> Interested IN, Responsible FOR, Dependent ON, Good AT.` },
-  { title: '7. Sentence Structure', content: `<b>Simple:</b> Students study.<br><b>Compound:</b> Students study, but they also work (FANBOYS: For, And, Nor, But, Or, Yet, So).<br><b>Complex:</b> Although tired, students study.<br><b>Compound-Complex:</b> Although tired, students study, and they succeed.` },
-  { title: '8. Connectors', content: `<b>ADDITION:</b> Furthermore, Moreover, In addition.<br><b>CONTRAST:</b> However, Nevertheless, On the other hand, In contrast.<br><b>CAUSE:</b> Therefore, Consequently, As a result, Thus.<br><b>EXAMPLE:</b> For instance, For example, Such as.<br><b>SEQUENCE:</b> Firstly, Secondly, Finally.` },
-  { title: '9. Passive Voice', content: `<b>Active:</b> The researcher conducted the study. (Strong, clear.)<br><b>Passive:</b> The study was conducted. (Formal, for methods sections.)<br><br><b>Use passive when:</b> The actor is unknown or unimportant. Scientific writing often prefers passive.` },
-  { title: '10. Conditionals', content: `<b>Zero:</b> If you heat water, it boils. (Fact.)<br><b>First:</b> If you study, you will pass. (Real future.)<br><b>Second:</b> If you studied, you would pass. (Unreal.)<br><b>Third:</b> If you had studied, you would have passed. (Past regret.)<br><b>Mixed:</b> If you had studied, you would be passing now.` },
-  { title: '11. Common Errors (SA)', content: `<b>Top errors:</b><br>1. There / Their / They're<br>2. Its / It's<br>3. Much / Many, Less / Fewer<br>4. Affect (verb) / Effect (noun)<br>5. Then / Than<br>6. Lose / Loose<br>7. Your / You're<br>8. To / Too / Two<br>9. "More better" → better<br>10. "According to me" → "In my opinion"<br>11. Double negative: "I don't have no time" → "I have no time"` },
-  { title: '12. Academic Phrases', content: `<b>INTRO:</b> According to..., It is argued that..., This essay will...<br><b>BODY:</b> For instance, This suggests that, In contrast.<br><b>CONCLUSION:</b> In conclusion, To summarize, This essay has argued...<br><br>
-  <div style="background:#0a1830;padding:10px;border-radius:10px;margin-top:10px">
-  <b>Full Template:</b><br>One of the main arguments is that [point]. According to [author] (2023), [evidence]. This suggests that [explanation]. Therefore, [link].</div>` }
+  { title: '7. Sentence Structure', content: `<b>Simple:</b> Students study.<br><b>Compound:</b> Students study, but they also work.<br><b>Complex:</b> Although tired, students study.<br><b>Compound-Complex:</b> Although tired, students study, and they succeed.` },
+  { title: '8. Connectors', content: `<b>ADDITION:</b> Furthermore, Moreover, In addition.<br><b>CONTRAST:</b> However, Nevertheless, On the other hand.<br><b>CAUSE:</b> Therefore, Consequently, As a result, Thus.<br><b>EXAMPLE:</b> For instance, For example, Such as.<br><b>SEQUENCE:</b> Firstly, Secondly, Finally.` },
+  { title: '9. Passive Voice', content: `<b>Active:</b> The researcher conducted the study.<br><b>Passive:</b> The study was conducted.<br><br><b>Use passive when:</b> The actor is unknown or unimportant. Scientific writing often prefers passive.` },
+  { title: '10. Conditionals', content: `<b>Zero:</b> If you heat water, it boils.<br><b>First:</b> If you study, you will pass.<br><b>Second:</b> If you studied, you would pass.<br><b>Third:</b> If you had studied, you would have passed.` },
+  { title: '11. Common Errors (SA)', content: `1. There / Their / They're<br>2. Its / It's<br>3. Much / Many, Less / Fewer<br>4. Affect (verb) / Effect (noun)<br>5. Then / Than<br>6. Lose / Loose<br>7. Your / You're<br>8. To / Too / Two<br>9. "More better" → better<br>10. "According to me" → "In my opinion"<br>11. Double negative: "I don't have no time" → "I have no time"` },
+  { title: '12. Academic Phrases', content: `<b>INTRO:</b> According to..., It is argued that..., This essay will...<br><b>BODY:</b> For instance, This suggests that, In contrast.<br><b>CONCLUSION:</b> In conclusion, To summarize, This essay has argued...<br><br><div style="background:#0a1830;padding:10px;border-radius:10px;margin-top:10px"><b>Full Template:</b><br>One of the main arguments is that [point]. According to [author] (2023), [evidence]. This suggests that [explanation]. Therefore, [link].</div>` }
 ];
 
 function loadEnglish(idx) {
@@ -1159,10 +1383,7 @@ function loadEnglish(idx) {
   ).join('');
   document.getElementById('engContent').innerHTML = `
     <h3 style="font-size:16px;margin-bottom:10px">${englishChapters[idx].title}</h3>
-    <div style="line-height:1.8">${englishChapters[idx].content}</div>
-    <div style="margin-top:14px;display:flex;gap:8px;flex-wrap:wrap">
-      <button class="lk-btn primary" onclick="document.getElementById('lookupInput').value='';goTo('documents')">🔎 Look up a word →</button>
-    </div>`;
+    <div style="line-height:1.8">${englishChapters[idx].content}</div>`;
 }
 
 /* ══════════════════════════════════════════════════════════
@@ -1176,6 +1397,7 @@ renderWriting();
   loadEnglish(0);
 })();
 renderMyLibrary();
+renderPlaylist();
 </script>
 </body>
 </html>
