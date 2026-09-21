@@ -192,6 +192,10 @@ input,textarea,select{font-family:inherit;color:inherit}
 .pdf-icon{width:32px;height:36px;background:#e53935;border-radius:6px;display:grid;place-items:center;font-weight:700;font-size:9px;color:#fff;flex-shrink:0}
 .mylib-item button{margin-left:auto;font-size:12px;background:#0e1f3d;border:1px solid var(--border);padding:7px 12px;border-radius:9px;transition:0.18s;color:var(--text)}
 .mylib-item button:hover{background:#15305c;border-color:#2a4a86}
+.mylib-item .rm-btn{background:#3a1a1f;border-color:#5c2a30;color:#ff8a80;margin-left:6px}
+.mylib-item .rm-btn:hover{background:#e53935;border-color:#e53935;color:#fff}
+.storage-badge{display:inline-flex;align-items:center;gap:6px;font-size:10.5px;color:var(--muted);background:#0d1e3a;border:1px solid #1a335b;border-radius:20px;padding:4px 10px;margin-bottom:10px}
+.storage-badge b{color:var(--blue2)}
 
 .ai-card{background:linear-gradient(145deg,#0f1d35,#0a1428);border:1px solid #2a4a86}
 .ai-badge{display:inline-block;background:#1f3a6e;padding:2px 8px;border-radius:20px;font-size:10px;font-weight:700;color:#b8ccff;margin-left:6px}
@@ -250,6 +254,26 @@ input,textarea,select{font-family:inherit;color:inherit}
 .modal-book-row b{font-size:13px;font-weight:600;display:block}
 .modal-book-row span{font-size:11px;color:var(--muted)}
 
+.about-hero{background:linear-gradient(145deg,#0f1d35,#0a1428);border:1px solid #2a4a86;border-radius:18px;padding:26px;text-align:center;margin-bottom:16px}
+.about-hero .logo-big{width:70px;height:70px;border-radius:18px;background:linear-gradient(135deg,#4f7bff,#a78bfa);display:grid;place-items:center;font-size:32px;margin:0 auto 14px;box-shadow:0 10px 30px rgba(79,123,255,0.4)}
+.about-hero h2{font-size:24px;font-weight:800;letter-spacing:-0.02em;background:linear-gradient(135deg,#fff,#c7d2fe);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.about-hero p{color:var(--muted);font-size:13px;margin-top:6px}
+.about-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:12px;margin-bottom:16px}
+.about-card{background:var(--panel);border:1px solid var(--border);border-radius:14px;padding:16px}
+.about-card h4{font-size:12px;text-transform:uppercase;letter-spacing:0.08em;color:var(--blue2);margin-bottom:10px;font-weight:700}
+.about-card .row{display:flex;justify-content:space-between;font-size:12.5px;padding:5px 0;border-bottom:1px solid #14284a}
+.about-card .row:last-child{border-bottom:none}
+.about-card .row span:first-child{color:var(--muted)}
+.about-card .row span:last-child{font-weight:600}
+.about-card a{color:var(--blue2);text-decoration:none}
+.about-card a:hover{text-decoration:underline}
+.policy-box{background:var(--panel);border:1px solid var(--border);border-radius:14px;padding:18px;margin-bottom:12px}
+.policy-box h3{font-size:15px;font-weight:700;margin-bottom:10px;display:flex;align-items:center;gap:8px}
+.policy-box p,.policy-box li{font-size:12.5px;line-height:1.75;color:var(--text)}
+.policy-box ul{margin-left:18px;margin-top:8px}
+.policy-box li{margin-bottom:4px}
+.policy-box .note{background:#0a1830;border-left:3px solid var(--blue2);padding:10px 12px;border-radius:8px;margin-top:10px;font-size:12px;color:var(--muted)}
+
 @media(max-width:1100px){.doc-layout{grid-template-columns:1fr}.cards{grid-template-columns:repeat(2,1fr)}}
 @media(max-width:700px){
   .brand>span{display:none}
@@ -282,6 +306,8 @@ input,textarea,select{font-family:inherit;color:inherit}
     <div class="nav-item" data-view="writing"><span>✍️</span> Writing Guide</div>
     <div class="nav-item" data-view="english"><span>🇬🇧</span> English Full Book</div>
     <div class="nav-item" data-view="music"><span>🎵</span> Music Player</div>
+    <div class="nav-item" data-view="about"><span>ℹ️</span> About</div>
+    <div class="nav-item" data-view="policy"><span>🔒</span> Privacy Policy</div>
     <div class="nav-item" data-view="settings"><span>⚙️</span> Settings</div>
   </div>
 
@@ -386,10 +412,11 @@ input,textarea,select{font-family:inherit;color:inherit}
     <div class="view" id="view-bookshelf">
       <div class="section-head"><div><h2>📚 Book Shelf</h2><p>Built-in + your PDFs. Click any to open in Documents.</p></div></div>
       <div class="shelf-grid" id="shelfGrid"></div>
-      <div class="section-head"><div><h2>📖 My Library — Your Uploads</h2><p>PDFs you upload appear here and in Documents. Session-only.</p></div></div>
+      <div class="section-head"><div><h2>📖 My Library — Your Uploads</h2><p>PDFs you upload are <b style="color:var(--blue2)">saved to your device</b> and stay after refresh.</p></div></div>
+      <div class="storage-badge">💾 <b id="storageCount">0</b> saved file(s) • <span id="storageSize">0 KB</span> used</div>
       <label class="upload-zone" for="pdfUpload">
         <b>📥 Add PDF Books (unlimited)</b>
-        <p>Lecture notes, past papers, textbooks — all open in viewer</p>
+        <p>Lecture notes, past papers, textbooks — saved locally on your device</p>
         <span class="lk-btn primary">Choose PDFs</span>
       </label>
       <input type="file" id="pdfUpload" accept="application/pdf" multiple hidden onchange="handleUpload(event)">
@@ -401,7 +428,7 @@ input,textarea,select{font-family:inherit;color:inherit}
       <div class="music-page">
         <div class="music-panel">
           <h2>🎵 Music Player</h2>
-          <div class="sub">Play, pause, skip, and mix ambient sounds. Uploads are session-only.</div>
+          <div class="sub">Play, pause, skip, and mix ambient sounds. Uploads are <b style="color:var(--blue2)">saved to your device</b>.</div>
 
           <div class="track-display">
             <div class="track-cover" id="trackCover">🎧</div>
@@ -422,7 +449,7 @@ input,textarea,select{font-family:inherit;color:inherit}
           </div>
 
           <div class="playlist" id="playlist"></div>
-          <label class="upload-btn" for="musicUpload">📥 Upload Music (MP3, WAV — unlimited)</label>
+          <label class="upload-btn" for="musicUpload">📥 Upload Music (MP3, WAV — unlimited, saved locally)</label>
           <input type="file" id="musicUpload" accept="audio/*" multiple hidden onchange="handleMusicUpload(event)">
         </div>
 
@@ -451,6 +478,139 @@ input,textarea,select{font-family:inherit;color:inherit}
       </div>
     </div>
 
+    <!-- ABOUT -->
+    <div class="view" id="view-about">
+      <div class="section-head"><div><h2>ℹ️ About StudyPad-Library</h2><p>Where Code Becomes Codex</p></div></div>
+      <div class="about-hero">
+        <div class="logo-big">📚</div>
+        <h2>StudyPad-Library</h2>
+        <p>Learn • Study • Grow — Your all-in-one academic workspace</p>
+      </div>
+      <div class="about-grid">
+        <div class="about-card">
+          <h4>🏢 Company</h4>
+          <div class="row"><span>Developer</span><span>Joheliv Labs</span></div>
+          <div class="row"><span>Creative Labs</span><span>Jason's Labs</span></div>
+          <div class="row"><span>Country</span><span>South Africa 🇿🇦</span></div>
+          <div class="row"><span>Year</span><span>2026</span></div>
+          <div class="row"><span>Version</span><span>1.0.0</span></div>
+        </div>
+        <div class="about-card">
+          <h4>📬 Contact</h4>
+          <div class="row"><span>Email</span><span><a href="mailto:studypadjoheliv@gmail.com">studypadjoheliv@gmail.com</a></span></div>
+          <div class="row"><span>Support</span><span>Mon–Fri, 8am–5pm SAST</span></div>
+          <div class="row"><span>Response</span><span>Within 48 hours</span></div>
+        </div>
+        <div class="about-card">
+          <h4>🎯 What We Do</h4>
+          <p style="font-size:12.5px;line-height:1.75;color:var(--muted)">
+            StudyPad-Library helps South African students read, write, and study smarter. 
+            Built-in books, PDF viewer, dictionary, AI summarizer, music player, and ambient 
+            mixer — all offline-capable, all free.
+          </p>
+        </div>
+      </div>
+    </div>
+
+    <!-- PRIVACY POLICY -->
+    <div class="view" id="view-policy">
+      <div class="section-head"><div><h2>🔒 Privacy Policy</h2><p>Last updated: 2026 • StudyPad-Library by Joheliv Labs</p></div></div>
+
+      <div class="policy-box">
+        <h3>📌 Overview</h3>
+        <p>
+          StudyPad-Library ("we", "our", "the app") is developed by <b>Joheliv Labs</b> 
+          in South Africa. This policy explains what data we handle and how. 
+          Your privacy matters — we built this app to keep your data on your device.
+        </p>
+      </div>
+
+      <div class="policy-box">
+        <h3>💾 Data We Store (On Your Device Only)</h3>
+        <p>The following data is saved <b>locally in your browser</b> using IndexedDB — it never leaves your device:</p>
+        <ul>
+          <li><b>PDF files</b> you upload to My Library</li>
+          <li><b>Music files</b> you upload to the Music Player</li>
+          <li>Book reading positions and preferences</li>
+          <li>AI summary/quiz/flashcard history (in-session only)</li>
+        </ul>
+        <div class="note">
+          🔐 <b>Important:</b> Your files are stored in your browser's local database. 
+          Clearing your browser data will remove them. We never see, store, or transmit your files.
+        </div>
+      </div>
+
+      <div class="policy-box">
+        <h3>🌐 External Services</h3>
+        <p>When you use certain features, requests go to third-party services:</p>
+        <ul>
+          <li><b>Dictionary API</b> (dictionaryapi.dev) — for word definitions</li>
+          <li><b>Datamuse API</b> (datamuse.com) — for synonyms</li>
+          <li><b>AI Worker</b> (jdevapphub.workers.dev) — for summaries, quizzes, flashcards</li>
+          <li><b>PDF.js CDN</b> (cdnjs.cloudflare.com) — for PDF rendering</li>
+          <li><b>Google Fonts</b> — for the Inter typeface</li>
+        </ul>
+        <p style="margin-top:8px">
+          These services receive only the text/word you ask about. We do not send your 
+          personal identity, files, or device info.
+        </p>
+      </div>
+
+      <div class="policy-box">
+        <h3>🚫 What We Do NOT Do</h3>
+        <ul>
+          <li>❌ We do not collect your name, email, or phone number</li>
+          <li>❌ We do not track you across websites</li>
+          <li>❌ We do not sell or share your data</li>
+          <li>❌ We do not upload your PDFs or music to any server</li>
+          <li>❌ We do not require an account or login</li>
+        </ul>
+      </div>
+
+      <div class="policy-box">
+        <h3>👤 Your Rights (POPIA — South Africa)</h3>
+        <p>
+          Under the Protection of Personal Information Act (POPIA) of South Africa, you have 
+          the right to access, correct, and delete your data. Since all your data lives on 
+          your device, you can:
+        </p>
+        <ul>
+          <li><b>Access:</b> Open the Bookshelf or Music Player to see your uploads</li>
+          <li><b>Delete:</b> Use the ✕ button next to any file, or clear browser data</li>
+          <li><b>Port:</b> Your files stay in their original format on your device</li>
+        </ul>
+      </div>
+
+      <div class="policy-box">
+        <h3>👶 Children's Privacy</h3>
+        <p>
+          StudyPad-Library is designed for students of all ages. We do not knowingly collect 
+          any personal information from children. If a parent or guardian believes their 
+          child has provided personal data, contact us at 
+          <a href="mailto:studypadjoheliv@gmail.com" style="color:var(--blue2)">studypadjoheliv@gmail.com</a> 
+          and we will assist immediately.
+        </p>
+      </div>
+
+      <div class="policy-box">
+        <h3>📝 Changes to This Policy</h3>
+        <p>
+          We may update this policy occasionally. When we do, the "Last updated" date 
+          at the top will change. Continued use of StudyPad-Library means you accept 
+          the updated policy.
+        </p>
+      </div>
+
+      <div class="policy-box">
+        <h3>📧 Contact Us</h3>
+        <p>
+          Questions about this policy? Email us at 
+          <a href="mailto:studypadjoheliv@gmail.com" style="color:var(--blue2)">studypadjoheliv@gmail.com</a><br>
+          <b>Joheliv Labs</b> • Jason's Labs • South Africa 🇿🇦 • 2026
+        </p>
+      </div>
+    </div>
+
     <div class="view" id="view-settings">
       <div class="section-head"><div><h2>⚙️ Settings</h2></div></div>
       <div class="card" style="max-width:500px">
@@ -459,7 +619,9 @@ input,textarea,select{font-family:inherit;color:inherit}
           Where Code Becomes Codex<br>
           By Joheliv Labs<br>
           All systems wired.<br><br>
-          <b style="color:var(--text)">Privacy:</b> Nothing is saved. Uploads live only in memory and vanish on refresh.
+          <b style="color:var(--text)">Privacy:</b> Your uploads are saved locally on your device 
+          (IndexedDB) and persist after refresh. They never leave your browser.<br><br>
+          <b style="color:var(--text)">Contact:</b> studypadjoheliv@gmail.com
         </div>
       </div>
     </div>
@@ -500,6 +662,82 @@ function goTo(v) {
 document.querySelectorAll('.nav-item').forEach(i => i.addEventListener('click', () => {
   goTo(i.dataset.view);
 }));
+
+/* ══════════════════════════════════════════════════════════
+   INDEXEDDB STORAGE
+   ══════════════════════════════════════════════════════════ */
+const DB_NAME = 'StudyPadLibraryDB';
+const DB_VERSION = 1;
+let db = null;
+
+function openDB() {
+  return new Promise((resolve, reject) => {
+    const req = indexedDB.open(DB_NAME, DB_VERSION);
+    req.onupgradeneeded = (e) => {
+      const d = e.target.result;
+      if (!d.objectStoreNames.contains('pdfs')) {
+        d.createObjectStore('pdfs', { keyPath: 'id' });
+      }
+      if (!d.objectStoreNames.contains('music')) {
+        d.createObjectStore('music', { keyPath: 'id' });
+      }
+    };
+    req.onsuccess = () => { db = req.result; resolve(db); };
+    req.onerror = () => reject(req.error);
+  });
+}
+
+function idbPut(store, value) {
+  return new Promise((resolve, reject) => {
+    if (!db) return reject(new Error('DB not open'));
+    const tx = db.transaction(store, 'readwrite');
+    tx.objectStore(store).put(value);
+    tx.oncomplete = () => resolve();
+    tx.onerror = () => reject(tx.error);
+  });
+}
+
+function idbDelete(store, id) {
+  return new Promise((resolve, reject) => {
+    if (!db) return reject(new Error('DB not open'));
+    const tx = db.transaction(store, 'readwrite');
+    tx.objectStore(store).delete(id);
+    tx.oncomplete = () => resolve();
+    tx.onerror = () => reject(tx.error);
+  });
+}
+
+function idbGetAll(store) {
+  return new Promise((resolve, reject) => {
+    if (!db) return reject(new Error('DB not open'));
+    const tx = db.transaction(store, 'readonly');
+    const req = tx.objectStore(store).getAll();
+    req.onsuccess = () => resolve(req.result);
+    req.onerror = () => reject(req.error);
+  });
+}
+
+function formatBytes(bytes) {
+  if (!bytes || bytes < 1024) return (bytes || 0) + ' B';
+  if (bytes < 1024 * 1024) return (bytes / 1024).toFixed(1) + ' KB';
+  return (bytes / 1024 / 1024).toFixed(1) + ' MB';
+}
+
+async function updateStorageInfo() {
+  try {
+    const pdfs = await idbGetAll('pdfs');
+    const music = await idbGetAll('music');
+    let total = 0;
+    pdfs.forEach(p => total += (p.blob ? p.blob.size : 0));
+    music.forEach(m => total += (m.blob ? m.blob.size : 0));
+    const countEl = document.getElementById('storageCount');
+    const sizeEl = document.getElementById('storageSize');
+    if (countEl) countEl.textContent = (pdfs.length + music.length);
+    if (sizeEl) sizeEl.textContent = formatBytes(total);
+  } catch (e) {
+    console.warn('Storage info failed:', e);
+  }
+}
 
 /* ══════════════════════════════════════════════════════════
    AI WORKER
@@ -849,19 +1087,39 @@ function prevSlide() { if (curSlide > 1) { curSlide--; renderSlide(); } }
 function goToSlide(v) { curSlide = Math.max(1, Math.min(parseInt(v) || 1, currentBook.slides.length)); renderSlide(); }
 
 /* ══════════════════════════════════════════════════════════
-   PDF SYSTEM
+   PDF SYSTEM — with persistent storage in IndexedDB
    ══════════════════════════════════════════════════════════ */
 pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
 let myLibrary = [];
 let currentPdf = null;
 let pdfPage = 1;
 
+function blobToDataUrl(blob) {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onload = () => resolve(reader.result);
+    reader.onerror = () => reject(reader.error);
+    reader.readAsDataURL(blob);
+  });
+}
+
 async function handleUpload(e) {
   const files = Array.from(e.target.files || []);
   for (const file of files) {
     if (file.type !== 'application/pdf') continue;
-    const url = URL.createObjectURL(file);
-    const entry = { name: file.name, url, doc: null, numPages: 1 };
+    const id = 'pdf_' + Date.now() + '_' + Math.random().toString(36).slice(2, 8);
+    const blob = file.slice(0, file.size, file.type);
+    try {
+      // Save to IndexedDB
+      await idbPut('pdfs', { id, name: file.name, blob, size: file.size, addedAt: Date.now() });
+    } catch (err) {
+      console.warn('Failed to save PDF:', err);
+      alert('Could not save PDF — storage may be full.');
+      continue;
+    }
+    // Load in memory
+    const url = URL.createObjectURL(blob);
+    const entry = { id, name: file.name, url, doc: null, numPages: 1, blob };
     myLibrary.push(entry);
     renderMyLibrary();
     try {
@@ -874,12 +1132,34 @@ async function handleUpload(e) {
     }
   }
   e.target.value = '';
+  updateStorageInfo();
+}
+
+async function loadSavedPdfs() {
+  try {
+    const saved = await idbGetAll('pdfs');
+    for (const item of saved) {
+      const url = URL.createObjectURL(item.blob);
+      const entry = { id: item.id, name: item.name, url, doc: null, numPages: 1, blob: item.blob };
+      myLibrary.push(entry);
+      // Load in background
+      pdfjsLib.getDocument(url).promise.then(doc => {
+        entry.doc = doc;
+        entry.numPages = doc.numPages;
+        renderMyLibrary();
+      }).catch(err => console.warn('Saved PDF load failed:', err));
+    }
+    renderMyLibrary();
+    updateStorageInfo();
+  } catch (e) {
+    console.warn('Load saved PDFs failed:', e);
+  }
 }
 
 function renderMyLibrary() {
   const w = document.getElementById('mylibList');
   if (myLibrary.length === 0) {
-    w.innerHTML = '<div style="font-size:12px;color:var(--muted);padding:8px">No uploads yet — add PDF above. (Session-only.)</div>';
+    w.innerHTML = '<div style="font-size:12px;color:var(--muted);padding:8px">No uploads yet — add PDF above. They are saved to your device.</div>';
     return;
   }
   w.innerHTML = '';
@@ -892,9 +1172,25 @@ function renderMyLibrary() {
         <b style="font-size:13px;display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${f.name}</b>
         <span style="font-size:11px;color:var(--muted)">${f.doc ? f.doc.numPages + ' pages' : 'Loading...'}</span>
       </div>
-      <button onclick="openUploadedPdf(${i})">Open</button>`;
+      <button onclick="openUploadedPdf(${i})">Open</button>
+      <button class="rm-btn" onclick="removePdf(${i})" title="Delete">✕</button>`;
     w.appendChild(row);
   });
+}
+
+async function removePdf(i) {
+  const f = myLibrary[i];
+  if (!f) return;
+  if (!confirm(`Delete "${f.name}"? This cannot be undone.`)) return;
+  try {
+    await idbDelete('pdfs', f.id);
+  } catch (e) {
+    console.warn('Delete failed:', e);
+  }
+  try { URL.revokeObjectURL(f.url); } catch (e) {}
+  myLibrary.splice(i, 1);
+  renderMyLibrary();
+  updateStorageInfo();
 }
 
 async function openUploadedPdf(i) {
@@ -1012,12 +1308,13 @@ function clearLookup() {
 }
 
 /* ══════════════════════════════════════════════════════════
-   MUSIC PLAYER
+   MUSIC PLAYER — FIXED + persistent storage
    ══════════════════════════════════════════════════════════ */
 let playlist = [];
 let currentTrackIdx = -1;
 let isPlaying = false;
 let currentAudio = null;
+let audioUnlocked = false;
 
 function formatTime(sec) {
   if (!isFinite(sec) || sec < 0) return '0:00';
@@ -1030,7 +1327,7 @@ function renderPlaylist() {
   const w = document.getElementById('playlist');
   if (!w) return;
   if (playlist.length === 0) {
-    w.innerHTML = '<div style="font-size:12px;color:var(--muted);padding:12px;text-align:center">No tracks yet — upload music below.</div>';
+    w.innerHTML = '<div style="font-size:12px;color:var(--muted);padding:12px;text-align:center">No tracks yet — upload music below. They are saved to your device.</div>';
     updateTrackDisplay();
     return;
   }
@@ -1087,6 +1384,7 @@ function updateTrackDisplay() {
 }
 
 function wireAudio(audioEl) {
+  // Remove any previous handlers by using properties (they're overwritten, not added)
   audioEl.onended = () => nextTrack();
   audioEl.ontimeupdate = () => {
     updateProgressFill();
@@ -1100,30 +1398,55 @@ function wireAudio(audioEl) {
   };
   audioEl.onplay = () => { isPlaying = true; updateTrackDisplay(); renderPlaylist(); };
   audioEl.onpause = () => { isPlaying = false; updateTrackDisplay(); renderPlaylist(); };
+  audioEl.onerror = (e) => {
+    console.warn('Audio error:', e);
+    isPlaying = false;
+    updateTrackDisplay();
+  };
 }
 
-function playTrackAt(i) {
+async function playTrackAt(i) {
   if (i < 0 || i >= playlist.length) return;
-  if (currentAudio) {
+  const track = playlist[i];
+  if (!track || !track.el) return;
+
+  // Pause current
+  if (currentAudio && currentAudio !== track.el) {
     try { currentAudio.pause(); } catch (e) {}
   }
-  currentTrackIdx = i;
-  currentAudio = playlist[i].el;
-  wireAudio(currentAudio);
-  if (!currentAudio.src) currentAudio.src = playlist[i].url;
 
-  const p = currentAudio.play();
-  if (p && p.catch) {
-    p.then(() => {
-      isPlaying = true;
-      updateTrackDisplay();
-      renderPlaylist();
-    }).catch(err => {
-      console.warn('Play failed:', err);
-      isPlaying = false;
-      updateTrackDisplay();
-    });
+  currentTrackIdx = i;
+  currentAudio = track.el;
+  wireAudio(currentAudio);
+
+  // Ensure src is set (persistent tracks need blob URL)
+  if (!currentAudio.src && track.url) {
+    currentAudio.src = track.url;
   }
+
+  try {
+    currentAudio.currentTime = 0;
+  } catch (e) {}
+
+  try {
+    await currentAudio.play();
+    audioUnlocked = true;
+    isPlaying = true;
+  } catch (err) {
+    console.warn('Play failed:', err);
+    // Retry after user gesture if autoplay blocked
+    if (err.name === 'NotAllowedError') {
+      // Attach one-time click handler
+      const resume = () => {
+        currentAudio.play().catch(() => {});
+        document.removeEventListener('click', resume);
+      };
+      document.addEventListener('click', resume, { once: true });
+    }
+    isPlaying = false;
+  }
+  updateTrackDisplay();
+  renderPlaylist();
 }
 
 function updateProgressFill() {
@@ -1142,7 +1465,16 @@ function togglePlay() {
     return;
   }
   if (currentAudio.paused) {
-    currentAudio.play().catch(err => console.warn(err));
+    currentAudio.play().catch(err => {
+      console.warn('Play failed:', err);
+      if (err.name === 'NotAllowedError') {
+        const resume = () => {
+          currentAudio.play().catch(() => {});
+          document.removeEventListener('click', resume);
+        };
+        document.addEventListener('click', resume, { once: true });
+      }
+    });
   } else {
     currentAudio.pause();
   }
@@ -1173,22 +1505,32 @@ function seekTrack(e) {
   updateProgressFill();
 }
 
-function handleMusicUpload(e) {
+async function handleMusicUpload(e) {
   const files = Array.from(e.target.files || []);
   if (!files.length) return;
 
-  files.forEach(file => {
-    if (!file.type.startsWith('audio/')) return;
-    const url = URL.createObjectURL(file);
+  for (const file of files) {
+    if (!file.type.startsWith('audio/')) continue;
+    const id = 'track_' + Date.now() + '_' + Math.random().toString(36).slice(2, 8);
+    const blob = file.slice(0, file.size, file.type);
+    try {
+      await idbPut('music', { id, name: file.name, blob, size: file.size, addedAt: Date.now() });
+    } catch (err) {
+      console.warn('Failed to save track:', err);
+      alert('Could not save track — storage may be full.');
+      continue;
+    }
+    const url = URL.createObjectURL(blob);
     const el = new Audio();
     el.src = url;
     el.volume = 0.7;
     el.preload = 'metadata';
-    playlist.push({ name: file.name, url, el, duration: 0 });
-  });
+    playlist.push({ id, name: file.name, url, el, duration: 0, blob });
+  }
 
   e.target.value = '';
   renderPlaylist();
+  updateStorageInfo();
 
   if (currentTrackIdx === -1 && playlist.length > 0) {
     currentTrackIdx = 0;
@@ -1198,17 +1540,40 @@ function handleMusicUpload(e) {
   }
 }
 
-function removeTrackAt(i) {
+async function loadSavedMusic() {
+  try {
+    const saved = await idbGetAll('music');
+    for (const item of saved) {
+      const url = URL.createObjectURL(item.blob);
+      const el = new Audio();
+      el.src = url;
+      el.volume = 0.7;
+      el.preload = 'metadata';
+      playlist.push({ id: item.id, name: item.name, url, el, duration: 0, blob: item.blob });
+    }
+    renderPlaylist();
+    updateStorageInfo();
+  } catch (e) {
+    console.warn('Load saved music failed:', e);
+  }
+}
+
+async function removeTrackAt(i) {
   if (i < 0 || i >= playlist.length) return;
   const t = playlist[i];
+  if (!confirm(`Delete "${t.name}"? This cannot be undone.`)) return;
+
   if (currentAudio === t.el) {
     try { currentAudio.pause(); } catch (e) {}
     currentAudio = null;
     isPlaying = false;
     currentTrackIdx = -1;
   }
-  URL.revokeObjectURL(t.url);
+  try { URL.revokeObjectURL(t.url); } catch (e) {}
+  try { await idbDelete('music', t.id); } catch (e) { console.warn(e); }
+
   playlist.splice(i, 1);
+
   if (currentTrackIdx > i) currentTrackIdx--;
   if (currentTrackIdx >= playlist.length) currentTrackIdx = playlist.length - 1;
 
@@ -1217,13 +1582,16 @@ function removeTrackAt(i) {
     wireAudio(currentAudio);
   } else {
     currentAudio = null;
-    currentTrackIdx = playlist.length > 0 ? 0 : -1;
-    if (currentTrackIdx === 0) {
+    if (playlist.length > 0) {
+      currentTrackIdx = 0;
       currentAudio = playlist[0].el;
       wireAudio(currentAudio);
+    } else {
+      currentTrackIdx = -1;
     }
   }
   renderPlaylist();
+  updateStorageInfo();
 }
 
 /* ══════════════════════════════════════════════════════════
@@ -1365,15 +1733,28 @@ function loadEnglish(idx) {
 /* ══════════════════════════════════════════════════════════
    INIT
    ══════════════════════════════════════════════════════════ */
-renderBookshelf();
-renderWriting();
-(function initDoc() {
+async function init() {
+  try {
+    await openDB();
+  } catch (e) {
+    console.warn('IndexedDB unavailable:', e);
+  }
+
+  renderBookshelf();
+  renderWriting();
   currentBook = BOOKS[0];
   renderSlide();
   loadEnglish(0);
-})();
-renderMyLibrary();
-renderPlaylist();
+  renderMyLibrary();
+  renderPlaylist();
+
+  // Load saved data from IndexedDB
+  await loadSavedPdfs();
+  await loadSavedMusic();
+  updateStorageInfo();
+}
+
+init();
 </script>
 </body>
 </html>
